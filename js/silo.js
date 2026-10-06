@@ -10,7 +10,6 @@ function updateHarkun(e,dt){const K=KINDS.hk,D=DIFF[SET.diff],dx=P.x-e.x,dy=P.y-
   let vx=dx/d,vy=dy/d;if(!e.see){const n=flowNext(e.x|0,e.y|0);if(n){const tx=n[0]+.5-e.x,ty=n[1]+.5-e.y,l=Math.hypot(tx,ty)||1;vx=tx/l;vy=ty/l;}}
   if(d>3.4||!e.see){const ox=e.x,oy=e.y,wob=Math.sin(G.time*3+e.id)*.4,s=K.speed*D.spd;moveBody(e,(vx-vy*wob)*s,(vy+vx*wob)*s,dt,e.rad);e.walk+=Math.hypot(e.x-ox,e.y-oy)*3;}}
 const SILO_UP={x:79.5,y:10};
-function siloInit(){G.seedproof=G.seedproof||false;}
 function updateSilo(dt){
   if(Math.hypot(P.x-SILO_UP.x,P.y-SILO_UP.y)<2.2){if(!(G.msgT>0))msg('ЛИФТ НАВЕРХ — 2 ЭТАЖ · СКОРО');}
   if(P.y>58.2&&G.gReturn){const r=G.gReturn;G.gReturn=null;keys.clear();transition(()=>{enterLevel(11);P.x=r.x;P.y=r.y+1;P.a=Math.PI/2;msg('ГАРАЖИ');},.6);}}

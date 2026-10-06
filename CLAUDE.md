@@ -64,6 +64,7 @@ Put new level-specific setup or per-tick logic in these hooks. There are still a
 - Code style is dense, minified-looking JS: short names, many statements per line. Match it; don't reformat or expand existing code.
 - All in-game text is Russian (UI uses the "Press Start 2P" pixel font, so keep strings short and uppercase where the surrounding UI is).
 - The header comment in `config.js` notes this is meant to be **ported to 3DS (devkitPro / citro2d + citro3d)**: keep the two fixed screen resolutions, button mapping, and boot-time generated art portable. Avoid browser-only shortcuts in core logic.
+- Game state: every `G` field is declared in `state.js`, in one of three groups: UI/meta in the `G` literal, `runState()` (one playthrough, reset on new game) or `levelState()` (reset by every `resetLevel`). Declare new fields there instead of creating them ad hoc; with `?debug`, reading or writing an undeclared `G` field logs a warning, which fails `npm test`.
 - `localStorage` keys are prefixed `panelka.` (`v2` settings, `slots`, `notes`, `unlock`, `last`). Every access is wrapped in `try/catch`; keep it that way.
 - `window.claude.hot` (end of `boot.js`) supports hot-reload snapshots when hosted as a Claude artifact; it must keep working with and without that object present.
 - Only external resources: Google Fonts (Press Start 2P, PT Mono, Russo One).

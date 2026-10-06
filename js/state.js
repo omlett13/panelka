@@ -1,9 +1,27 @@
 'use strict';
 /* ---------- GAME STATE ---------- */
-const G={state:'menu',page:'main',sel:0,parent:'main',prevState:'play',t:0,time:0,kills:0,killTotal:0,items:0,itemTotal:0,secrets:0,secretTotal:0,msg:'',msgT:0,bark:'',barkT:0,flash:0,hurt:0,bonus:0,deadT:0,zoom:0,power:false,winTime:0,navT:0,hadLock:false,noiseT:0,
-  rub:0,god:false,trans:null,loot:false,lootHeld:-1,lootSlot:-1,lootCur:0,statsT:0,rideT:0,rideDing:false,hiT:0,
-  shopT:0,shopClosing:false,hand:{x:200,y:150},hover:-1,dolly:null,pokeT:0,shake:0,shopMsg:'',shopMsgT:0,floorN:1,
-  level:1,cleared:false,hasKey:false,bossOn:false,healT:0,brawlUsed:false,firstDeadT:-1,clearT:0,drillVol:0};
+/* All game state lives in G and every field is declared here. Three groups:
+   - UI / meta: survives level loads (menus, shop, lift, camera, checkpoint);
+   - runState(): progress for one playthrough, reset by resetLevel(false) (new game, level select, menu);
+   - levelState(): everything that belongs to the current level, reset by every resetLevel.
+   Add new fields to one of these, never ad hoc. With ?debug, touching an undeclared field warns. */
+const runState=()=>({rub:0,floorN:1,candy:0,foundHQ:false,gReturn:null});
+const levelState=()=>({
+  time:0,kills:0,killTotal:0,items:0,itemTotal:0,secrets:0,msg:'',msgT:0,bark:'',barkT:0,flash:0,hurt:0,bonus:0,power:false,trans:null,loot:false,
+  cleared:false,bossOn:false,healT:6,brawlUsed:false,firstDeadT:-1,clearT:0,face:null,goo:0,grab:null,grannyN:0,
+  safeFound:false,fuses:0,liftKey:false,dvOn:false,dvDown:false,cut:null,flatKey:false,liftBreak:0,codeOK:false,brk:null,kp:null,boardHP:{},code:[],
+  ambS:0,birdT:0,boomT:0,fireT:0,shoutT:0,spitT:0,ventT:0,                                     // timers
+  duel:null,rc:null,drop:null,dropDead:false,roll:0,gtT:0,                                      // roof
+  outside:false,siteDone:false,trainMove:false,departed:false,departT:0,ghostOn:false,ghostDone:false,ghostEnd:false,ghostT:0,lockDoor:-1,wave:null, // metro
+  brig:null,siteEnd:0,obrezEnt:null,arena:false,breach:false,breachHole:false,                  // site
+  gkey:false,gateOpen:false,garDone:false,knock:null,seedFound:false});                         // garages
+const G=watchKeys('G',Object.assign({
+  state:'menu',page:'main',sel:0,parent:'main',prevState:'play',t:0,deadT:0,zoom:0,winTime:0,navT:0,hadLock:false,noiseT:0,god:false,
+  lootHeld:-1,lootSlot:-1,lootCur:0,statsT:0,rideT:0,rideDing:false,rideTarget:0,hiT:0,talk:null,noteI:0,house:9,
+  shopT:0,shopClosing:false,hand:{x:200,y:150},hover:-1,dolly:null,pokeT:0,shake:0,shopMsg:'',shopMsgT:0,
+  level:1,secretTotal:0,hasKey:false,cp:null,menuCam:null,menuLoad:false,menuLvl:1,shotId:0,
+  dawn:0 // roof sunrise; deliberately carried into later levels (nofog sprites use it)
+},runState(),levelState()));
 const P={x:3.5,y:18.5,a:-0.9,hp:100,armor:0,ammo9:8,shells:0,has:[1,1,0],w:1,cool:0,anim:9,punch:0,bob:0,bobAmt:0,camZ:.5,switchT:0,faceHurt:0,faceGrin:0,faceLook:0,faceLookT:0,stepPh:0,vodka:0,throwT:0,kefir:0};
 const UP={kastet:0,tt:0,dvust:0,krossy:0,vest:0,bando:0,salo:0,tapok2:0,gvozd:0};
 const maxHP=()=>UP.salo?125:100,maxAR=()=>UP.vest?150:100,cap9=()=>UP.bando?150:99,capS=()=>UP.bando?60:40;
@@ -250,14 +268,13 @@ let ents=[], eid=0;
 const FOUND=new Set();
 /* keep=true carries rubles, upgrades, weapons, ammo and vodka into the next run */
 function resetLevel(keep){
-  FOUND.clear();lure=null;G.face=null;G.goo=0;G.grab=null;
+  FOUND.clear();lure=null;Object.assign(G,levelState());
   const D=DIFF[SET.diff];
-  G.grannyN=0;ents=[];G.kills=0;G.items=0;G.killTotal=0;G.itemTotal=0;G.secrets=0;G.time=0;G.msg='';G.bark='';G.barkT=0;G.msgT=0;G.hurt=0;G.bonus=0;G.flash=0;G.power=false;G.loot=false;G.trans=null;
+  ents=[];
   doorOpen.fill(0);doorTarget.fill(0);doorTimer.fill(0);SEEN.fill(0);
-  if(!keep){G.rub=0;for(const k in UP)UP[k]=0;Object.assign(P,{ammo9:8,shells:0,has:[1,1,0,0],w:1,vodka:0,kefir:0});G.floorN=1;}
+  if(!keep){Object.assign(G,runState());for(const k in UP)UP[k]=0;Object.assign(P,{ammo9:8,shells:0,has:[1,1,0,0],w:1,vodka:0,kefir:0});}
   else{P.ammo9=Math.max(P.ammo9,8);}
-  const ST=LEVELDEF[G.level].start;G.cleared=false;G.hasKey=G.hasKey&&keep;G.bossOn=false;G.healT=6;G.brawlUsed=false;G.firstDeadT=-1;G.clearT=0;G.safeFound=false;
-  G.fuses=0;G.liftKey=false;G.dvOn=false;G.dvDown=false;G.cut=null;G.flatKey=false;G.liftBreak=0;G.codeOK=false;G.brk=null;G.kp=null;G.boardHP={};G.code=[1,2,3].map(()=>1+((Math.random()*9)|0));
+  const ST=LEVELDEF[G.level].start;G.hasKey=G.hasKey&&keep;G.code=[1,2,3].map(()=>1+((Math.random()*9)|0));
   Object.assign(P,{x:ST.x,y:ST.y,a:ST.a,bleed:0,hp:maxHP(),armor:UP.vest?50:0,cool:0,anim:9,punch:0,bob:0,bobAmt:0,camZ:.5,switchT:0,faceHurt:0,faceGrin:0,throwT:0});
   if(!P.has[P.w])P.w=1;
   for(const [t,x0,y0] of LEVEL_SRC[G.level].ents){const x=x0,y=y0;
@@ -268,7 +285,7 @@ function resetLevel(keep){
     else if(ITEMS[t]){if(ITEMS[t].lore&&NOTESGOT.includes(t))continue;ents.push({kind:'item',t,x,y,v:G.level===8&&t==='rub'?5+((hash2(x*10|0,y*10|0)*10)|0):t==='rubS'?(G.level===3?60:40):t==='safe'?250:0});if(!ITEMS[t].money&&!ITEMS[t].lore)G.itemTotal++;}
     else if(KINDS[t]){const K=KINDS[t];let x=x0,y=y0;const rr=K.rad||.32*K.scale;if(solidR(x,y,rr)){x=(x|0)+.5;y=(y|0)+.5;}ents.push({kind:'enemy',k:t,x,y,hp:K.hp*D.hp,max:K.hp*D.hp,state:'idle',t:0,cool:0,alert:!!K.roller,pain:0,walk:0,id:eid++,rad:K.rad||.32*K.scale,stT:2+Math.random()*3,stun:0,rage:false,rageT:0,losT:0,see:false,sdir:Math.random()<.5?1:-1,box:K.box||0});if(K.granny){const b=ents[ents.length-1];b.gs='sit';b.sus=0;b.sx=x;b.sy=y;b.note=G.level===6?'note13':G.level===1?'note9':G.grannyN++?'note11':'note10';}else G.killTotal++;}
   }
-  G.duel=null;G.rc=null;G.drop=null;G.dropDead=false;G.roll=0;P.pitch=0;RF.heli=null;RF.spot=false;RF.rain=[];
+  P.pitch=0;RF.heli=null;RF.spot=false;RF.rain=[];
   const LD=LEVELDEF[G.level];if(LD.init)LD.init();
   computeFlow();
 }
