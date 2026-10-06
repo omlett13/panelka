@@ -17,12 +17,16 @@ function renderTop(){
     let fx=px+rowD*rdx0,fy=py+rowD*rdy0;const sx=rowD*(rdx1-rdx0)/RW,sy=rowD*(rdy1-rdy0)/RW;
     let fog=1-rowD/FOGD;if(fog<0)fog=0;const fogI=fog*256;const fI=flash>0?flash*Math.max(0,1-rowD/7)*190:0;const feF=Math.min(256,fogI*1.5+40)|0;const tR=TORCH?230*TROW[y]*Math.max(0,1-rowD/10):0;const hk=HZ?1-fog:0,hr=hk*178,hg=hk*196,hb=hk*214;
     const o=y*RW,skyRow=Math.max(0,Math.min(SKYH-1,(SKYH-1-(RHOR-y)*skyK)|0))*SKYW;if(!isF&&camZ>1){for(let x=0;x<RW;x++)FB[o+x]=SKY[skyRow+SKYCOL[x]];continue;}
+    const fG=fI*.85,fB=fI*.6;let lc=-1,lr=0,lg=0,lb=0; // per-row constants; lighting cached while the cell doesn't change
     for(let x=0;x<RW;x++,fx+=sx,fy+=sy){
       if(fx<0||fy<0||fx>=MWL||fy>=MHL){if(isF&&G.level===7){const u=((fx/6)%1+1)%1,v=((fy/6)%1+1)%1,c=TX.cityTop[(((v*64)|0)<<6)|((u*64)|0)],L=(70+(G.dawn||0)*120)*Math.max(.45,fog);FB[o+x]=sh(c,L|0,(L*.9)|0,(L*.88)|0);continue;}FB[o+x]=isF?OOBF:SKY[skyRow+SKYCOL[x]];continue;}
       const cx=fx|0,cy=fy|0,cell=cy*MW+cx;let tex;
       if(isF)tex=FLOORTEX[cell];else{const zc=ZONE[cell];if((zc===Z_OUT||zc===Z_VOID)&&!(PIN&&TILE[cell]!==0)&&!CEILW[cell]){FB[o+x]=SKY[skyRow+SKYCOL[x]];continue;}tex=CEILTEX[cell];}
       const c=tex[((((fy-cy)*64)|0)<<6)|(((fx-cx)*64)|0)];
-      const tq=tR?tR*TCOL[x]:0;FB[o+x]=(c>>>24)===254?sh(c,feF,feF,feF):sh(c,((LR[cell]*fogI)>>8)+fI+tq,((LG[cell]*fogI)>>8)+fI*.85+tq*.95,((LB[cell]*fogI)>>8)+fI*.6+tq*.8);if(hk)FB[o+x]=hzA(FB[o+x],hr,hg,hb);
+      if((c>>>24)===254)FB[o+x]=sh(c,feF,feF,feF);
+      else{if(cell!==lc){lc=cell;lr=((LR[cell]*fogI)>>8)+fI;lg=((LG[cell]*fogI)>>8)+fG;lb=((LB[cell]*fogI)>>8)+fB;}
+        if(tR){const tq=tR*TCOL[x];FB[o+x]=sh(c,lr+tq,lg+tq*.95,lb+tq*.8);}else FB[o+x]=sh(c,lr,lg,lb);}
+      if(hk)FB[o+x]=hzA(FB[o+x],hr,hg,hb);
     }
   }
   const bm=BRIGHT[SET.bright],ar=AMB[0][0]*300*bm,ag=AMB[0][1]*300*bm,ab=AMB[0][2]*300*bm;

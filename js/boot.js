@@ -14,6 +14,18 @@ function drawErr(now){const e=ERR.last;if(now-e.at>8000){ERR.last=null;return;}
   try{const s='ОШИБКА ['+e.phase+'] '+e.msg+(e.n>1?' ×'+e.n:'');tg.save();tg.fillStyle='rgba(20,0,0,.85)';tg.fillRect(0,H-14,W,14);
     tg.font='9px "PT Mono", monospace';tg.textAlign='left';tg.textBaseline='middle';tg.fillStyle=DANGER;tg.fillText(s.length>70?s.slice(0,69)+'…':s,4,H-7);tg.restore();}catch(x){}}
 
+/* ---------- FRAME TIMES (debug: 'perf' button) ----------
+   ms per phase over the last 120 frames: PERF.stats = {upd,top,bot,frame} each {avg,max}; frame = time between frames */
+const PERF={on:false,n:0,i:0,buf:new Float32Array(120*4),last:0,stats:null};
+function perfAdd(u,t,b,now){const o=PERF.i*4;PERF.buf[o]=u;PERF.buf[o+1]=t;PERF.buf[o+2]=b;PERF.buf[o+3]=PERF.last?now-PERF.last:0;PERF.last=now;
+  PERF.i=(PERF.i+1)%120;PERF.n=Math.min(120,PERF.n+1);const st=['upd','top','bot','frame'].map(()=>({avg:0,max:0}));
+  for(let k=0;k<PERF.n;k++)for(let j=0;j<4;j++){const v=PERF.buf[k*4+j];st[j].avg+=v/PERF.n;if(v>st[j].max)st[j].max=v;}
+  PERF.stats={upd:st[0],top:st[1],bot:st[2],frame:st[3]};}
+function perfReset(){PERF.n=PERF.i=PERF.last=0;PERF.stats=null;}
+function drawPerf(){const s=PERF.stats;if(!s)return;const f=v=>v.toFixed(1).padStart(5);
+  tg.save();tg.fillStyle='rgba(0,0,0,.7)';tg.fillRect(W-128,0,128,44);tg.font='9px "PT Mono", monospace';tg.textAlign='left';tg.textBaseline='top';tg.fillStyle=VFD;
+  [['    avg   max',null],['upd ',s.upd],['top ',s.top],['bot ',s.bot]].forEach(([l,v],i)=>tg.fillText(v?l+f(v.avg)+' '+f(v.max)+' ms':l+'  '+(1000/(s.frame.avg||16.7)).toFixed(0)+' fps',W-124,2+i*10));tg.restore();}
+
 /* ---------- BOOT ---------- */
 function start(data){
   setRes();menuScene();G.state='menu';openPage('main');
@@ -22,9 +34,10 @@ function start(data){
   if(document.fonts&&document.fonts.load){document.fonts.load('8px "Press Start 2P"').catch(()=>{});document.fonts.load('44px "Russo One"').catch(()=>{});}
   let last=performance.now();
   function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;
-    try{update(dt);}catch(err){loopErr('update',err);}
-    try{renderTop();}catch(err){loopErr('renderTop',err);}
-    try{renderBottom();}catch(err){loopErr('renderBottom',err);}
+    const t0=performance.now();try{update(dt);}catch(err){loopErr('update',err);}
+    const t1=performance.now();try{renderTop();}catch(err){loopErr('renderTop',err);}
+    const t2=performance.now();try{renderBottom();}catch(err){loopErr('renderBottom',err);}
+    if(PERF.on){perfAdd(t1-t0,t2-t1,performance.now()-t2,now);drawPerf();}
     if(ERR.last)drawErr(now);requestAnimationFrame(loop);}
   requestAnimationFrame(loop);
 }

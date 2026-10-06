@@ -6,7 +6,8 @@
     "start": "node serve.mjs",
     "build": "node build.mjs",
     "lint": "eslint .",
-    "test": "node test/smoke.mjs && node build.mjs && node test/smoke.mjs dist/Панелька.html"
+    "test": "node test/smoke.mjs && node build.mjs && node test/smoke.mjs dist/Панелька.html",
+    "perf": "node test/perf.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

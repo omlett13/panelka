@@ -12,6 +12,7 @@ npm start          # http://127.0.0.1:8080/ — serves index.html
 npm run build      # → dist/Панелька.html, one self-contained file (CSS, JS and audio inlined)
 npm run lint       # ESLint (no-undef across files, unused vars, recommended rules; no formatting rules)
 npm test           # smoke test on the source and on the build
+npm run perf       # frame times per level and pixel setting under 1×/4×/6× CPU throttling
 ```
 
 Opening `index.html` straight from disk works, but the music won't load (browsers block `fetch` on `file://`). Use `npm start` or the built file.
@@ -75,8 +76,9 @@ Put new level-specific setup or per-tick logic in these hooks. There are still a
 
 ## Debugging and testing
 
-- Debug mode (`DEBUG` in `config.js`) is on with `?debug`/`#debug` or on a local dev server (`?nodebug` turns it off there), and off for `file://` and real hosts. It enables the debug panel (`` ` `` key or `dbg` button: jump to any level, skip to bosses/set pieces, kill all, +money, max upgrades, god mode; handlers in `input.js`, `data-dbg` values) and the undeclared-`G`-field warnings. Without it, the panel's elements are removed from the page.
+- Debug mode (`DEBUG` in `config.js`) is on with `?debug`/`#debug` or on a local dev server (`?nodebug` turns it off there), and off for `file://` and real hosts. It enables the debug panel (`` ` `` key or `dbg` button: jump to any level, skip to bosses/set pieces, kill all, +money, max upgrades, god mode, frame-time overlay; handlers in `input.js`, `data-dbg` values). Without it, the panel's elements are removed from the page. The undeclared-`G`-field Proxy (`WATCH`) runs only with an explicit `?debug`, because it slows the renderer by roughly 45%. Don't measure performance with `?debug`.
 - Run `npm run lint` and `npm test` before committing. `npm test` drives the game through the debug panel, so keep the `data-dbg` level buttons working.
 - A new top-level name in one `js/` file is automatically known to ESLint in the others. A name used in a file but declared nowhere is a `no-undef` error.
 - Exceptions in the main loop (`update`, `renderTop`, `renderBottom`, each caught separately in `boot.js`) are logged once per distinct error, shown in a red bar at the bottom of the top screen, and an `update` error pauses the game. Check the console after changes.
+- Performance: `renderTop` at 400×240 is the only significant per-frame cost (floor/ceiling loop first, then walls). `update` and `renderBottom` stay under ~3 ms even at 6× throttling. Check changes to the renderer with `npm run perf`, and keep output pixel-identical unless you mean to change the look.
 - `levels.js` maps are 96 rows of exactly 128 characters (levels 1–7 only use the top-left 64×48). Edit them character for character. A character missing from `TMAP`/`ZMAP` silently becomes a wall in game, so `test/maps.js` reports it.

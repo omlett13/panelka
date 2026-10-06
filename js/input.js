@@ -61,6 +61,7 @@ document.querySelectorAll('[data-dbg]').forEach(b=>b.addEventListener('click',()
   if(a==='close'){toggleDbg();return;}
   if(a==='rub'){G.rub+=500;msg('DEBUG  +500 РУБ');return;}
   if(a==='max'){for(const k in UP)UP[k]=1;P.has=[1,1,1,1];P.ammo9=cap9();P.shells=capS();P.vodka=3;P.kefir=2;P.hp=maxHP();P.armor=maxAR();msg('DEBUG  ВСЁ КУПЛЕНО');return;}
+  if(a==='perf'){PERF.on=!PERF.on;perfReset();b.textContent='frame times: '+(PERF.on?'ON':'off');return;}
   if(a==='god'){G.god=!G.god;b.textContent='god mode: '+(G.god?'ON':'off');return;}
   if(a==='kill'){if(G.state==='pause')resume();if(G.state!=='play')return;for(const e of ents)if(e.kind==='enemy'&&!e.dead&&e.k!=='bb'&&e.k!=='gg')killEnemy(e);msg('DEBUG  ВСЕ УБИТЫ');return;}
   if(a==='f4'){if(G.state==='pause')resume();if(G.state!=='play'&&G.state!=='lift')newGame();enterLevel(4);G.loot=false;return;}

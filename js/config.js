@@ -15,7 +15,8 @@
 const DEBUG=(()=>{const q=location.search+location.hash;if(/[?&#]nodebug\b/.test(q))return false;if(/[?&#]debug\b/.test(q))return true;
   return /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)||location.hostname.endsWith('.localhost');})();
 /* in debug, wrap a state object so reads/writes of undeclared keys warn (catches typos and ad-hoc fields) */
-function watchKeys(name,o){if(!DEBUG||typeof Proxy==='undefined')return o;const warned=new Set(),chk=(k,op)=>{if(typeof k!=='string'||k in o||k==='toJSON'||k==='then'||warned.has(k))return;warned.add(k);console.warn(name+'.'+k+' '+op+' but not declared');};
+const WATCH=DEBUG&&/[?&#]debug\b/.test(location.search+location.hash); // explicit ?debug only: the Proxy slows hot loops ~10%
+function watchKeys(name,o){if(!WATCH||typeof Proxy==='undefined')return o;const warned=new Set(),chk=(k,op)=>{if(typeof k!=='string'||k in o||k==='toJSON'||k==='then'||warned.has(k))return;warned.add(k);console.warn(name+'.'+k+' '+op+' but not declared');};
   return new Proxy(o,{get(t,k){chk(k,'read');return t[k];},set(t,k,v){chk(k,'written');t[k]=v;return true;}});}
 let FOGD=12.5,CULL2=196,CEILH=1;const W=400,H=240,BW=320,BH=240,PLANE=0.8,SKYW=1024,SKYH=120;
 const LABEL='#bdb8aa',VFD='#7df2c9',DIM='#4d5a55',WARN='#f0973c',DANGER='#e8583e';
