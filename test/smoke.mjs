@@ -1,8 +1,11 @@
-// Serves the repo over HTTP, loads the game in headless Chromium, checks that the music
-// decodes, visits every level through the debug panel, and fails on any console error.
+// Serves the repo over HTTP, loads the game in headless Chromium, validates the level maps
+// (test/maps.js), checks that the music decodes, visits every level through the debug panel,
+// and fails on any console error or warning.
 //   node test/smoke.mjs [page]   (default: index.html; e.g. dist/Панелька.html)
+/* global G, loadMp3, document */ // used inside page.evaluate callbacks, which run in the browser
 import { chromium } from 'playwright';
 import { once } from 'node:events';
+import fs from 'node:fs';
 import { serve } from '../serve.mjs';
 
 const page_ = process.argv[2] || 'index.html';
@@ -24,6 +27,9 @@ try {
   await page.waitForTimeout(1500);
   const where = () => page.evaluate(() => G.level + ':' + G.state);
   console.log('boot', await where());
+  const mapProblems = await page.evaluate(`(${fs.readFileSync(new URL('maps.js', import.meta.url), 'utf8')})()`);
+  console.log('maps', mapProblems.length ? mapProblems.length + ' problems' : 'ok');
+  errors.push(...mapProblems);
   await page.keyboard.press('Enter'); // ИГРАТЬ (also creates the AudioContext)
   await page.waitForTimeout(1500);
   console.log('play', await where());

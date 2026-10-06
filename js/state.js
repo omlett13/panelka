@@ -213,7 +213,7 @@ function loadLevel(n){
 SKY=SKYN;
 /* dawn over the district: k=0 before sunrise, k=1 sun on the horizon. Sun ENE, chimneys to its left, the white house far southwest */
 const SUNC=983;
-function dawnSky(k){const [c,g]=cv(SKYW,SKYH),r=rng(301);
+function dawnSky(k){const [,g]=cv(SKYW,SKYH),r=rng(301);
   const gr=g.createLinearGradient(0,0,0,SKYH);
   if(k>=2){gr.addColorStop(0,'#3a6ab8');gr.addColorStop(.6,'#7aa4d8');gr.addColorStop(1,'#b8cadc');}
   else if(k){gr.addColorStop(0,'#35568e');gr.addColorStop(.45,'#8a7aa8');gr.addColorStop(.78,'#e0909a');gr.addColorStop(1,'#f6b070');}

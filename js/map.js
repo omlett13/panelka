@@ -40,9 +40,9 @@ let EYEPTS=null;const HARD=new Map();
 function EYE(g,c,x,y,w,h){R(g,c,x,y,w,h);if(EYEPTS)EYEPTS.push([x,y,w,h]);}
 function bakeH(draw,emis){EYEPTS=[];const n=bake(draw,emis);const pts=EYEPTS;EYEPTS=null;
   if(pts.length){const h=bake(draw,g=>{if(emis)emis(g);for(const q of pts){R(g,'#ff2a12',q[0],q[1],q[2],q[3]+1);R(g,'#ff9070',q[0],q[1],1,1);}});HARD.set(n,h);}return n;}
-function bake(draw,emis,w,h){w=w||64;h=h||64;const [c,g]=cv(w,h);draw(g);if(emis)emis(g);
+function bake(draw,emis,w,h){w=w||64;h=h||64;const [,g]=cv(w,h);draw(g);if(emis)emis(g);
   const d=new Uint32Array(g.getImageData(0,0,w,h).data.buffer.slice(0));let m=null;
-  if(emis){const [c2,g2]=cv(w,h);emis(g2);m=g2.getImageData(0,0,w,h).data;}
+  if(emis){const [,g2]=cv(w,h);emis(g2);m=g2.getImageData(0,0,w,h).data;}
   for(let i=0;i<d.length;i++){const a=d[i]>>>24;if(a<128){d[i]=0;continue;}const v=d[i]&0x00ffffff;d[i]=(((m&&m[i*4+3]>128)?254:255)<<24|v)>>>0;}
   return d;}
 function sh(c,lr,lg,lb){let r=((c&255)*lr)>>8,g=(((c>>>8)&255)*lg)>>8,b=(((c>>>16)&255)*lb)>>8;if(r>255)r=255;if(g>255)g=255;if(b>255)b=255;if(r<0)r=0;if(g<0)g=0;if(b<0)b=0;return (0xff000000|(b<<16)|(g<<8)|r)>>>0;}

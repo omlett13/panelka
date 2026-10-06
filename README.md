@@ -50,5 +50,5 @@ On-screen controls also work with touch and mouse: the circle pad, A (fire), B (
 
 - Plain JavaScript with no libraries: a software raycaster drawn on a `<canvas>`. The code is in `js/`, split by subsystem; [CLAUDE.md](CLAUDE.md) has a map of it.
 - The game draws all its textures and sprites in code when it starts, so there are no image files. Sound effects are synthesized live with WebAudio. Only the boss and crowd music are MP3s (`audio/`).
-- `npm test` runs a headless browser through every level and fails on any error.
+- `npm run lint` checks the code with ESLint. `npm test` validates the level maps, then runs a headless browser through every level and fails on any error. CI runs both on every push.
 - Debug panel (jump to any level, god mode, …): press `` ` `` or the `dbg` button. It's on by default with `npm start`, and anywhere else when you add `?debug` to the URL. Players don't see it otherwise.

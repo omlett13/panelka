@@ -79,7 +79,7 @@ document.querySelectorAll('[data-dbg]').forEach(b=>b.addEventListener('click',()
 }));
 document.querySelectorAll('[data-btn]').forEach(b=>{const id=b.dataset.btn;
   const down=e=>{e.preventDefault();initAudio();b.classList.add('on');if(id in btn)btn[id]=1;
-    if(G.trans||G.state==='ride'){}
+    if(G.trans||G.state==='ride'){/* buttons do nothing mid-transition or riding */}
     else if(G.state==='shop'){if(id==='A')shopClick();else if(id==='B'||id==='START')shopBack();}
     else if(G.state==='breaker'||G.state==='keypad')puzzleBtn(id);
     else if(G.state==='talk'){if(id==='A')talkChoose();else if(id==='B'||id==='START')talkClose();else if(id==='X')talkMove(-1);else if(id==='Y')talkMove(1);}

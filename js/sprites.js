@@ -49,7 +49,7 @@ function drawGranny(g,pose){
     head(26,18,false);bag(44,48);
     if(pose==='sitQ'){g.fillStyle='#ffd040';g.font='bold 14px sans-serif';g.textAlign='center';g.textBaseline='top';g.fillText('?',32,0);}
     return;}
-  const wl=0,up=pose==='shout'||pose==='shoutX',sw=pose==='swing';
+  const up=pose==='shout'||pose==='shoutX',sw=pose==='swing';
   R(g,'#6a6a6a',24,54,7,9);R(g,'#6a6a6a',33,54,7,9);R(g,'#4a4a4a',24,62,7,1);R(g,'#4a4a4a',33,62,7,1);
   R(g,CO,20,26,24,30);R(g,COD,20,52,24,4);R(g,COD,31,28,2,26);R(g,'#5a4e66',22,27,4,24);
   if(up){R(g,CO,12,14,6,16);R(g,CO,46,14,6,16);R(g,SK,12,11,6,4);R(g,SK,46,11,6,4);}

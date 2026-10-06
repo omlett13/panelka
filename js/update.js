@@ -235,7 +235,7 @@ function updateEnemy(e,dt){
   if(K.coal&&e.see&&d>2.6&&d<10&&e.cool<=0&&Math.random()<dt*(e.phase2?2.4:1.5)){e.state='attack';e.t=.5;e.throwing=true;return;}
   const reach=K.reach;
   if(e.see&&e.cool<=0){if(!ranged&&d<reach){e.state='attack';e.t=K.wind*(rage?.7:1)*(e.phase2?.7:1);return;}if(ranged&&d<10&&Math.random()<dt*(K.thrower?3.4:2.6)){e.state='attack';e.t=K.wind;e.throwing=!!K.thrower;return;}}
-  let vx=0,vy=0;
+  let vx,vy;
   if(ranged&&e.see&&d<3.2&&!K.thrower){vx=-dx/d;vy=-dy/d;}
   else if(ranged&&e.see&&d<7){vx=-dy/d*e.sdir*.75;vy=dx/d*e.sdir*.75;if(Math.random()<dt*.6)e.sdir*=-1;}
   else if(e.see&&d<6){if(d<.75)return;vx=dx/d;vy=dy/d;

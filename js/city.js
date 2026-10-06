@@ -47,7 +47,7 @@ function talkChoose(){const t=G.talk;if(!t)return;const o=t.opts[t.sel];if(o)o.f
 function talkKey(k){if(k==='ArrowUp'||k==='KeyW')talkMove(-1);else if(k==='ArrowDown'||k==='KeyS')talkMove(1);else if(k==='Enter'||k==='Space'||k==='KeyE')talkChoose();else if(k==='Escape'||k==='Backspace'||k==='Tab'||k==='KeyQ')talkClose();}
 function talkRows(){const t=G.talk,n=t.opts.length,h=19,y0=BH-6-n*h;return t.opts.map((o,i)=>({x:10,y:y0+i*h,w:BW-20,h:h-2,i}));}
 function talkTouch(p){for(const r of talkRows())if(inR(p,r)){if(G.talk.sel===r.i)talkChoose();else{G.talk.sel=r.i;sfx.tick();}return;}}
-function buyItem(it){const [name,price,fx]=it,T=TALK[G.talk.id];
+function buyItem(it){const [,price,fx]=it,T=TALK[G.talk.id];
   if(G.rub<price){talkSay(pick(['Денег нет — не задерживай.','Рублей не хватает, милок.','Без денег — только посмотреть.']));sfx.click();return;}
   if(fx.ammo9&&P.ammo9>=cap9()){talkSay('Тебе столько не унести.');sfx.click();return;}if(fx.shells&&P.shells>=capS()){talkSay('Карманы полные, куда тебе ещё.');sfx.click();return;}
   if(fx.hp&&!fx.bleed&&P.hp>=maxHP()){talkSay('Ты и так сытый. Потом приходи.');sfx.click();return;}

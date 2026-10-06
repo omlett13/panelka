@@ -10,6 +10,7 @@ Plain JavaScript, no framework, no runtime dependencies. Node is only used for t
 npm install        # playwright, for tests
 npm start          # http://127.0.0.1:8080/ — serves index.html
 npm run build      # → dist/Панелька.html, one self-contained file (CSS, JS and audio inlined)
+npm run lint       # ESLint (no-undef across files, unused vars, recommended rules; no formatting rules)
 npm test           # smoke test on the source and on the build
 ```
 
@@ -24,7 +25,10 @@ js/*.js           game code, classic scripts sharing one global scope (see below
 audio/*.mp3       boss and crowd music, loaded with loadMp3() in js/audio.js
 build.mjs         inlines everything into dist/Панелька.html; swaps audio paths for data: URLs
 serve.mjs         tiny static server used by `npm start` and the tests
-test/smoke.mjs    headless Chromium: boots, decodes music, visits every level, fails on console errors/warnings
+test/smoke.mjs    headless Chromium: validates maps, boots, decodes music, visits every level, fails on console errors/warnings
+test/maps.js      map checks run in the page: 128×96 rows, known map characters, known entity types, entities in bounds
+eslint.config.js  lints each js/ file with every other file's top-level names as globals
+.github/workflows CI runs lint and test on every push and PR
 ```
 
 ### Script files
@@ -72,6 +76,7 @@ Put new level-specific setup or per-tick logic in these hooks. There are still a
 ## Debugging and testing
 
 - Debug mode (`DEBUG` in `config.js`) is on with `?debug`/`#debug` or on a local dev server (`?nodebug` turns it off there), and off for `file://` and real hosts. It enables the debug panel (`` ` `` key or `dbg` button: jump to any level, skip to bosses/set pieces, kill all, +money, max upgrades, god mode; handlers in `input.js`, `data-dbg` values) and the undeclared-`G`-field warnings. Without it, the panel's elements are removed from the page.
-- `npm test` drives the game through the debug panel, so keep the `data-dbg` level buttons working.
+- Run `npm run lint` and `npm test` before committing. `npm test` drives the game through the debug panel, so keep the `data-dbg` level buttons working.
+- A new top-level name in one `js/` file is automatically known to ESLint in the others. A name used in a file but declared nowhere is a `no-undef` error.
 - Exceptions in the main loop (`update`, `renderTop`, `renderBottom`, each caught separately in `boot.js`) are logged once per distinct error, shown in a red bar at the bottom of the top screen, and an `update` error pauses the game. Check the console after changes.
-- `levels.js` map rows must all have the same width as their level; edit them character for character.
+- `levels.js` maps are 96 rows of exactly 128 characters (levels 1–7 only use the top-left 64×48). Edit them character for character. A character missing from `TMAP`/`ZMAP` silently becomes a wall in game, so `test/maps.js` reports it.

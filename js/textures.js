@@ -225,7 +225,7 @@ function siteTextures(){
      for(let x=2;x<64;x+=15){R(g,'#2a2a2a',x,6,4,58);R(g,'#4a4a4a',x,6,1,58);R(g,'#c8a81e',x-1,6,6,2);R(g,'#1e1e1e',x-1,62,6,2);}R(g,'#5a5a52',0,54,64,8);R(g,'#6c6c62',0,54,64,1);for(let x=0;x<64;x+=8)R(g,'#3a3a34',x,55,1,7);
      R(g,'#3a3a3a',0,50,64,3);});}
   /* ЭЛЕВАТОР floor 1: silo metal, seed-dust floor, girder ceiling, grain-bin tube */
-  {const rr=rng(660);
+  {
    TX.siloW=bake(g=>{const r=rng(661);R(g,'#8a8276',0,0,64,64);for(let x=0;x<64;x+=6){R(g,'#9a9286',x,0,4,64);R(g,'#6e665a',x+4,0,2,64);R(g,'#aaa296',x+1,0,1,64);}
      for(let y=0;y<64;y+=16)R(g,'#6a6256',0,y,64,1);for(let i=0;i<10;i++){const x=(r()*62)|0,y=(r()*58)|0;R(g,'rgba(120,70,30,.5)',x,y,2,4+(r()*10|0));}});
    TX.siloF=bake(g=>{const r=rng(662);R(g,'#9a8f74',0,0,64,64);for(let i=0;i<70;i++)R(g,r()<.5?'#908568':'#a69a7c',(r()*64)|0,(r()*64)|0,2,2);
@@ -343,7 +343,7 @@ function siteArt(){
   SPR.tires=bake(g=>{for(let i=0;i<4;i++){const y=48-i*9;R(g,'#141414',12,y,40,10);R(g,'#2a2a2a',12,y,40,2);R(g,'#0a0a0a',28,y+3,8,4);R(g,'#3a3a3a',14,y+4,10,1);}});}
   /* seed projectile + husk, seed sacks, conveyor, seed pile */
   /* grain-elevator machinery: flywheel (mesh-guard wheel + motor), electric motor, control panel */
-  {SPR.flywheel=bake(g=>{const r=rng(680);R(g,'#3a3632',8,54,48,10);R(g,'#2a2622',8,54,48,2);
+  {SPR.flywheel=bake(g=>{R(g,'#3a3632',8,54,48,10);R(g,'#2a2622',8,54,48,2);
      g.fillStyle='#c86a28';g.beginPath();g.arc(38,36,20,0,7);g.fill();g.fillStyle='#a8541c';g.beginPath();g.arc(38,36,20,Math.PI*.9,Math.PI*1.6);g.lineTo(38,36);g.fill();
      g.strokeStyle='#5a3414';g.lineWidth=1;for(let a=0;a<6.28;a+=.32){g.beginPath();g.moveTo(38,36);g.lineTo(38+Math.cos(a)*19,36+Math.sin(a)*19);g.stroke();}
      g.strokeStyle='#e0a050';g.beginPath();g.arc(38,36,20,0,7);g.stroke();g.fillStyle='#1a1614';g.beginPath();g.arc(38,36,5,0,7);g.fill();
@@ -459,8 +459,6 @@ function cityTextures(){
     bake(g=>tSign(g,rng(403),'#2a8a5a','АПТЕКА',null,g=>{R(g,'#e8e8e0',24,30,16,16);R(g,'#c02020',30,32,4,12);R(g,'#c02020',26,36,12,4);for(let x=8;x<20;x+=4)R(g,'#8ab0c0',x,44,3,8);for(let x=44;x<58;x+=4)R(g,'#c0a060',x,44,3,8);})),
     bake(g=>tSign(g,rng(404),'#6a3a2a','РЕМОНТ','ОБУВИ',g=>{for(let x=8;x<56;x+=12){R(g,'#2a1a10',x,40,8,12);R(g,'#2a1a10',x,50,11,3);R(g,'#4a3020',x+1,41,2,9);}})),
     bake(g=>tSign(g,rng(405),'#e8e8e0','МОЛОКО',null,g=>{for(let x=8;x<56;x+=7){R(g,'#f0f0ea',x,36,5,14);R(g,'#2a5aa0',x,40,5,4);}}))];
-  TX.sign[4]=TX.sign[4];
-  const DW=(f)=>g=>f(g);
   TX.deco=[
     ['#3a7a2a','ОВОЩИ',null,g=>{for(let x=6;x<58;x+=10){R(g,'#8a6a3a',x,40,9,12);for(let i=0;i<4;i++){g.fillStyle=['#e07a20','#c02020','#3a8a2a','#e8c040'][(x+i)%4];g.beginPath();g.arc(x+2+(i%2)*4,40-(i>>1)*3,2.2,0,7);g.fill();}}}],
     ['#2a5aa0','МОЛОКО',null,g=>{for(let x=7;x<57;x+=6){R(g,'#f4f4ee',x,34,5,16);R(g,'#2a5aa0',x,40,5,4);R(g,'#d8d8d0',x+1,31,3,3);}}],
@@ -572,7 +570,7 @@ const DECOV=new Uint8Array(N); for(let i=0;i<N;i++){const x=i%MW,y=(i/MW)|0;DECO
 const GRAFV=new Uint8Array(N); for(let i=0;i<N;i++)GRAFV[i]=(hash2(i,91)*8)|0;
 const MAILV=new Uint8Array(N); for(let i=0;i<N;i++)MAILV[i]=(hash2(i,77)*3)|0;
 
-let SKY,OOBF=0xff000000;const SKYN=(function(){const [c,g]=cv(SKYW,SKYH);const gr=g.createLinearGradient(0,0,0,SKYH);gr.addColorStop(0,'#05060c');gr.addColorStop(.7,'#141421');gr.addColorStop(1,'#3a2a2a');g.fillStyle=gr;g.fillRect(0,0,SKYW,SKYH);
+let SKY,OOBF=0xff000000;const SKYN=(function(){const [,g]=cv(SKYW,SKYH);const gr=g.createLinearGradient(0,0,0,SKYH);gr.addColorStop(0,'#05060c');gr.addColorStop(.7,'#141421');gr.addColorStop(1,'#3a2a2a');g.fillStyle=gr;g.fillRect(0,0,SKYW,SKYH);
   const r=rng(99); for(let i=0;i<260;i++){g.fillStyle=r()<.8?'#8a8aa0':'#d8d8e8';g.fillRect((r()*SKYW)|0,(r()*80)|0,1,1);}
   g.fillStyle='rgba(216,212,196,.12)';g.beginPath();g.arc(300,26,12,0,7);g.fill();g.fillStyle='#d8d4c4';g.beginPath();g.arc(300,26,6,0,7);g.fill();
   let x=0; while(x<SKYW){const w=40+((r()*70)|0),h=18+((r()*44)|0);R(g,'#0a0b10',x,SKYH-h,w,h);for(let yy=SKYH-h+3;yy<SKYH-2;yy+=4)for(let xx=x+3;xx<x+w-3;xx+=5){if(r()<.13)R(g,r()<.8?'#c98a44':'#6f86c2',xx,yy,2,2);}x+=w+((r()*18)|0);}
