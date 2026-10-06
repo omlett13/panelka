@@ -10,7 +10,10 @@
    ============================================================ */
 
 /* ---------- CONFIG ---------- */
-const DEBUG=/[?&#]debug\b/.test(location.search+location.hash);
+/* debug tools (panel, ` key, state key checks): on with ?debug or #debug, or by default on a local dev server
+   (localhost / 127.0.0.1 / ::1; ?nodebug turns it off there). Off for file:// so the built single file ships without it. */
+const DEBUG=(()=>{const q=location.search+location.hash;if(/[?&#]nodebug\b/.test(q))return false;if(/[?&#]debug\b/.test(q))return true;
+  return /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)||location.hostname.endsWith('.localhost');})();
 /* in debug, wrap a state object so reads/writes of undeclared keys warn (catches typos and ad-hoc fields) */
 function watchKeys(name,o){if(!DEBUG||typeof Proxy==='undefined')return o;const warned=new Set(),chk=(k,op)=>{if(typeof k!=='string'||k in o||k==='toJSON'||k==='then'||warned.has(k))return;warned.add(k);console.warn(name+'.'+k+' '+op+' but not declared');};
   return new Proxy(o,{get(t,k){chk(k,'read');return t[k];},set(t,k,v){chk(k,'written');t[k]=v;return true;}});}

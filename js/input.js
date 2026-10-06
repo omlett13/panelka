@@ -22,7 +22,8 @@ function lootKey(k){
   else if(k==='ArrowUp'||k==='KeyW')G.lootCur=c>=LN?c-LN:c;
   else if(k==='Enter'||k==='Space'||k==='KeyE')lootPick(c<LN?'item':'slot',c<LN?c:c-LN);
 }
-function toggleDbg(){const d=document.getElementById('dbg');d.hidden=!d.hidden;}
+function toggleDbg(){const d=document.getElementById('dbg');if(d)d.hidden=!d.hidden;}
+if(!DEBUG)for(const id of ['dbg','dbgBtn'])document.getElementById(id).remove();
 addEventListener('keydown',e=>{const k=e.code;if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Backspace','Tab'].includes(k))e.preventDefault();initAudio();
   if(k==='Backquote'&&!e.repeat){toggleDbg();return;}
   if(k==='KeyM'&&!e.repeat){SET.snd^=1;applySettings();saveSet();return;}
@@ -55,7 +56,7 @@ addEventListener('mouseup',()=>{mouseFire=false;});
 document.addEventListener('mousemove',e=>{if(document.pointerLockElement===topC)mouseDX+=e.movementX||0;});
 document.addEventListener('pointerlockchange',()=>{if(document.pointerLockElement===topC)G.hadLock=true;else if(G.hadLock){G.hadLock=false;mouseFire=false;if(!G.trans&&!G.loot)pauseGame();}});
 topC.addEventListener('touchstart',e=>{e.preventDefault();},{passive:false});
-document.getElementById('dbgBtn').addEventListener('click',e=>{toggleDbg();e.currentTarget.blur();});
+if(DEBUG)document.getElementById('dbgBtn').addEventListener('click',e=>{toggleDbg();e.currentTarget.blur();});
 document.querySelectorAll('[data-dbg]').forEach(b=>b.addEventListener('click',()=>{b.blur();const a=b.dataset.dbg;
   if(a==='close'){toggleDbg();return;}
   if(a==='rub'){G.rub+=500;msg('DEBUG  +500 РУБ');return;}

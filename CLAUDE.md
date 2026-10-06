@@ -71,7 +71,7 @@ Put new level-specific setup or per-tick logic in these hooks. There are still a
 
 ## Debugging and testing
 
-- Press `` ` `` (or the `dbg` button) for the debug panel: jump to any level, skip to bosses/set pieces, kill all, +money, max upgrades, god mode. Handlers are in `input.js` (`data-dbg` values).
+- Debug mode (`DEBUG` in `config.js`) is on with `?debug`/`#debug` or on a local dev server (`?nodebug` turns it off there), and off for `file://` and real hosts. It enables the debug panel (`` ` `` key or `dbg` button: jump to any level, skip to bosses/set pieces, kill all, +money, max upgrades, god mode; handlers in `input.js`, `data-dbg` values) and the undeclared-`G`-field warnings. Without it, the panel's elements are removed from the page.
 - `npm test` drives the game through the debug panel, so keep the `data-dbg` level buttons working.
 - Exceptions in the main loop (`update`, `renderTop`, `renderBottom`, each caught separately in `boot.js`) are logged once per distinct error, shown in a red bar at the bottom of the top screen, and an `update` error pauses the game. Check the console after changes.
 - `levels.js` map rows must all have the same width as their level; edit them character for character.
