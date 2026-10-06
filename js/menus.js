@@ -3,8 +3,8 @@
 const MENUS={pause:['ПРОДОЛЖИТЬ','НАСТРОЙКИ','ЗАМЕТКИ','УПРАВЛЕНИЕ','В МЕНЮ'],dead:['ЕЩЕ РАЗ','В МЕНЮ'],win:['ДАЛЬШЕ','В МЕНЮ'],liftChoice:['ВНИЗ: ПОДВАЛ','ДАЛЬШЕ: НОВЫЙ ДОМ'],controls:['НАЗАД']};
 const CONTROLS=[['WASD','ХОДИТЬ'],['СТРЕЛКИ/МЫШЬ','ПОВОРОТ'],['ПРОБЕЛ/КЛИК','ОГОНЬ'],['E','ИСПОЛЬЗОВАТЬ'],['1 2 3 4 / 5','СЛОТЫ / ТАПОК'],['G','БРОСИТЬ ВОДКУ'],['TAB','ЛУТ'],['SHIFT','БЕГ'],['ENTER/ESC','ПАУЗА'],['A B / L R','ОГОНЬ ИСП / ВБОК']];
 /* level select: unlocks as you reach floors */
-let UNL=new Set([1]);try{const s=JSON.parse(localStorage.getItem('panelka.unlock')||'[]');if(Array.isArray(s))for(const v of s)if(LEVEL_SRC[v])UNL.add(v);}catch(e){}
-function unlock(n){if(UNL.has(n))return;UNL.add(n);try{localStorage.setItem('panelka.unlock',JSON.stringify([...UNL]));}catch(e){}}
+let UNL=new Set([1]);for(const v of store.get('unlock',[],Array.isArray))if(LEVEL_SRC[v])UNL.add(v);
+function unlock(n){if(UNL.has(n))return;UNL.add(n);store.set('unlock',[...UNL]);}
 const HOUSES={9:[[1,'ЭТАЖ 1'],[2,'ЭТАЖ 2'],[3,'ПОДВАЛ']],11:[[4,'ЭТАЖ 1'],[5,'ЛЕСТНИЦА'],[6,'ЭТАЖ 2'],[7,'КРЫША']],4:[[9,'МЕТРО'],[10,'СТРОЙКА']]};
 Object.defineProperty(MENUS,'main',{get:()=>UNL.size>1?['ИГРАТЬ','УРОВНИ','НАСТРОЙКИ','ЗАМЕТКИ','УПРАВЛЕНИЕ']:['ИГРАТЬ','НАСТРОЙКИ','ЗАМЕТКИ','УПРАВЛЕНИЕ']});
 Object.defineProperty(MENUS,'levels',{get:()=>['ДОМ 9',UNL.has(4)?'ДОМ 11':'ДОМ 11 · ЗАКРЫТО',UNL.has(8)?'ГОРОД':'ГОРОД · ЗАКРЫТО',UNL.has(9)?'МЕТРО':'МЕТРО · ЗАКРЫТО',UNL.has(11)?'ГАРАЖИ':'ГАРАЖИ · ЗАКРЫТО','НАЗАД']});
@@ -26,7 +26,7 @@ function resume(){G.state=G.prevState||'play';G.page=null;keys.clear();}
 function pauseGame(){if(G.state!=='play'&&G.state!=='lift')return;G.prevState=G.state;G.loot=false;G.state='pause';openPage('pause');keys.clear();mouseFire=false;exitLock();}
 const LNAME={1:'ДОМ 9 · ЭТАЖ 1',2:'ДОМ 9 · ЭТАЖ 2',3:'ДОМ 9 · ПОДВАЛ',4:'ДОМ 11 · ЭТАЖ 1',5:'ДОМ 11 · ЛЕСТНИЦА',6:'ДОМ 11 · ЭТАЖ 2',7:'ДОМ 11 · КРЫША',8:'ГОРОД',9:'МЕТРО',10:'СТРОЙКА',11:'ГАРАЖИ',12:'ЭЛЕВАТОР'};
 const MENUCAM={1:{x:8.5,y:11.5,a:0},7:{x:9,y:9,a:-.3},8:{x:51,y:53,a:-Math.PI/2},9:{x:60,y:39.5,a:0},10:{x:60,y:79,a:-Math.PI/2-.25},11:{x:23,y:54.5,a:-.05},12:{x:44,y:49,a:-Math.PI/2}};
-function lastLevel(){try{const n=+localStorage.getItem('panelka.last');return LEVEL_SRC[n]&&UNL.has(n)?n:1;}catch(e){return 1;}}
+function lastLevel(){const n=store.get('last',1,Number.isInteger);return LEVEL_SRC[n]&&UNL.has(n)?n:1;}
 function menuScene(){const n=lastLevel();G.menuLoad=true;loadLevel(n);resetLevel(false);G.menuLoad=false;const c=MENUCAM[n]||LEVELDEF[n].start;G.menuCam={x:c.x,y:c.y};P.x=c.x;P.y=c.y;P.a=c.a||0;G.menuLvl=n;
   if(n===9){G.trainMove=true;}if(n===7){G.dawn=.85;skyMixK=-1;setDawn(.85);}}
 function toMenu(){menuScene();G.state='menu';openPage('main');}

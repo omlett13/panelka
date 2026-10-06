@@ -27,8 +27,8 @@ const UP={kastet:0,tt:0,dvust:0,krossy:0,vest:0,bando:0,salo:0,tapok2:0,gvozd:0}
 const maxHP=()=>UP.salo?125:100,maxAR=()=>UP.vest?150:100,cap9=()=>UP.bando?150:99,capS=()=>UP.bando?60:40;
 /* quick-slots on the bottom screen: 0 fist, 1 pistol, 2 shotgun, 3 vodka, 4 use, 5 slipper */
 let SLOTS=[0,1,2,3];
-try{const s=JSON.parse(localStorage.getItem('panelka.slots')||'null');if(Array.isArray(s)&&s.length===4&&s.every(v=>v>=0&&v<=5))SLOTS=s;}catch(e){}
-function saveSlots(){try{localStorage.setItem('panelka.slots',JSON.stringify(SLOTS));}catch(e){}}
+SLOTS=store.get('slots',SLOTS,s=>Array.isArray(s)&&s.length===4&&s.every(v=>v>=0&&v<=5));
+function saveSlots(){store.set('slots',SLOTS);}
 
 const KINDS={
   sq:{hp:26,speed:2.2,reach:1.05,dmg:[8,13],wind:.3,rate:.8,sight:8,scale:1,pitch:150,idle:'squat',bark:['Слышь!','Есть чё?','Ты с какого района?','Сюда иди!','Чё, самый умный?','Закурить есть?']},
@@ -90,8 +90,8 @@ const NOTES=[
  {id:'note13',title:'СПЛЕТНИ: СМОТРЯЩИЙ',kind:'СО СЛОВ БАБЫ ТОМЫ',text:['Смотрящий наш — Гоша Рыжий.','Раньше у Бати на побегушках.','Ключ от квартиры на замке','всегда при нём — говорят,','там у них общак лежит.','А код с крыши — по стенам.']},
  {id:'note14',title:'ПРАВДА: ВЕРТОЛЁТ',kind:'ГАЗЕТА «ПРАВДА»',text:['Над жилым массивом замечен','вертолёт без опознавательных','знаков. Очевидцы сообщают','о двух гражданах крупного','телосложения. Милиция: «учения».','Редакция просит не паниковать.']}
 ];
-let NOTESGOT=[];try{const s=JSON.parse(localStorage.getItem('panelka.notes')||'[]');if(Array.isArray(s))NOTESGOT=s.filter(v=>typeof v==='string');}catch(e){}
-function saveNotes(){try{localStorage.setItem('panelka.notes',JSON.stringify(NOTESGOT));}catch(e){}}
+let NOTESGOT=store.get('notes',[],Array.isArray).filter(v=>typeof v==='string');
+function saveNotes(){store.set('notes',NOTESGOT);}
 const LIGHTS1=[
   {x:4,y:5,c:[1,.6,.26],r:6.5,i:1.25},{x:11,y:10,c:[1,.6,.26],r:6.5,i:1.25},{x:6,y:17,c:[1,.6,.26],r:6,i:1.1},
   {x:14,y:23.2,c:[1,.6,.26],r:6,i:1.15},{x:28,y:29,c:[1,.6,.26],r:6,i:1.1,fl:2},
@@ -203,7 +203,7 @@ function initLights(){
     for(let i=0;i<N;i++){if(ROOM[i]!==room||room<0)continue;const cx=i%MW+.5,cy=((i/MW)|0)+.5,d=Math.hypot(cx-l.x,cy-l.y);if(d>=l.r)continue;l.cells.push(i);l.w.push(Math.pow(1-d/l.r,2)*l.i*256);}}
 }
 function loadLevel(n){
-  G.level=n;if(!G.menuLoad){try{localStorage.setItem('panelka.last',n);}catch(e){}}MWL=n>=8?MW:64;MHL=n>=8?MH:48;unlock(n);parseMap(LEVEL_SRC[n].map);
+  G.level=n;if(!G.menuLoad)store.set('last',n);MWL=n>=8?MW:64;MHL=n>=8?MH:48;unlock(n);parseMap(LEVEL_SRC[n].map);
   for(let i=0;i<N;i++){const z=ZONE[i];FLOORTEX[i]=z===Z_OUT?TX.asph:(z===Z_APT||z===Z_BOSS)?TX.parq:z===Z_BASE?TX.conc:z===Z_LIFT?TX.rubber:z===Z_VOID?TX.far:z===Z_WATER?TX.water:z===Z_BOIL?TX.coalf:TX.tile;CEILTEX[i]=z===Z_LIFT?TX.liftCeil:(z===Z_BASE||z===Z_WATER||z===Z_BOIL)?TX.ceilB:TX.ceil;}
   const L=Object.assign({},LVDEF0,LEVELDEF[n]);CEILW.fill(0);if(L.cells)L.cells();
   FOGD=L.fog;CULL2=L.cull;CEILH=L.ceilH;HZ=L.hz;OOBF=L.oob;SKY=L.sky();

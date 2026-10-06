@@ -17,7 +17,20 @@ function watchKeys(name,o){if(!DEBUG||typeof Proxy==='undefined')return o;const 
 let FOGD=12.5,CULL2=196,CEILH=1;const W=400,H=240,BW=320,BH=240,PLANE=0.8,SKYW=1024,SKYH=120;
 const LABEL='#bdb8aa',VFD='#7df2c9',DIM='#4d5a55',WARN='#f0973c',DANGER='#e8583e';
 
-/* ---------- SETTINGS (per-viewer, localStorage) ---------- */
+/* ---------- SAVES (localStorage) ----------
+   every save is JSON under 'panelka.'+name: v2 settings · slots · notes · unlock · last.
+   store.get never throws: missing, corrupt, rejected by ok(), or blocked storage all give the fallback.
+   Bump SAVE_VER and add a step to migrateSaves() when a stored format changes. */
+const SAVE_VER=1;
+const store={
+  get(name,fallback,ok){try{const raw=localStorage.getItem('panelka.'+name);if(raw==null)return fallback;const v=JSON.parse(raw);return !ok||ok(v)?v:fallback;}catch(e){return fallback;}},
+  set(name,v){try{localStorage.setItem('panelka.'+name,JSON.stringify(v));}catch(e){}}
+};
+(function migrateSaves(){const v=store.get('ver',0,Number.isInteger);if(v>=SAVE_VER)return;
+  /* 0 → 1: formats unchanged from the unversioned saves; just stamp the version */
+  store.set('ver',SAVE_VER);})();
+
+/* ---------- SETTINGS (per-viewer, saved) ---------- */
 const SETS=[
   {k:'px',label:'ПИКСЕЛИ',vals:['400x240','200x120','133x80','100x60']},
   {k:'diff',label:'СЛОЖНОСТЬ',vals:['ЛЕГКО','НОРМА','ЖЕСТКО']},
@@ -27,8 +40,8 @@ const SETS=[
   {k:'snd',label:'ЗВУК',vals:['ВЫКЛ','ВКЛ']}
 ];
 const SET={px:0,diff:1,bright:1,sens:4,bob:1,snd:1};
-try{const s=JSON.parse(localStorage.getItem('panelka.v2')||'{}');for(const k in SET)if(typeof s[k]==='number')SET[k]=s[k];}catch(e){}
-function saveSet(){try{localStorage.setItem('panelka.v2',JSON.stringify(SET));}catch(e){}}
+{const s=store.get('v2',{},o=>o&&typeof o==='object');for(const k in SET)if(typeof s[k]==='number')SET[k]=s[k];}
+function saveSet(){store.set('v2',SET);}
 const PXS=[1,2,3,4],BRIGHT=[.75,1,1.25,1.5,1.8];
 const DIFF=[{dmg:.6,hp:.8,spd:.9,ammo:1.5},{dmg:1,hp:1,spd:1,ammo:1},{dmg:1.4,hp:1.25,spd:1.12,ammo:.75}];
 
