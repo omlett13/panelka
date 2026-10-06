@@ -133,19 +133,46 @@ const LIGHTS7=[{x:5,y:7.5,c:[1,.75,.45],r:4,i:.8,fl:1},{x:33,y:7,c:[1,.8,.5],r:4
 const LIGHTS12=[{x:44,y:11,c:[1,.9,.7],r:6,i:.7},{x:30,y:30,c:[1,.86,.6],r:6,i:.5},{x:58,y:30,c:[1,.86,.6],r:6,i:.5},{x:44,y:48,c:[1,.9,.7],r:6,i:.6}];
 const LIGHTS11=[{x:24,y:9.5,c:[1,.85,.6],r:5,i:1}];
 const LIGHTS10=[{x:77.5,y:77,c:[1,.85,.6],r:5,i:1},{x:48,y:42,c:[1,.92,.8],r:7,i:.8},{x:60,y:40,c:[1,.92,.8],r:7,i:.8},{x:72,y:42,c:[1,.92,.8],r:7,i:.8},{x:55,y:45,c:[1,.92,.8],r:6,i:.6},{x:66,y:45,c:[1,.92,.8],r:6,i:.6}];
+/* per-level config. Render: fog (FOGD), cull (CULL2), ceilH (CEILH), hz (HZ), oob (OOBF), sky() (SKY); defaults in LVDEF0.
+   Hooks: cells() floor/ceiling/zone overrides after parseMap · init() end of resetLevel · update(dt) each play tick, return true to end the tick */
+const LVDEF0={fog:12.5,cull:196,ceilH:1,hz:0,oob:0xff000000,sky:()=>SKYN};
 const LEVELDEF={
-  12:{lights:LIGHTS12,start:{x:44,y:51,a:-Math.PI/2},obj:'ВЕРХ',amb:1.5},
-  11:{lights:LIGHTS11,start:{x:22.6,y:54.5,a:0},obj:'КЛЮЧ',amb:1.3},
-  10:{lights:LIGHTS10,start:{x:60,y:80.5,a:-Math.PI/2},obj:'БРИГАДИР',amb:1.3},
-  9:{lights:LIGHTS9,start:{x:6.5,y:8.5,a:0},obj:'КОНТРОЛЁР',amb:1.1},
-  8:{lights:LIGHTS8,start:{x:41.5,y:55.5,a:-Math.PI/2},obj:'ГОРОД',amb:1.6},
-  7:{lights:LIGHTS7,start:{x:5.5,y:7.5,a:0},obj:'ГИТАРИСТ',amb:1.35},
+  12:{lights:LIGHTS12,start:{x:44,y:51,a:-Math.PI/2},obj:'ВЕРХ',amb:1.5,fog:60,cull:900,ceilH:5,oob:0xffb88a5a,sky:()=>SKYD1,
+    cells(){WH12.fill(0);RAILM.fill(0);for(let i=MW;i<N-MW;i++){const t=TILE[i];if(t!==68&&t!==69)continue;const r=j=>TILE[j]===68||TILE[j]===69;RAILM[i]=(r(i-MW)?1:0)|(r(i+MW)?2:0)|(r(i-1)?4:0)|(r(i+1)?8:0);}for(let i=0;i<N;i++){const c=FLCH[i],t=TILE[i];if(c===47){FLOORTEX[i]=TX.siloF;ZONE[i]=Z_OUT;continue;}if(c===46||t===68||t===69){FLOORTEX[i]=TX.siloF;ZONE[i]=Z_HALL;}CEILTEX[i]=TX.siloC;if(t===66||t===70)TALLOK[i]=1;if(t===70){const x=i%MW,y=(i/MW)|0;WH12[i]=3+((hash2(((x/2)|0)*7+y*13,((y/2)|0)*5+x*3)*4)|0);}}},
+    update(dt){updateSilo(dt);}},
+  11:{lights:LIGHTS11,start:{x:22.6,y:54.5,a:0},obj:'КЛЮЧ',amb:1.3,fog:40,cull:1600,hz:1,oob:0xff8a8e92,sky:()=>SKYDAY,secrets:1,
+    cells(){for(let i=0;i<N;i++){const c=FLCH[i],t=TILE[i];if(c===44)FLOORTEX[i]=TX.lane;else if(c===91){FLOORTEX[i]=TX.goil;CEILTEX[i]=TX.rawc;}else if(c===46||c===59){FLOORTEX[i]=TX.rawf;CEILTEX[i]=TX.rawc;}if(t===1)FLOORTEX[i]=TX.tar;if(t>=51&&t<=55){FLOORTEX[i]=TX.lane;ZONE[i]=Z_OUT;}if(t===62){FLOORTEX[i]=TX.goil;CEILTEX[i]=TX.rawc;ZONE[i]=Z_HALL;}else if(t>=60&&t<=65){FLOORTEX[i]=TX.lane;CEILTEX[i]=TX.rawc;ZONE[i]=Z_OUT;}}
+      for(let i=MW;i<N-MW;i++){const t=TILE[i];if(t>=60&&t<=64&&(ZONE[i-1]===Z_HALL||ZONE[i+1]===Z_HALL||ZONE[i-MW]===Z_HALL||ZONE[i+MW]===Z_HALL))CEILW[i]=1;}},
+    init(){garInit();},update(dt){updateGar(dt);}},
+  10:{lights:LIGHTS10,start:{x:60,y:80.5,a:-Math.PI/2},obj:'БРИГАДИР',amb:1.3,fog:42,cull:4000,oob:0xff8a8e92,sky:()=>SKYDAY,
+    cells(){for(let i=0;i<N;i++){const c=FLCH[i];if(c===44)FLOORTEX[i]=TX.dirt;else if(c===121)FLOORTEX[i]=TX.rawf;else if(c===46||c===59){FLOORTEX[i]=TX.rawf;CEILTEX[i]=TX.rawc;}if(TILE[i]===48||TILE[i]===56||TILE[i]===50)TALLOK[i]=1;if(TILE[i]===1)FLOORTEX[i]=TX.tar;const t=TILE[i];if((t>=51&&t<=55)||t===57){FLOORTEX[i]=TX.dirt;ZONE[i]=Z_OUT;}if(t===56)FLOORTEX[i]=TX.rawf;if(t===50){FLOORTEX[i]=TX.rawf;CEILTEX[i]=TX.rawc;doorOpen[i]=1;doorTarget[i]=1;}}},
+    init(){siteInit();},
+    update(dt){updateSite(dt);if(G.duel){updateDuel(dt);updateProj(dt);updateFx(dt);for(const f of ents)if(f.kind==='fire')f.life-=dt;return true;}}},
+  9:{lights:LIGHTS9,start:{x:6.5,y:8.5,a:0},obj:'КОНТРОЛЁР',amb:1.1,fog:22,sky:()=>SKYSITE,
+    cells(){for(let i=0;i<N;i++){const c=FLCH[i];if(c===109){FLOORTEX[i]=TX.mfloor;CEILTEX[i]=TX.mceil;}else if(c===114){FLOORTEX[i]=TX.tfloor;CEILTEX[i]=TX.tceil;}else if(c===101){FLOORTEX[i]=TX.escal;CEILTEX[i]=TX.eceil;}else if(c===95){FLOORTEX[i]=TX.rawf;CEILTEX[i]=TX.rawc;}}},
+    init(){metroInit();},update(dt){updateMetro(dt);}},
+  8:{lights:LIGHTS8,start:{x:41.5,y:55.5,a:-Math.PI/2},obj:'ГОРОД',amb:1.6,fog:46,cull:900,hz:1,sky:()=>SKYDAY,
+    cells(){for(let i=0;i<N;i++){const c=FLCH[i];if(c===119){ZONE[i]=Z_OUT;FLOORTEX[i]=TX.fwater;continue;}const t=TILE[i];if(t===1||t===2||(t>=31&&t<=39))TALLOK[i]=1;if(ZONE[i]===Z_OUT)FLOORTEX[i]=c===121?TX.walk:c===113?TX.grass:c===120?TX.parq:c===106?TX.rails:TX.road;else if(ZONE[i]===Z_WATER)FLOORTEX[i]=TX.fwater;}},
+    update(dt){updateNPCs(dt);}},
+  7:{lights:LIGHTS7,start:{x:5.5,y:7.5,a:0},obj:'ГИТАРИСТ',amb:1.35,fog:24,oob:0xff201a1c,sky:()=>SKYMIX,
+    cells(){for(let i=0;i<N;i++){if(FLCH[i]===116)FLOORTEX[i]=TX.tar;else if(FLCH[i]===112)FLOORTEX[i]=TX.plank;}streetTex(false);},
+    init(){roofInit();},
+    update(dt){updateRoof(dt);if(G.drop){updateFx(dt);return true;}if(G.rc&&G.rc.lock){for(const e of ents)if(e.kind==='enemy'&&e.k==='dz')updateDancer(e,dt);updateFx(dt);return true;}}},
   5:{lights:LIGHTS5,start:{x:11.5,y:30.5,a:0},obj:'ВЕРХ',amb:.45,torch:1},
-  6:{lights:LIGHTS6,start:{x:3.5,y:23.5,a:0},obj:'ЗАДАЧИ',amb:.6,torch:1},
-  4:{lights:LIGHTS4,start:{x:3.5,y:33.5,a:-Math.PI/2},obj:'ЛИФТ'},
+  6:{lights:LIGHTS6,start:{x:3.5,y:23.5,a:0},obj:'ЗАДАЧИ',amb:.6,torch:1,init(){makeTags(G.code,true);}},
+  4:{lights:LIGHTS4,start:{x:3.5,y:33.5,a:-Math.PI/2},obj:'ЛИФТ',init(){makeTags(G.code,false);},
+    update(){if(G.codeOK&&!G.dvOn&&!G.cut&&!G.dvDown&&P.x>=10&&P.x<14&&P.y>=11.5&&P.y<16.9){const dv=ents.find(o=>o.k==='dv'&&!o.dead);if(dv){startCut(dv);return true;}}}},
   1:{lights:LIGHTS1,start:{x:3.5,y:18.5,a:-0.9},obj:'ТОК'},
   3:{lights:LIGHTS3,start:{x:1.5,y:17.5,a:0},obj:'СЕЙФ',amb:.45,torch:1},
-  2:{lights:LIGHTS2,start:{x:1.5,y:16.9,a:0},obj:'КЛЮЧ',heal:[[35,20.5],[45,23.5],[34.2,28],[45,32.5],[39,32.5],[41,21.2],[38,27.5]]}
+  2:{lights:LIGHTS2,start:{x:1.5,y:16.9,a:0},obj:'КЛЮЧ',heal:[[35,20.5],[45,23.5],[34.2,28],[45,32.5],[39,32.5],[41,21.2],[38,27.5]],
+    update(dt){if(G.cleared)return;
+      const pc=(P.y|0)*MW+(P.x|0);
+      if(!G.bossOn&&BROOM[pc])bossStart();
+      if(G.bossOn){if(BDOOR>=0)doorTarget[BDOOR]=0;
+        G.healT-=dt;if(G.healT<=0){G.healT=13+Math.random()*4;
+          const live=ents.filter(e=>e.kind==='item'&&e.heal&&!e.taken).length;
+          if(live<2){const pts=LEVELDEF[2].heal.filter(p=>Math.hypot(p[0]-P.x,p[1]-P.y)>2.5);const p=pts[(Math.random()*pts.length)|0];
+            if(p){{const r=Math.random();ents.push({kind:'item',t:r<.45?'kvass':r<.75?'pelmeni':'shells',x:p[0],y:p[1],drop:1,heal:1});}spawnFx('puff',p[0],p[1],.5);sfx.pickup();}}}}}}
 };
 let LIGHTS=[];
 const AMB=[[.16,.17,.27],[.2,.22,.2],[.19,.16,.12],[.06,.06,.06],[.34,.33,.3],[.12,.13,.2],[.36,.32,.28],[.05,.07,.08],[.12,.06,.03]];
@@ -160,16 +187,10 @@ function initLights(){
 function loadLevel(n){
   G.level=n;if(!G.menuLoad){try{localStorage.setItem('panelka.last',n);}catch(e){}}MWL=n>=8?MW:64;MHL=n>=8?MH:48;unlock(n);parseMap(LEVEL_SRC[n].map);
   for(let i=0;i<N;i++){const z=ZONE[i];FLOORTEX[i]=z===Z_OUT?TX.asph:(z===Z_APT||z===Z_BOSS)?TX.parq:z===Z_BASE?TX.conc:z===Z_LIFT?TX.rubber:z===Z_VOID?TX.far:z===Z_WATER?TX.water:z===Z_BOIL?TX.coalf:TX.tile;CEILTEX[i]=z===Z_LIFT?TX.liftCeil:(z===Z_BASE||z===Z_WATER||z===Z_BOIL)?TX.ceilB:TX.ceil;}
-  if(n===7){for(let i=0;i<N;i++){if(FLCH[i]===116)FLOORTEX[i]=TX.tar;else if(FLCH[i]===112)FLOORTEX[i]=TX.plank;}streetTex(false);}
-  HZ=(n===8||n===11)?1:0;CULL2=n===12?900:n===11?1600:n===10?4000:n===8?900:196;if(n===8){for(let i=0;i<N;i++){const c=FLCH[i];if(c===119){ZONE[i]=Z_OUT;FLOORTEX[i]=TX.fwater;continue;}const t=TILE[i];if(t===1||t===2||(t>=31&&t<=39))TALLOK[i]=1;if(ZONE[i]===Z_OUT)FLOORTEX[i]=c===121?TX.walk:c===113?TX.grass:c===120?TX.parq:c===106?TX.rails:TX.road;else if(ZONE[i]===Z_WATER)FLOORTEX[i]=TX.fwater;}}
-  if(n===9)for(let i=0;i<N;i++){const c=FLCH[i];if(c===109){FLOORTEX[i]=TX.mfloor;CEILTEX[i]=TX.mceil;}else if(c===114){FLOORTEX[i]=TX.tfloor;CEILTEX[i]=TX.tceil;}else if(c===101){FLOORTEX[i]=TX.escal;CEILTEX[i]=TX.eceil;}else if(c===95){FLOORTEX[i]=TX.rawf;CEILTEX[i]=TX.rawc;}}
-  if(n===10)for(let i=0;i<N;i++){const c=FLCH[i];if(c===44)FLOORTEX[i]=TX.dirt;else if(c===121)FLOORTEX[i]=TX.rawf;else if(c===46||c===59){FLOORTEX[i]=TX.rawf;CEILTEX[i]=TX.rawc;}if(TILE[i]===48||TILE[i]===56||TILE[i]===50)TALLOK[i]=1;if(TILE[i]===1)FLOORTEX[i]=TX.tar;const t=TILE[i];if((t>=51&&t<=55)||t===57){FLOORTEX[i]=TX.dirt;ZONE[i]=Z_OUT;}if(t===56)FLOORTEX[i]=TX.rawf;if(t===50){FLOORTEX[i]=TX.rawf;CEILTEX[i]=TX.rawc;doorOpen[i]=1;doorTarget[i]=1;}}
-  if(n===12){WH12.fill(0);RAILM.fill(0);for(let i=MW;i<N-MW;i++){const t=TILE[i];if(t!==68&&t!==69)continue;const r=j=>TILE[j]===68||TILE[j]===69;RAILM[i]=(r(i-MW)?1:0)|(r(i+MW)?2:0)|(r(i-1)?4:0)|(r(i+1)?8:0);}for(let i=0;i<N;i++){const c=FLCH[i],t=TILE[i];if(c===47){FLOORTEX[i]=TX.siloF;ZONE[i]=Z_OUT;continue;}if(c===46||t===68||t===69){FLOORTEX[i]=TX.siloF;ZONE[i]=Z_HALL;}CEILTEX[i]=TX.siloC;if(t===66||t===70)TALLOK[i]=1;if(t===70){const x=i%MW,y=(i/MW)|0;WH12[i]=3+((hash2(((x/2)|0)*7+y*13,((y/2)|0)*5+x*3)*4)|0);}}}
-  if(n===11)for(let i=0;i<N;i++){const c=FLCH[i],t=TILE[i];if(c===44)FLOORTEX[i]=TX.lane;else if(c===91){FLOORTEX[i]=TX.goil;CEILTEX[i]=TX.rawc;}else if(c===46||c===59){FLOORTEX[i]=TX.rawf;CEILTEX[i]=TX.rawc;}if(t===1)FLOORTEX[i]=TX.tar;if(t>=51&&t<=55){FLOORTEX[i]=TX.lane;ZONE[i]=Z_OUT;}if(t===62){FLOORTEX[i]=TX.goil;CEILTEX[i]=TX.rawc;ZONE[i]=Z_HALL;}else if(t>=60&&t<=65){FLOORTEX[i]=TX.lane;CEILTEX[i]=TX.rawc;ZONE[i]=Z_OUT;}}
-  CEILH=n===12?5:1;CEILW.fill(0);if(n===11)for(let i=MW;i<N-MW;i++){const t=TILE[i];if(t>=60&&t<=64&&(ZONE[i-1]===Z_HALL||ZONE[i+1]===Z_HALL||ZONE[i-MW]===Z_HALL||ZONE[i+MW]===Z_HALL))CEILW[i]=1;}
-  FOGD=n===12?60:n===11?40:n===10?42:n===9?22:n===8?46:n===7?24:12.5;OOBF=n===7?0xff201a1c:(n===10||n===11)?0xff8a8e92:n===12?0xffb88a5a:0xff000000;SKY=n===12?SKYD1:(n===10||n===11)?SKYDAY:n===9?SKYSITE:n===8?SKYDAY:n===7?SKYMIX:SKYN;
-  LIGHTS=LEVELDEF[n].lights.map(l=>Object.assign({},l));initLights();
-  G.secretTotal=0;for(let i=0;i<N;i++)if(TILE[i]===10)G.secretTotal++;if(n===11)G.secretTotal=1;
+  const L=Object.assign({},LVDEF0,LEVELDEF[n]);CEILW.fill(0);if(L.cells)L.cells();
+  FOGD=L.fog;CULL2=L.cull;CEILH=L.ceilH;HZ=L.hz;OOBF=L.oob;SKY=L.sky();
+  LIGHTS=L.lights.map(l=>Object.assign({},l));initLights();
+  G.secretTotal=0;for(let i=0;i<N;i++)if(TILE[i]===10)G.secretTotal++;if(L.secrets!=null)G.secretTotal=L.secrets;
 }
 SKY=SKYN;
 /* dawn over the district: k=0 before sunrise, k=1 sun on the horizon. Sun ENE, chimneys to its left, the white house far southwest */
@@ -236,7 +257,7 @@ function resetLevel(keep){
   if(!keep){G.rub=0;for(const k in UP)UP[k]=0;Object.assign(P,{ammo9:8,shells:0,has:[1,1,0,0],w:1,vodka:0,kefir:0});G.floorN=1;}
   else{P.ammo9=Math.max(P.ammo9,8);}
   const ST=LEVELDEF[G.level].start;G.cleared=false;G.hasKey=G.hasKey&&keep;G.bossOn=false;G.healT=6;G.brawlUsed=false;G.firstDeadT=-1;G.clearT=0;G.safeFound=false;
-  G.fuses=0;G.liftKey=false;G.dvOn=false;G.dvDown=false;G.cut=null;G.flatKey=false;G.liftBreak=0;G.codeOK=false;G.brk=null;G.kp=null;G.boardHP={};G.code=[1,2,3].map(()=>1+((Math.random()*9)|0));if(G.level===4||G.level===6)makeTags(G.code,G.level===6);
+  G.fuses=0;G.liftKey=false;G.dvOn=false;G.dvDown=false;G.cut=null;G.flatKey=false;G.liftBreak=0;G.codeOK=false;G.brk=null;G.kp=null;G.boardHP={};G.code=[1,2,3].map(()=>1+((Math.random()*9)|0));
   Object.assign(P,{x:ST.x,y:ST.y,a:ST.a,bleed:0,hp:maxHP(),armor:UP.vest?50:0,cool:0,anim:9,punch:0,bob:0,bobAmt:0,camZ:.5,switchT:0,faceHurt:0,faceGrin:0,throwT:0});
   if(!P.has[P.w])P.w=1;
   for(const [t,x0,y0] of LEVEL_SRC[G.level].ents){const x=x0,y=y0;
@@ -247,9 +268,8 @@ function resetLevel(keep){
     else if(ITEMS[t]){if(ITEMS[t].lore&&NOTESGOT.includes(t))continue;ents.push({kind:'item',t,x,y,v:G.level===8&&t==='rub'?5+((hash2(x*10|0,y*10|0)*10)|0):t==='rubS'?(G.level===3?60:40):t==='safe'?250:0});if(!ITEMS[t].money&&!ITEMS[t].lore)G.itemTotal++;}
     else if(KINDS[t]){const K=KINDS[t];let x=x0,y=y0;const rr=K.rad||.32*K.scale;if(solidR(x,y,rr)){x=(x|0)+.5;y=(y|0)+.5;}ents.push({kind:'enemy',k:t,x,y,hp:K.hp*D.hp,max:K.hp*D.hp,state:'idle',t:0,cool:0,alert:!!K.roller,pain:0,walk:0,id:eid++,rad:K.rad||.32*K.scale,stT:2+Math.random()*3,stun:0,rage:false,rageT:0,losT:0,see:false,sdir:Math.random()<.5?1:-1,box:K.box||0});if(K.granny){const b=ents[ents.length-1];b.gs='sit';b.sus=0;b.sx=x;b.sy=y;b.note=G.level===6?'note13':G.level===1?'note9':G.grannyN++?'note11':'note10';}else G.killTotal++;}
   }
-  if(G.level===9)metroInit();
-  G.duel=null;if(G.level===10)siteInit();if(G.level===11)garInit();
-  G.rc=null;G.drop=null;G.dropDead=false;G.roll=0;P.pitch=0;RF.heli=null;RF.spot=false;RF.rain=[];if(G.level===7)roofInit();
+  G.duel=null;G.rc=null;G.drop=null;G.dropDead=false;G.roll=0;P.pitch=0;RF.heli=null;RF.spot=false;RF.rain=[];
+  const LD=LEVELDEF[G.level];if(LD.init)LD.init();
   computeFlow();
 }
 

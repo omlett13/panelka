@@ -33,22 +33,8 @@ function update(dt){
   flowT-=dt;if(flowT<=0){computeFlow();flowT=.2;}
   if(lure){lure.life-=dt;if(lure.life<=0)lure=null;}
   G.clearT-=dt;
-  if(G.level===2&&!G.cleared){
-    const pc=(P.y|0)*MW+(P.x|0);
-    if(!G.bossOn&&BROOM[pc])bossStart();
-    if(G.bossOn){if(BDOOR>=0)doorTarget[BDOOR]=0;
-      G.healT-=dt;if(G.healT<=0){G.healT=13+Math.random()*4;
-        const live=ents.filter(e=>e.kind==='item'&&e.heal&&!e.taken).length;
-        if(live<2){const pts=LEVELDEF[2].heal.filter(p=>Math.hypot(p[0]-P.x,p[1]-P.y)>2.5);const p=pts[(Math.random()*pts.length)|0];
-          if(p){{const r=Math.random();ents.push({kind:'item',t:r<.45?'kvass':r<.75?'pelmeni':'shells',x:p[0],y:p[1],drop:1,heal:1});}spawnFx('puff',p[0],p[1],.5);sfx.pickup();}}}}}
-  if(G.level===4&&G.codeOK&&!G.dvOn&&!G.cut&&!G.dvDown&&P.x>=10&&P.x<14&&P.y>=11.5&&P.y<16.9){const dv=ents.find(o=>o.k==='dv'&&!o.dead);if(dv)startCut(dv);}
   if(G.cut){updateCut(dt);updateFx(dt);updateDoors(dt);return;}
-  if(G.level===8)updateNPCs(dt);
-  if(G.level===9)updateMetro(dt);
-  if(G.level===11)updateGar(dt);
-  if(G.level===12)updateSilo(dt);
-  if(G.level===10){updateSite(dt);if(G.duel){updateDuel(dt);updateProj(dt);updateFx(dt);for(const f of ents)if(f.kind==='fire')f.life-=dt;return;}}
-  if(G.level===7){updateRoof(dt);if(G.drop){updateFx(dt);return;}if(G.rc&&G.rc.lock){for(const e of ents)if(e.kind==='enemy'&&e.k==='dz')updateDancer(e,dt);updateFx(dt);return;}}
+  {const LD=LEVELDEF[G.level];if(LD.update&&LD.update(dt))return;}
   for(const e of ents)if(e.kind==='enemy')updateEnemy(e,dt);
   updateProj(dt);updateFx(dt);updateBottles(dt);updateSlippers(dt);updateRolls(dt);updateBoom(dt);updateFluff(dt);
   G.fireT=(G.fireT||0)-dt;G.ventT=(G.ventT||0)-dt;G.goo=Math.max(0,(G.goo||0)-dt);

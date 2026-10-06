@@ -51,7 +51,13 @@ The `js/` files are **classic scripts, not ES modules**. They share one global s
 
 ## Levels
 
-Numbered 1–12, names in `LNAME`; per-level start/lights/objective in `LEVELDEF`. Order of play: Дом 9 (1 floor 1, 2 floor 2 + boss, 3 basement) → Дом 11 (4 floor 1, 5 stairs, 6 floor 2, 7 roof) → 8 Город (hub) → 9 Метро, 10 Стройка, 11 Гаражи, 12 Элеватор. Levels 1–7 use a 64×48 part of the grid; 8+ use the full 128×96. Many functions branch on `G.level===n`. When changing one level, grep for `G.level===N` and `n===N` to find all its special cases.
+Numbered 1–12, names in `LNAME`. Order of play: Дом 9 (1 floor 1, 2 floor 2 + boss, 3 basement) → Дом 11 (4 floor 1, 5 stairs, 6 floor 2, 7 roof) → 8 Город (hub) → 9 Метро, 10 Стройка, 11 Гаражи, 12 Элеватор. Levels 1–7 use a 64×48 part of the grid; 8+ use the full 128×96.
+
+Each level's setup lives in `LEVELDEF[n]` (`state.js`):
+- data: `lights`, `start`, `obj`, `amb`, `torch`, and render settings `fog`, `cull`, `ceilH`, `hz`, `oob`, `sky()`, with defaults in `LVDEF0`;
+- hooks: `cells()` runs after `parseMap` to override floor/ceiling textures and zones per cell; `init()` runs at the end of `resetLevel`; `update(dt)` runs every play tick, and returning `true` ends the tick early (cutscenes, duels).
+
+Put new level-specific setup or per-tick logic in these hooks. There are still about 100 inline `G.level===N` checks inside rendering, AI and HUD code, so grep for them too when changing a level.
 
 ## Conventions
 
