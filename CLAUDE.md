@@ -66,5 +66,5 @@ Numbered 1–12, names in `LNAME`; per-level start/lights/objective in `LEVELDEF
 
 - Press `` ` `` (or the `dbg` button) for the debug panel: jump to any level, skip to bosses/set pieces, kill all, +money, max upgrades, god mode. Handlers are in `input.js` (`data-dbg` values).
 - `npm test` drives the game through the debug panel, so keep the `data-dbg` level buttons working.
-- Exceptions in the main loop are caught and logged to the console instead of stopping the game, so check the console after changes.
+- Exceptions in the main loop (`update`, `renderTop`, `renderBottom`, each caught separately in `boot.js`) are logged once per distinct error, shown in a red bar at the bottom of the top screen, and an `update` error pauses the game. Check the console after changes.
 - `levels.js` map rows must all have the same width as their level; edit them character for character.
