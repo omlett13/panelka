@@ -1,0 +1,13 @@
+{
+  "name": "panelka",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node serve.mjs",
+    "build": "node build.mjs",
+    "test": "node test/smoke.mjs && node build.mjs && node test/smoke.mjs dist/Панелька.html"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0"
+  }
+}

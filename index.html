@@ -1,0 +1,79 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<title>Панелька</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=PT+Mono&family=Russo+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head><body>
+
+<div class="ds" id="ds">
+  <section class="lid">
+    <div class="grille gl"></div><div class="grille gr"></div>
+    <div class="bezel bz-top"><canvas id="top" width="400" height="240" aria-label="Верхний экран: вид от первого лица"></canvas></div>
+    <span class="brand">ПАНЕЛЬКА</span>
+    <span class="model">ЭЛЕКТРОНИКА ИМ-3Д</span>
+    <span class="led" aria-hidden="true"></span>
+  </section>
+  <div class="hinge"></div>
+  <section class="base">
+    <button class="ctl pill bL" data-btn="L" id="btnL">L</button>
+    <button class="ctl pill bR" data-btn="R" id="btnR">R</button>
+    <div class="pad" id="pad" aria-label="Круговой пад"><div class="nub" id="nub"></div></div>
+    <div class="bezel bz-bot"><canvas id="bot" width="320" height="240" aria-label="Нижний сенсорный экран"></canvas></div>
+    <button class="ctl round bX" data-btn="X" id="btnX">X</button>
+    <button class="ctl round bY" data-btn="Y" id="btnY">Y</button>
+    <button class="ctl round bA" data-btn="A" id="btnA">A</button>
+    <button class="ctl round bB" data-btn="B" id="btnB">B</button>
+    <button class="ctl pill bSel" data-btn="SELECT" id="btnSel">SELECT</button>
+    <button class="ctl pill bSta" data-btn="START" id="btnSta">START</button>
+    <span class="pwr" aria-hidden="true"></span>
+  </section>
+</div>
+<button id="dbgBtn" type="button">dbg</button>
+<div id="dbg" hidden>
+  <b>DEBUG (` key)</b>
+  <button type="button" data-dbg="lift">skip to elevator</button>
+  <button type="button" data-dbg="kill">kill all enemies</button>
+  <button type="button" data-dbg="f2">go to floor 2</button>
+  <button type="button" data-dbg="boss">teleport to boss room</button>
+  <button type="button" data-dbg="f3">go to basement</button>
+  <button type="button" data-dbg="f4">go to дом 11</button>
+  <button type="button" data-dbg="d4">дом 11: all fuses + key</button>
+  <button type="button" data-dbg="f5">go to лестница</button>
+  <button type="button" data-dbg="f6">go to дом 11 floor 2</button>
+  <button type="button" data-dbg="f7">go to КРЫША (roof)</button>
+  <button type="button" data-dbg="chase">roof: skip to chase</button>
+  <button type="button" data-dbg="f8">go to ГОРОД (city)</button>
+  <button type="button" data-dbg="f9">go to МЕТРО (metro)</button>
+  <button type="button" data-dbg="f10">go to СТРОЙКА (site)</button>
+  <button type="button" data-dbg="f11">go to ГАРАЖИ (garages)</button>
+  <button type="button" data-dbg="f12">go to ЭЛЕВАТОР (silo)</button>
+  <button type="button" data-dbg="duel">site: foreman on the crane</button>
+  <button type="button" data-dbg="rub">+500 rub</button>
+  <button type="button" data-dbg="max">MAX OUT (buy everything)</button>
+  <button type="button" data-dbg="god">god mode: off</button>
+  <button type="button" data-dbg="close">close</button>
+</div>
+<script src="js/config.js"></script>
+<script src="js/levels.js"></script>
+<script src="js/map.js"></script>
+<script src="js/textures.js"></script>
+<script src="js/sprites.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/state.js"></script>
+<script src="js/world.js"></script>
+<script src="js/roof.js"></script>
+<script src="js/city.js"></script>
+<script src="js/metro.js"></script>
+<script src="js/silo.js"></script>
+<script src="js/garages.js"></script>
+<script src="js/site.js"></script>
+<script src="js/puzzles.js"></script>
+<script src="js/lift.js"></script>
+<script src="js/menus.js"></script>
+<script src="js/input.js"></script>
+<script src="js/update.js"></script>
+<script src="js/render-top.js"></script>
+<script src="js/render-bottom.js"></script>
+<script src="js/boot.js"></script>
+</body></html>

@@ -6,11 +6,21 @@ The game runs in the browser and is dressed up as a dual-screen handheld modelle
 
 ## Play
 
-There's nothing to install or build. Open the file in any modern browser:
+Play it in any modern browser. The quickest way is the single-file build:
 
 ```bash
-open "Панелька.html"
+npm install
+npm run build
+open "dist/Панелька.html"
 ```
+
+`dist/Панелька.html` has everything inlined (code, styles and music), so you can copy it anywhere and open it. To play from the source while editing, use the dev server:
+
+```bash
+npm start
+```
+
+and open http://127.0.0.1:8080/. Opening `index.html` straight from disk also works, but without music, because browsers don't let pages on `file://` load the audio files.
 
 Click the top screen to lock the mouse for looking around. Settings, notes and level select are in the main menu. Your progress and settings are saved in the browser.
 
@@ -38,8 +48,7 @@ On-screen controls also work with touch and mouse: the circle pad, A (fire), B (
 
 ## Tech
 
-- Everything is in a single HTML file: a software raycaster drawn on a `<canvas>`, written in plain JavaScript with no libraries.
-- The game draws all its textures and sprites in code when it starts, so there are no image files. Sound effects are synthesized live with WebAudio. Only the boss and crowd music are embedded MP3s.
+- Plain JavaScript with no libraries: a software raycaster drawn on a `<canvas>`. The code is in `js/`, split by subsystem; [CLAUDE.md](CLAUDE.md) has a map of it.
+- The game draws all its textures and sprites in code when it starts, so there are no image files. Sound effects are synthesized live with WebAudio. Only the boss and crowd music are MP3s (`audio/`).
+- `npm test` runs a headless browser through every level and fails on any error.
 - Press `` ` `` to open the debug panel, which can jump to any level or turn on god mode.
-
-See [CLAUDE.md](CLAUDE.md) for a map of the code.
