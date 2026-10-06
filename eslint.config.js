@@ -28,7 +28,7 @@ function topLevelNames(file) {
 const NAMES = Object.fromEntries(FILES.map(f => [f, topLevelNames(f)]));
 
 export default [
-  { ignores: ['dist/**', 'node_modules/**', 'Панелька.html'] },
+  { ignores: ['dist/**', 'node_modules/**'] },
   js.configs.recommended,
   {
     files: ['js/**/*.js'],
