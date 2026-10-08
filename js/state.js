@@ -53,6 +53,7 @@ const KINDS={
   hk:{who:'ХАРКУН',hp:80,speed:1.7,reach:1.1,dmg:[6,9],wind:.3,rate:1.1,sight:9,scale:1.3,pitch:120,idle:'stand',harkun:1,bark:['Хрр-тьфу!','Подходи ближе!','Полный рот!']},
   oc:{who:'ОЧЕРЕДНИК',hp:34,speed:2.4,reach:0,dmg:[3,5],wind:.3,rate:1.6,sight:12,scale:1,pitch:200,idle:'stand',ochered:1,bark:['Тр-р-р-р!','Очередь держи!','Щёлк-щёлк-щёлк!']},
   sy:{who:'СЕМЯНКА',hp:130,speed:1.3,reach:1.1,dmg:[6,9],wind:.6,rate:2.4,sight:13,scale:1.35,pitch:95,idle:'stand',semyanka:1,bark:['Шляпку лови!','С горкой!','На, подсолнух!']},
+  sh:{who:'ШАПКА',hp:30,speed:1.8,reach:0,dmg:[6,9],wind:.4,rate:1.2,sight:11,scale:1.05,pitch:150,idle:'stand',shapka:1,bark:['Шапку не трожь!','Семки — в шапке!','Ушанка — бронь!','Лови, пока горячие!']},
   mx:{who:'МЕХАНИК',hp:48,speed:2.3,reach:1.1,dmg:[10,15],wind:.32,rate:.8,sight:9,scale:1.05,pitch:115,idle:'stand',bark:['Ключ на двенадцать!','Не трожь машину!','Ща подкручу тебе!','Карбюратор не дам!']},
   kd:{who:'МАЛОЙ',hp:14,speed:3.6,reach:.9,dmg:[4,7],wind:.22,rate:.6,sight:10,scale:.62,pitch:270,idle:'stand',jumper:1,kid:1,rad:.24,bark:['Дядя, лови!','Петушка хочешь?','Ха-ха, попался!']},
   sw:{who:'СТОРОЖ',name:'СТОРОЖ',hp:1100,speed:1.7,reach:1.45,dmg:[18,26],wind:.45,rate:1,sight:30,scale:1.45,pitch:80,idle:'stand',boss:1,storozh:1,rad:.5,bark:['Стоять! Кооператив закрыт!','Ключи? Через мой труп!','Пропуск есть?']},

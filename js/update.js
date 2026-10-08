@@ -100,6 +100,7 @@ function updateEnemy(e,dt){
   if(K.rf){if(e.k==='gt')updateGuitar(e,dt);else if(e.k==='dz')updateDancer(e,dt);return;}
   if(K.ctrl){updateCtrl(e,dt);return;}
   if(K.harkun){updateHarkun(e,dt);return;}
+  if(K.shapka){updateShapka(e,dt);return;}
   if(K.ochered){updateOchered(e,dt);return;}
   if(K.semyanka){updateSemyanka(e,dt);return;}
   if(K.storozh){updateStorozh(e,dt);return;}
@@ -247,7 +248,7 @@ function updateEnemy(e,dt){
   if(Math.hypot(e.x-P.x,e.y-P.y)<.55){e.x=ox;e.y=oy;}
   e.walk+=Math.hypot(e.x-ox,e.y-oy)*3.2;
 }
-function updateProj(dt){for(const p of ents){if(p.kind!=='proj'||p.dead)continue;p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt;
+function updateProj(dt){for(const p of ents){if(p.kind!=='proj'||p.dead||p.hat)continue;p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt;
   if(p.arc){const kk=1-p.life/p.T;p.z=.5+Math.sin(Math.min(1,kk)*Math.PI)*1.6;}
   if(p.life<=0&&p.arc&&Math.hypot(p.x-P.x,p.y-P.y)<.95){p.dead=true;if(p.seed)seedHurt(p.dmg);else hurtPlayer(p.dmg);sfx.punch();continue;}
   if(p.life<=0||(!p.air&&sightBlock(p.x|0,p.y|0))){p.dead=true;if(p.fire){const bx=p.x-p.vx*.03,by=p.y-p.vy*.03;ents.push({kind:'fire',x:bx,y:by,life:3.5});}continue;}if(Math.hypot(p.x-P.x,p.y-P.y)<.35&&(!p.arc||p.life<p.T*.3)){p.dead=true;if(p.seed)seedHurt(p.dmg);else hurtPlayer(p.dmg);if(p.kb){moveBody(P,p.vx*.45,p.vy*.45,.1,.24);G.shake=Math.max(G.shake,.15);}if(p.fire)ents.push({kind:'fire',x:P.x,y:P.y,life:2.5});}}}

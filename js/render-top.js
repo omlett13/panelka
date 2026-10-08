@@ -145,6 +145,8 @@ function frameOf0(e){
   if(e.kind==='prop'&&e.t==='fountain')return {d:SPR.fountain[(G.t*6|0)%2],sc:e.sc};
   if(e.kind==='prop'){if(e.t==='dealer')return {d:(G.state==='shop'&&!G.shopClosing)?SPR.dealerOpen:SPR.dealer,sc:e.sc};if(e.t==='hlamp')return {d:SPR.hlamp,sc:e.sc,lift:CEILH-1.1};return {d:SPR[e.t],sc:e.sc};}
   if(e.kind==='item')return {d:SPR[ITEMS[e.t].spr||e.t],sc:ITEMS[e.t].sc};
+  if(e.kind==='proj'&&e.hat)return {d:SPR.shHat[(G.t*12|0)%2],sc:.75,lift:.35};
+  if(e.kind==='enemy'&&e.k==='sh')return shapkaFrame(e);
   if(e.kind==='proj'&&e.big)return {d:SPR.sunhead,sc:1.4,lift:(e.z||0)};
   if(e.kind==='proj')return e.spr?{d:SPR[e.spr],sc:e.spr==='tracer'?.9:.5,lift:e.z!=null?e.z:.3}:{d:SPR.semki,sc:.35,lift:.45};
   if(e.kind==='fx')return {d:SPR[e.t],sc:.45,lift:.3};

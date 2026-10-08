@@ -413,3 +413,27 @@ const ART={};
   ART.hand=hc;
 })();
 
+/* ШАПКА (ЭЛЕВАТОР floor 2): blue-tracksuit spitter under a giant seed-filled fur ушанка */
+(function(){const PH={suit:'#27449b',top:'#27449b',stripe:'#eeeeee',skin:'#d0a283',hair:'#6b4a2a',shoe:'#e2e2e2'},PB=Object.assign({},PH,{hair:'#c4967a'});
+  const F1='#6e5644',F2='#56412f',F3='#8a705a',FD='#3e2e22',SD=['#1a1a1a','#d8d8d0','#2a2418'];
+  const fur=(g,r,x,y,w,h,n)=>{for(let i=0;i<n;i++)R(g,r()<.5?F3:FD,x+((r()*w)|0),y+((r()*h)|0),1,1);};
+  const ell=(g,c,cx,cy,rx,ry,rot)=>{g.fillStyle=c;g.beginPath();g.ellipse(cx,cy,rx,ry,rot||0,0,7);g.fill();};
+  const seeds=(g,r,x,y,w,h,n)=>{for(let i=0;i<n;i++){const sx=x+((r()*w)|0),sy=y+((r()*h)|0);R(g,SD[0],sx,sy,2,1);if(r()<.5)R(g,SD[1],sx+1,sy,1,1);}};
+  function ush(g,hx,hy,r){R(g,F1,hx-6,hy-7,24,9);R(g,F1,hx-4,hy-9,20,2);R(g,F3,hx-3,hy-8,14,1);
+    R(g,F2,hx-7,hy+1,26,4);R(g,F3,hx-6,hy+1,24,1);R(g,FD,hx-7,hy+4,26,1);
+    R(g,F2,hx-7,hy+4,5,10);R(g,F2,hx+14,hy+4,5,10);R(g,FD,hx-7,hy+13,5,1);R(g,FD,hx+14,hy+13,5,1);R(g,'#2a2018',hx-5,hy+14,1,3);R(g,'#2a2018',hx+16,hy+14,1,3);
+    fur(g,r,hx-6,hy-8,24,12,46);}
+  function bowl(g,r,cx,cy,rx,ry,rot,full){ell(g,F2,cx,cy,rx,ry,rot);ell(g,F1,cx,cy-1,rx-1,ry-1,rot);if(full){ell(g,'#2a2418',cx,cy-1,rx-4,ry-2,rot);seeds(g,r,cx-rx+5,cy-ry+1,rx*2-10,ry*2-3,14);}fur(g,r,cx-rx,cy-ry,rx*2,ry*2,18);}
+  function bald(g,hx,hy,panic){R(g,'#e4b898',hx+3,hy+1,3,1);if(panic){R(g,'#3a0d0d',hx+4,hy+8,4,3);R(g,'#9fd0ff',hx-2,hy+3,1,2);R(g,'#9fd0ff',hx+13,hy+5,1,2);}}
+  const S=SPR.sh={};
+  for(const p of ['stand','walk1','walk2'])S[p]=bakeH(g=>{const r=rng(671);drawGop(g,p,PH);ush(g,26,8+(p==='stand'?0:1),r);});
+  for(const p of ['stand','walk1','walk2'])S['b'+p]=bakeH(g=>{drawGop(g,p,PB);bald(g,26,8+(p==='stand'?0:1),true);});
+  S.hide=bake(g=>{const r=rng(672);R(g,'#e2e2e2',22,61,6,2);R(g,'#e2e2e2',36,61,6,2);R(g,F2,7,59,7,4);R(g,F2,50,59,7,4);ell(g,F2,32,64,21,22);ell(g,F1,32,64,19,20);R(g,F2,11,55,42,4);R(g,F3,12,55,40,1);fur(g,r,12,43,40,20,70);});
+  S.pop=bakeH(g=>{const r=rng(673);drawGop(g,'squat',PH);ush(g,26,9,r);});
+  S.spray=bakeH(g=>{const r=rng(674);drawGop(g,'attack',PB);bald(g,26,8,false);bowl(g,r,30,29,15,6,-.45,true);seeds(g,r,16,34,18,14,12);});
+  S.open=bakeH(g=>{const r=rng(675);drawGop(g,'stand',PB);bald(g,26,8,false);bowl(g,r,32,41,13,5,0,true);R(g,PB.skin,38,35,4,4);R(g,PB.top,41,26,4,10);});
+  S.dead=bake(g=>{const r=rng(676);drawGop(g,'dead',PB);bowl(g,r,9,49,9,4,.3,false);seeds(g,r,2,52,20,8,16);});
+  S.deadB=bake(g=>{drawGop(g,'dead',PB);});
+  SPR.shHat=[0,1].map(f=>bake(g=>{const r=rng(677);if(f){R(g,F2,30,30,5,22);}else{R(g,F2,10,39,44,4);}ell(g,F2,32,41,15,6);ell(g,F1,32,40,13,4);R(g,F1,26,34,12,4);fur(g,r,18,34,28,12,24);}));
+  SPR.shHatG=bake(g=>{const r=rng(678);bowl(g,r,32,56,14,6,0,true);seeds(g,r,10,58,44,6,18);});
+})();
