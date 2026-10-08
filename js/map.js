@@ -3,7 +3,7 @@ const MW=128,MH=96,N=MW*MH;let MWL=64,MHL=48;
 const Z_OUT=0,Z_HALL=1,Z_APT=2,Z_BASE=3,Z_LIFT=4,Z_VOID=5,Z_BOSS=6,Z_WATER=7,Z_BOIL=8;
 const FLCH=new Uint8Array(N);const RF={heli:null,spot:false,rain:[],cvs:{}};const TILE=new Uint8Array(N), ZONE=new Int8Array(N).fill(-1);
 const ISD=[0,0,0,0,0,0,1,1,0,0,1,0,0,0,1,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,1,1,0,0,0,0,0,0,1];ISD[62]=1;   /* door-like tiles: D E X W O N */
-const TMAP={'#':1,'B':2,'M':3,'G':4,'L':5,'D':6,'E':7,'S':8,'R':9,'X':10,'Y':11,'Z':12,'P':13,'W':14,'K':15,'F':16,'C':17,'O':18,'J':20,'N':21,'I':22,'Q':23,'H':24,'V':25,'U':26,'1':27,'2':28,'3':29,'a':30,'4':31,'5':32,'6':33,'7':34,'9':35,'h':36,'d':37,'l':38,'k':39,'n':40,'z':41,'f':42,'g':43,'c':44,'u':45,'b':46,'i':47,'=':48,'@':50,'-':51,'|':52,'+':53,'%':54,'&':55,'$':56,'!':57,'A':60,'T':61,'s':62,'0':63,'8':64,'>':65,'(':66,')':67,'<':68,'?':69,'{':70};
+const TMAP={'#':1,'B':2,'M':3,'G':4,'L':5,'D':6,'E':7,'S':8,'R':9,'X':10,'Y':11,'Z':12,'P':13,'W':14,'K':15,'F':16,'C':17,'O':18,'J':20,'N':21,'I':22,'Q':23,'H':24,'V':25,'U':26,'1':27,'2':28,'3':29,'a':30,'4':31,'5':32,'6':33,'7':34,'9':35,'h':36,'d':37,'l':38,'k':39,'n':40,'z':41,'f':42,'g':43,'c':44,'u':45,'b':46,'i':47,'=':48,'@':50,'-':51,'|':52,'+':53,'%':54,'&':55,'$':56,'!':57,'A':60,'T':61,'s':62,'0':63,'8':64,'>':65,'(':66,')':67,'<':68,'?':69,'{':70,'}':71};
 const ZMAP={'/':Z_OUT,';':Z_HALL,'[':Z_HALL,'m':Z_HALL,'r':Z_HALL,'e':Z_HALL,'y':Z_OUT,'q':Z_OUT,'x':Z_OUT,'j':Z_OUT,'o':Z_VOID,'t':Z_OUT,'p':Z_OUT,',':Z_OUT,'.':Z_HALL,':':Z_APT,'_':Z_BASE,'~':Z_LIFT,'v':Z_VOID,'^':Z_BOSS,'w':Z_WATER,'*':Z_BOIL};
 const LIFT_SPAWN={x:3.5,y:39.35,a:-Math.PI/2};
 const doorOpen=new Float32Array(N), doorTarget=new Float32Array(N), doorTimer=new Float32Array(N);
@@ -11,7 +11,7 @@ let DOORS=[];let BDOOR=-1;
 const RAILM=new Uint8Array(N),WH12=new Uint8Array(N),CEILW=new Uint8Array(N),SEEN=new Uint8Array(N),TALLOK=new Uint8Array(N),ROOM=new Int16Array(N),BROOM=new Uint8Array(N);
 function inB(x,y){return x>=0&&y>=0&&x<MW&&y<MH;}
 function parseMap(src){
-  BDOOR=-1;
+  BDOOR=-1;ISD[12]=G.level===12?1:0;   /* lift doors 'Z' open only in the silo */
   for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){
     const ch=src[y][x], i=y*MW+x;ZONE[i]=-1;FLCH[i]=ch.charCodeAt(0);
     if(ch in ZMAP){TILE[i]=0;ZONE[i]=ZMAP[ch];}

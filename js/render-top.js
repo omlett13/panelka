@@ -36,23 +36,24 @@ function renderTop(){
     const ddx=rdx===0?1e30:Math.abs(1/rdx),ddy=rdy===0?1e30:Math.abs(1/rdy);let stx,sty,sdx,sdy;
     if(rdx<0){stx=-1;sdx=(px-mx)*ddx;}else{stx=1;sdx=(mx+1-px)*ddx;}
     if(rdy<0){sty=-1;sdy=(py-my)*ddy;}else{sty=1;sdy=(my+1-py)*ddy;}
-    let prev=my*MW+mx,side=0,hitT=0,hitI=-1,dOff=0,railD=0,railW=0,ovD=0,ovI=-1,ovTx=0,ovSide=0;SEEN[prev]=1;LOWN=0;if(RZON)for(let y=0,q=x;y<RH;y++,q+=RW)RZ[q]=1e9;LOWD[x]=1e9;LOWY[x]=RH;BIN[x]=IND?0:1e9;BYA[x]=IND?-1e9:0;BEX[x]=1e9;ZT[x]=0;let lowFull=0;
+    let prev=my*MW+mx,side=0,hitT=0,hitI=-1,dOff=0,railD=0,railW=0,ovD=0,ovI=-1,ovTx=0,ovSide=0,cabIn=RZON&&ZONE[prev]===Z_LIFT?0:-1,cabOut=-1;SEEN[prev]=1;LOWN=0;if(RZON)for(let y=0,q=x;y<RH;y++,q+=RW)RZ[q]=1e9;LOWD[x]=1e9;LOWY[x]=RH;BIN[x]=IND?0:1e9;BYA[x]=IND?-1e9:0;BEX[x]=1e9;ZT[x]=0;let lowFull=0;
     for(let i=0;i<120;i++){
       if(sdx<sdy){sdx+=ddx;mx+=stx;side=0;}else{sdy+=ddy;my+=sty;side=1;}
       if(mx<0||my<0||mx>=MWL||my>=MHL)break;
       const ci=my*MW+mx,t=TILE[ci];
       if(L10R&&camZ<1){const z=ZONE[ci];if(BIN[x]>1e8){if(z===Z_HALL&&ZONE[prev]!==Z_HALL){const dd=side===0?sdx-ddx:sdy-ddy;BIN[x]=dd;BYA[x]=RHOR-(1-camZ)*RPROJ/dd;}}else if(BEX[x]>1e8&&z===Z_OUT)BEX[x]=side===0?sdx-ddx:sdy-ddy;}
       if(t===0&&OUTP&&FLCH[ci]===59&&LOWN<12){LOWC[LOWN]=ci;LOWP[LOWN]=prev;LOWT[LOWN]=99;LOWN++;}
-      if(t===0){if(!railD&&ZONE[ci]===Z_VOID&&ZONE[prev]!==Z_VOID&&FLCH[ci]!==111){railD=side===0?sdx-ddx:sdy-ddy;let w=side===0?py+railD*rdy:px+railD*rdx;railW=w-Math.floor(w);}SEEN[ci]=1;prev=ci;continue;}
+      if(t===0&&RZON){const zl=ZONE[ci]===Z_LIFT;if(zl&&cabIn<0)cabIn=side===0?sdx-ddx:sdy-ddy;else if(!zl&&cabIn>=0&&cabOut<0)cabOut=side===0?sdx-ddx:sdy-ddy;}
+      if(t===0){if(!railD&&!RZON&&ZONE[ci]===Z_VOID&&ZONE[prev]!==Z_VOID&&FLCH[ci]!==111){railD=side===0?sdx-ddx:sdy-ddy;let w=side===0?py+railD*rdy:px+railD*rdx;railW=w-Math.floor(w);}SEEN[ci]=1;prev=ci;continue;}
       if((t>=51&&t<=55)||t===57||(L10R&&(t===49||(t===2&&OUTP)))||(L11R&&(t===62||t===63||t===64||((t===60||t===61||t===65)&&(OUTP||BEX[x]<1e8))))||(L12R&&t>=68&&t<=70)){const hh=t===70?WH12[ci]*.5:(LOWB[t]?LOWB[t][4]:9);if(LOWN<12&&!(lowFull>camZ&&hh<=lowFull)){if(t===68||t===69){const m=RAILM[ci];if((m&3)||!(m&12)){LOWC[LOWN]=ci;LOWP[LOWN]=prev;LOWT[LOWN]=68;LOWN++;}if((m&12)&&LOWN<12){LOWC[LOWN]=ci;LOWP[LOWN]=prev;LOWT[LOWN]=69;LOWN++;}}else{LOWC[LOWN]=ci;LOWP[LOWN]=prev;LOWT[LOWN]=t;LOWN++;}const B2=LOWB[t];if(B2&&t!==62&&B2[0]===0&&B2[1]===1&&B2[2]===0&&B2[3]===1&&!(B2[6]>0)&&hh>lowFull)lowFull=hh;}SEEN[ci]=1;prev=ci;continue;}
       if(ISD[t]&&!(L11R&&t===62)){const o=doorOpen[ci];if(o>0){const pd=side===0?sdx-ddx:sdy-ddy;let w=side===0?py+pd*rdy:px+pd*rdx;w-=Math.floor(w);if(w<o){
         /* open doorway in a tall facade: remember it so the wall above the door still gets drawn */
-        if(ovI<0&&TALLOK[ci]&&(ZONE[prev]===Z_OUT||ZONE[prev]===Z_VOID)){ovD=pd;ovI=ci;ovSide=side;let q=(w*64)|0;if(q>63)q=63;if((side===0&&rdx<0)||(side===1&&rdy>0))q=63-q;ovTx=q;}
-        SEEN[ci]=1;prev=ci;continue;}}dOff=o;}
+        if(ovI<0&&((TALLOK[ci]&&(ZONE[prev]===Z_OUT||ZONE[prev]===Z_VOID))||(RZON&&t===12))){ovD=pd;ovI=ci;ovSide=side;let q=(w*64)|0;if(q>63)q=63;if((side===0&&rdx<0)||(side===1&&rdy>0))q=63-q;ovTx=q;}
+        if(RZON&&cabIn<0&&ZONE[ci]===Z_LIFT)cabIn=pd;SEEN[ci]=1;prev=ci;continue;}}dOff=o;}
       SEEN[ci]=1;hitT=t;hitI=ci;break;
     }
     if(hitI<0){ZB[x]=1e9;if(railD)drawRail(x,railD,railW,camZ);if(LOWN)drawLow(x,px,py,rdx,rdy,camZ);continue;}
-    let perp=side===0?sdx-ddx:sdy-ddy;if(perp<.01)perp=.01;ZB[x]=perp;
+    let perp=side===0?sdx-ddx:sdy-ddy;if(perp<.01)perp=.01;ZB[x]=perp;if(cabIn>=0&&cabOut<0)cabOut=perp;
     let wx=side===0?py+perp*rdy:px+perp*rdx;wx-=Math.floor(wx);let txU=(wx*64)|0;if(ISD[hitT])wx-=dOff;
     let tx=(wx*64)|0;if(tx<0)tx=0;if(tx>63)tx=63;if(txU>63)txU=63;if((side===0&&rdx<0)||(side===1&&rdy>0)){tx=63-tx;txU=63-txU;}
     const pz=ZONE[prev];let base=null;const tall=(pz===Z_OUT||pz===Z_VOID)&&TALLOK[hitI]===1;
@@ -70,7 +71,7 @@ function renderTop(){
       case 10:base=zoneWall;break;
       case 11:base=TX.liftWall[((hitI%MW)*2+((hitI/MW)|0)*3+side)%TX.liftWall.length];break;
       case 12:base=TX.liftDoor;break;
-      case 13:base=TX.liftPanel[G.state==='ride'&&G.rideDing||G.state==='win'?rideTo():floorLabel(G.level)];break;
+      case 13:base=G.level===12?TX.liftPanelR:TX.liftPanel[G.state==='ride'&&G.rideDing||G.state==='win'?rideTo():floorLabel(G.level)];break;
       case 14:base=TX.balc;break;
       case 15:base=TX.barric;break;
       case 16:base=TX.furn[FURNV[hitI]];break;
@@ -87,10 +88,11 @@ function renderTop(){
       case 31:case 32:case 33:case 34:base=pz===Z_HALL?TX.shopIn:TX.sign[hitT-31];break;case 35:base=G.level===8?TX.deco[DECOV[hitI]]:TX.sign[4];break;
       case 36:base=pz===Z_HALL?TX.shelf:tall?null:TX.brick;break;
       case 39:base=TX.metroIn;break;case 40:base=FLCH[prev]===114?(G.ghostOn?TX.twinGhost:G.trainMove?TX.twin[(G.t*14|0)&3]:TX.twinStop):TX.tcarOut;break;
-      case 41:base=TX.tend;break;case 42:base=TX.tdoor;break;case 43:base=TX.tgdoor;break;case 44:base=TX.marble;break;case 45:base=TX.mosaic;break;case 46:base=TX.eswall;break;case 47:base=TX.fence;break;case 48:base=TX.column;break;case 49:base=TX.fbrick;break;case 50:base=TX.skelIn;break;case 58:base=TX.fbrick;break;case 66:base=TX.siloW;break;case 68:base=TX.siloW;break;case 60:base=pz===Z_HALL?TX.gint:TX.gwall;break;case 61:case 62:base=pz===Z_HALL?TX.gint:TX.gdoor[((((hitI%MW)/3)|0)*7+(((hitI/MW)|0))*3)%5];break;case 63:base=TX.ggate;break;case 64:base=TX.plita;break;case 65:base=TX.gdoorS;break;case 67:base=TX.siloBin;break;case 56:base=tall?TX.skelG:TX.skelIn;break;case 37:base=TX.glassDoor;break;case 38:base=TX.bdoor;break;
+      case 41:base=TX.tend;break;case 42:base=TX.tdoor;break;case 43:base=TX.tgdoor;break;case 44:base=TX.marble;break;case 45:base=TX.mosaic;break;case 46:base=TX.eswall;break;case 47:base=TX.fence;break;case 48:base=TX.column;break;case 49:base=TX.fbrick;break;case 50:base=TX.skelIn;break;case 58:base=TX.fbrick;break;case 66:base=TX.siloW;break;case 68:base=TX.siloW;break;case 60:base=pz===Z_HALL?TX.gint:TX.gwall;break;case 61:case 62:base=pz===Z_HALL?TX.gint:TX.gdoor[((((hitI%MW)/3)|0)*7+(((hitI/MW)|0))*3)%5];break;case 63:base=TX.ggate;break;case 64:base=TX.plita;break;case 65:base=TX.gdoorS;break;case 67:base=TX.siloBin;break;case 71:base=TX.siloStairs;break;case 56:base=tall?TX.skelG:TX.skelIn;break;case 37:base=TX.glassDoor;break;case 38:base=TX.bdoor;break;
       case 27:case 28:case 29:base=TX.tag[hitT-27];break;
     }
-    const lineH=RPROJ/perp,fl=RHOR+camZ*lineH,st=(G.level===12&&hitT===66)?CEILH:(tall?5:(CEILH>1&&pz!==Z_OUT&&pz!==Z_VOID?CEILH:1)),top=fl-st*lineH;
+    if(RZON&&(hitT===11||hitT===13)&&pz!==Z_LIFT)base=TX.siloShaft;
+    const lineH=RPROJ/perp,fl=RHOR+camZ*lineH,st=(RZON&&pz===Z_LIFT)?1:(G.level===12&&hitT===66)?CEILH:(tall?5:(CEILH>1&&pz!==Z_OUT&&pz!==Z_VOID?CEILH:1)),top=fl-st*lineH;
     const y0=Math.max(0,Math.ceil(top)),y1=Math.min(RH-1,Math.floor(fl));if(OUTP&&!IND&&BIN[x]>1e8)ZT[x]=Math.max(0,Math.ceil(top));
     let hA=1e9,hB=-1e9;if(perp>BIN[x]+.01){hA=BYA[x];hB=RHOR-(1-camZ)*RPROJ/Math.min(perp,BEX[x]);}
     let fog=1-perp/FOGD;if(fog<0)fog=0;const fogI=fog*256,sd=side===1?.78:1;const hk=HZ?1-fog:0,hr=hk*178,hg=hk*196,hb=hk*214;
@@ -101,14 +103,15 @@ function renderTop(){
     for(let y=y0;y<=y1;y++){if(y>=hA&&y<hB)continue;
       const v=(fl-y)*inv;let s=v|0;if(s>=st)s=st-1;let ty=63-(((v-s)*64)|0);if(ty<0)ty=0;
       let tex=base,lr=lr0,lg=lg0,lb=lb0;
-      let cx2=tx;if(G.level===12&&hitT===66){tex=TX.siloW;cx2=tx;}else if(tall&&(s>0||!base)&&hitT!==48){if(hitT===56||hitT===50||hitT===58){tex=s===4?TX.skelTop:TX.skelF[WINV[hitI*5+s]&1];cx2=txU;}else{tex=TX.panel[WINV[hitI*5+s]];cx2=txU;if(s>0&&!L10D){lr=ur;lg=ug;lb=ub;}}}
+      let cx2=tx;if(G.level===12&&(hitT===66||(s>0&&hitT===71))){tex=TX.siloW;cx2=tx;}else if(RZON&&s>0&&hitT>=11&&hitT<=13){tex=TX.siloShaft;cx2=tx;}else if(tall&&(s>0||!base)&&hitT!==48){if(hitT===56||hitT===50||hitT===58){tex=s===4?TX.skelTop:TX.skelF[WINV[hitI*5+s]&1];cx2=txU;}else{tex=TX.panel[WINV[hitI*5+s]];cx2=txU;if(s>0&&!L10D){lr=ur;lg=ug;lb=ub;}}}
       const c=tex[(ty<<6)|cx2];if(c===0)continue;
       const tw=tW?tW*TROW[y]:0;FB[y*RW+x]=(c>>>24)===254?sh(c,fe,fe,fe):sh(c,(lr+tw)|0,(lg+tw*.95)|0,(lb+tw*.8)|0);if(hk)FB[y*RW+x]=hzA(FB[y*RW+x],hr,hg,hb);
     }
     if(ovI>=0&&ovD<perp){const d=Math.max(.05,ovD),lh=RPROJ/d,f2=RHOR+camZ*lh,ya=Math.max(0,Math.ceil(f2-5*lh)),yb=Math.min(RH-1,Math.floor(f2-lh));
-      let fg=1-d/FOGD;if(fg<0)fg=0;const s2=ovSide===1?.78:1,sk=TILE[ovI]===50,r2=(sk?LR[ovI]*fg:ar*fg)*s2,g2=(sk?LG[ovI]*fg:ag*fg)*s2,b2=(sk?LB[ovI]*fg:ab*fg)*s2,fe2=Math.min(256,fg*256*1.5+40)|0;
-      for(let y=ya;y<=yb;y++){const v=(f2-y)/lh;let s=v|0;if(s<1)s=1;if(s>4)s=4;let ty=63-(((v-s)*64)|0);if(ty<0)ty=0;const c=(TILE[ovI]===50?(s===4?TX.skelTop:TX.skelF[WINV[ovI*5+s]&1]):TX.panel[WINV[ovI*5+s]])[(ty<<6)|ovTx];if(c===0)continue;
+      let fg=1-d/FOGD;if(fg<0)fg=0;const s2=ovSide===1?.78:1,sk=TILE[ovI]===50||TILE[ovI]===12,r2=(sk?LR[ovI]*fg:ar*fg)*s2,g2=(sk?LG[ovI]*fg:ag*fg)*s2,b2=(sk?LB[ovI]*fg:ab*fg)*s2,fe2=Math.min(256,fg*256*1.5+40)|0;
+      for(let y=ya;y<=yb;y++){const v=(f2-y)/lh;let s=v|0;if(s<1)s=1;if(s>4)s=4;let ty=63-(((v-s)*64)|0);if(ty<0)ty=0;const c=(TILE[ovI]===12?TX.siloShaft:TILE[ovI]===50?(s===4?TX.skelTop:TX.skelF[WINV[ovI*5+s]&1]):TX.panel[WINV[ovI*5+s]])[(ty<<6)|ovTx];if(c===0)continue;
         FB[y*RW+x]=(c>>>24)===254?sh(c,fe2,fe2,fe2):sh(c,r2|0,g2|0,b2|0);}}
+    if(cabOut>cabIn)drawCab(x,cabIn,cabOut,px,py,rdx,rdy,camZ,flash);
     if(railD&&railD<perp)drawRail(x,railD,railW,camZ);
     if(LOWN)drawLow(x,px,py,rdx,rdy,camZ);
   }
@@ -126,6 +129,11 @@ function renderTop(){
   drawTopOverlay();
 }
 /* balcony railing: a see-through, waist-high strip drawn where the ray leaves the balcony */
+/* silo lift cabin: its ceiling is a plane at height 1 between where the ray enters the cabin (d0) and leaves it (d1) */
+function drawCab(x,d0,d1,px,py,rdx,rdy,camZ,flash){const k=(1-camZ)*RPROJ,yA=d0>0?Math.max(0,Math.ceil(RHOR-k/d0-.5)):0,yB=Math.min(RHOR-1,Math.floor(RHOR-k/d1-.5));
+  for(let y=yA;y<=yB;y++){const d=k/(RHOR-y-.5);if(d<d0||d>d1)continue;const fx=px+d*rdx,fy=py+d*rdy,cx=fx|0,cy=fy|0,cell=cy*MW+cx;
+    let fog=1-d/FOGD;if(fog<0)fog=0;const fogI=fog*256,fI=flash>0?flash*Math.max(0,1-d/7)*190:0,c=CEILTEX[cell][((((fy-cy)*64)|0)<<6)|(((fx-cx)*64)|0)];
+    RZ[y*RW+x]=d;if((c>>>24)===254){const fe=Math.min(256,fogI*1.5+40)|0;FB[y*RW+x]=sh(c,fe,fe,fe);}else FB[y*RW+x]=sh(c,((LR[cell]*fogI)>>8)+fI,((LG[cell]*fogI)>>8)+fI*.85,((LB[cell]*fogI)>>8)+fI*.6);}}
 function drawRail(x,d,w,camZ){
   if(d<.05)d=.05;const lineH=RPROJ/d,fl=RHOR+camZ*lineH,top=fl-.48*lineH,y0=Math.max(0,Math.ceil(top)),y1=Math.min(RH-1,Math.floor(fl));
   const tx=((w*64)|0)&63,cell=(P.y|0)*MW+(P.x|0);let fog=1-d/FOGD;if(fog<0)fog=0;const f=fog*256;

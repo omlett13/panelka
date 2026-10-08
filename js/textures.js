@@ -235,7 +235,22 @@ function siteTextures(){
      for(let i=0;i<40;i++)R(g,'#3e382e',(r()*64)|0,(r()*64)|0,2,1);R(g,'#2a251e',30,30,5,5);});
    TX.siloBin=bake(g=>{const r=rng(664);for(let x=0;x<64;x++){const k=Math.abs(x-32)/32,sh=1-k*k*.7;const c=[158*sh,150*sh,132*sh].map(v=>v|0);g.fillStyle='rgb('+c+')';g.fillRect(x,0,1,64);}
      for(let y=0;y<64;y+=9)R(g,'rgba(60,54,44,.7)',0,y,64,2);for(let i=0;i<8;i++)R(g,'rgba(120,70,30,.45)',(r()*60)|0,(r()*60)|0,3,8+(r()*12|0));
-     R(g,'rgba(255,240,200,.25)',22,0,4,64);});}
+     R(g,'rgba(255,240,200,.25)',22,0,4,64);});
+   /* stairwell: checker-plate steps with rusty nosing; lift panel gone to rust, screen dead */
+   TX.siloStep=bake(g=>{const r=rng(666);R(g,'#5c5850',0,0,64,64);for(let y=0;y<64;y+=4)for(let x=(y/4)%2*4;x<64;x+=8)R(g,'#6c675e',x,y,3,1);
+     for(let y=0;y<64;y+=16){R(g,'#2a2620',0,y+13,64,3);R(g,'#8a5a2a',0,y,64,2);R(g,'#a87040',0,y,64,1);}for(let i=0;i<40;i++)R(g,r()<.5?'#6a3e1e':'#4a2a14',(r()*64)|0,(r()*64)|0,2,1);});
+   TX.siloStairs=bake(g=>{const r=rng(668);R(g,'#8a8276',0,0,64,64);for(let x=0;x<64;x+=6){R(g,'#9a9286',x,0,4,64);R(g,'#6e665a',x+4,0,2,64);}R(g,'#5e584e',0,0,64,3);
+     R(g,'#121110',8,12,48,52);for(let i=0;i<9;i++){const y=60-i*5,w=46-i*3,x=9+i*1.5;R(g,'#4a4238',x,y,w,3);R(g,'#8a5a2a',x,y,w,1);}
+     R(g,'#a09a8a',8,12,3,52);R(g,'#a09a8a',53,12,3,52);R(g,'#c8b070',16,3,32,8);poly(g,'#2a2620',[[32,4],[36,8],[34,8],[34,10],[30,10],[30,8],[28,8]]);
+     for(let i=0;i<6;i++){const x=(r()*62)|0;R(g,'rgba(120,64,24,.45)',x,(r()*10)|0,1,4+((r()*8)|0));}});
+   TX.siloShaft=bake(g=>{const r=rng(669);R(g,'#5e6466',0,0,64,64);for(let x=0;x<64;x+=16){R(g,'#4a5052',x,0,2,64);R(g,'#727a7c',x+2,0,1,64);}R(g,'#4a5052',0,31,64,2);R(g,'#727a7c',0,33,64,1);
+     for(let x=6;x<64;x+=16)for(let y=4;y<64;y+=28){R(g,'#3a3e40',x,y,2,2);R(g,'#8a9294',x,y,1,1);R(g,'#3a3e40',x+4,y,2,2);R(g,'#8a9294',x+4,y,1,1);}
+     for(let i=0;i<8;i++){const x=(r()*62)|0,y=(r()*40)|0;R(g,'rgba(120,64,24,.5)',x,y,1+((r()*2)|0),6+((r()*16)|0));}for(let i=0;i<50;i++)R(g,'rgba(30,30,30,.25)',(r()*64)|0,(r()*64)|0,2,1);});
+   TX.liftPanelR=bake(g=>{const r=rng(667);tLiftPanel(g,rng(62));R(g,'#0c0807',39,7,16,9);R(g,'#1e1612',40,8,5,1);
+     for(let j=0;j<5;j++)for(let i=0;i<2;i++){const x=41+i*8,y=20+j*7;R(g,'#5a3418',x,y,5,5);R(g,r()<.5?'#8a4a1e':'#7a5030',x+1+((r()*3)|0),y+1+((r()*3)|0),2,2);R(g,'#3a200e',x,y+4,5,1);if(r()<.6)R(g,'rgba(110,60,25,.6)',x+2,y+5,1,2+((r()*4)|0));}
+     for(let i=0;i<30;i++)R(g,r()<.5?'rgba(120,64,24,.55)':'rgba(70,40,18,.5)',36+((r()*22)|0),4+((r()*56)|0),1+((r()*2)|0),1+((r()*3)|0));});
+   /* floor 2 grain hole: floor 1 far below, nearly black */
+   TX.siloHole=bake(g=>{const r=rng(665);R(g,'#0b0906',0,0,64,64);for(let i=0;i<90;i++)R(g,r()<.6?'#1a140c':'#241c12',(r()*64)|0,(r()*64)|0,1,1);for(let i=0;i<10;i++)R(g,'#050403',(r()*60)|0,(r()*60)|0,4,3);});}
   /* ГАРАЖИ textures */
   {const rnd=rng(611);
    const roofBand=g=>{R(g,'#2a2624',0,0,64,6);R(g,'#3a3430',0,0,64,1);R(g,'#1a1614',0,5,64,1);for(let x=0;x<64;x+=9)R(g,'#46403a',x,1,4,1);};

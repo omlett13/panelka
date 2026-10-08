@@ -121,6 +121,7 @@ function useAction(){
   if(G.state==='lift'){if(facingDealer()){openShop();return;}const f=frontTarget();if(f&&f.t==='panel'){if(G.level===4){liftBroken();return;}if(G.level===2&&G.hasKey){G.state='liftMenu';openPage('liftChoice');sfx.tick();}else startRide(G.level===1?2:'win');return;}sfx.tick();return;}
   if(G.state!=='play')return;if(G.level===11){const sw=facingStorozh();if(sw){talkStorozh(sw);return;}}if(G.level===11&&frontGate()){useGate();return;}if(G.level===10&&G.brig&&G.brig.phase==='crane'&&nearCraneB()){startDuel();return;}{const n=facingNPC();if(n){if(n.talk==='bar')openShop();else openTalk(n);return;}}{const gr=facingGranny();if(gr){bribe(gr);return;}}const f=frontTarget();if(!f){sfx.tick();return;}
   if(f.t==='seeds'){if(!G.foundHQ){G.foundHQ=true;}G.seedFound=true;G.secrets=1;sfx.ding();sfx.door();G.gReturn={x:P.x,y:P.y,a:P.a};keys.clear();transition(()=>{enterLevel(12);msg('ЭЛЕВАТОР · 1 ЭТАЖ');},.6);return;}
+  if(f.t==='panel'&&G.level===12){siloBroken();return;}
   if(f.t==='gshut'){sfx.click();msg(pick(['ЗАПЕРТО НАГЛУХО','НА ЗАМКЕ','ЭТОТ НЕ ОТКРЫТЬ']));return;}
   if(f.t==='door'){
     if(f.i===BDOOR&&G.bossOn){sfx.click();msg('ЗАПЕРТО');return;}

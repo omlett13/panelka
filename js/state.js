@@ -14,7 +14,8 @@ const levelState=()=>({
   duel:null,rc:null,drop:null,dropDead:false,roll:0,gtT:0,                                      // roof
   outside:false,siteDone:false,trainMove:false,departed:false,departT:0,ghostOn:false,ghostDone:false,ghostEnd:false,ghostT:0,lockDoor:-1,wave:null, // metro
   brig:null,siteEnd:0,obrezEnt:null,arena:false,breach:false,breachHole:false,                  // site
-  gkey:false,gateOpen:false,garDone:false,knock:null,seedFound:false});                         // garages
+  gkey:false,gateOpen:false,garDone:false,knock:null,seedFound:false,                                    // garages
+  siloCage:false});                                                                          // silo
 const G=watchKeys('G',Object.assign({
   state:'menu',page:'main',sel:0,parent:'main',prevState:'play',t:0,deadT:0,zoom:0,winTime:0,navT:0,hadLock:false,noiseT:0,god:false,
   lootHeld:-1,lootSlot:-1,lootCur:0,statsT:0,rideT:0,rideDing:false,rideTarget:0,hiT:0,talk:null,noteI:0,house:9,
@@ -148,7 +149,8 @@ const LIGHTS9=(function(){const L=[],W=[1,.85,.6],C=[.85,.9,1];L.push({x:8,y:8,c
     {x:110,y:44.5,c:[1,.8,.55],r:7,i:1.1,fl:1},{x:119,y:44.5,c:[1,.8,.55],r:7,i:1.1},{x:101.5,y:49.5,c:[1,.8,.55],r:6,i:1},{x:101.5,y:59.5,c:[1,.8,.55],r:6,i:1,fl:2},{x:111.5,y:59.5,c:[1,.8,.55],r:6,i:1},{x:111.5,y:53.5,c:[1,.8,.55],r:6,i:1});return L;})();
 const LIGHTS8=[{x:72,y:38,c:[1,.9,.75],r:6,i:1},{x:82,y:38,c:[1,.9,.75],r:5,i:1},{x:91,y:38,c:[.85,1,.9],r:5,i:1},{x:70,y:53,c:[1,.85,.6],r:5,i:.9,fl:1},{x:98,y:38,c:[1,.3,.2],r:3,i:.6,fl:2}];
 const LIGHTS7=[{x:5,y:7.5,c:[1,.75,.45],r:4,i:.8,fl:1},{x:33,y:7,c:[1,.8,.5],r:4.5,i:.9,fl:2},{x:20,y:36,c:[1,.75,.45],r:5,i:.7},{x:44,y:36,c:[1,.75,.45],r:5,i:.7}];
-const LIGHTS12=[{x:44,y:11,c:[1,.9,.7],r:6,i:.7},{x:30,y:30,c:[1,.86,.6],r:6,i:.5},{x:58,y:30,c:[1,.86,.6],r:6,i:.5},{x:44,y:48,c:[1,.9,.7],r:6,i:.6}];
+const LIGHTS12=[{x:107,y:22,c:[1,.86,.6],r:6,i:.8,fl:1},{x:107,y:32.5,c:[1,.86,.6],r:6,i:.8},{x:79.5,y:9.5,c:[.9,.97,.95],r:3.2,i:.75,fl:1},{x:79.5,y:66.5,c:[.9,.97,.95],r:3.2,i:.75,fl:1},{x:44,y:11,c:[1,.9,.7],r:6,i:.7},{x:30,y:30,c:[1,.86,.6],r:6,i:.5},{x:58,y:30,c:[1,.86,.6],r:6,i:.5},{x:44,y:48,c:[1,.9,.7],r:6,i:.6},
+  {x:76,y:70,c:[1,.9,.7],r:6,i:.6},{x:48,y:72,c:[1,.86,.6],r:6,i:.5},{x:48,y:86,c:[1,.86,.6],r:6,i:.5},{x:20,y:70,c:[1,.9,.7],r:6,i:.6},{x:22,y:84,c:[1,.86,.6],r:6,i:.5}];
 const LIGHTS11=[{x:24,y:9.5,c:[1,.85,.6],r:5,i:1}];
 const LIGHTS10=[{x:77.5,y:77,c:[1,.85,.6],r:5,i:1},{x:48,y:42,c:[1,.92,.8],r:7,i:.8},{x:60,y:40,c:[1,.92,.8],r:7,i:.8},{x:72,y:42,c:[1,.92,.8],r:7,i:.8},{x:55,y:45,c:[1,.92,.8],r:6,i:.6},{x:66,y:45,c:[1,.92,.8],r:6,i:.6}];
 /* per-level config. Render: fog (FOGD), cull (CULL2), ceilH (CEILH), hz (HZ), oob (OOBF), sky() (SKY); defaults in LVDEF0.
@@ -156,8 +158,8 @@ const LIGHTS10=[{x:77.5,y:77,c:[1,.85,.6],r:5,i:1},{x:48,y:42,c:[1,.92,.8],r:7,i
 const LVDEF0={fog:12.5,cull:196,ceilH:1,hz:0,oob:0xff000000,sky:()=>SKYN};
 const LEVELDEF={
   12:{lights:LIGHTS12,start:{x:44,y:51,a:-Math.PI/2},obj:'ВЕРХ',amb:1.5,fog:60,cull:900,ceilH:5,oob:0xffb88a5a,sky:()=>SKYD1,
-    cells(){WH12.fill(0);RAILM.fill(0);for(let i=MW;i<N-MW;i++){const t=TILE[i];if(t!==68&&t!==69)continue;const r=j=>TILE[j]===68||TILE[j]===69;RAILM[i]=(r(i-MW)?1:0)|(r(i+MW)?2:0)|(r(i-1)?4:0)|(r(i+1)?8:0);}for(let i=0;i<N;i++){const c=FLCH[i],t=TILE[i];if(c===47){FLOORTEX[i]=TX.siloF;ZONE[i]=Z_OUT;continue;}if(c===46||t===68||t===69){FLOORTEX[i]=TX.siloF;ZONE[i]=Z_HALL;}CEILTEX[i]=TX.siloC;if(t===66||t===70)TALLOK[i]=1;if(t===70){const x=i%MW,y=(i/MW)|0;WH12[i]=3+((hash2(((x/2)|0)*7+y*13,((y/2)|0)*5+x*3)*4)|0);}}},
-    update(dt){updateSilo(dt);}},
+    cells(){WH12.fill(0);RAILM.fill(0);for(let i=MW;i<N-MW;i++){const t=TILE[i];if(t!==68&&t!==69)continue;const r=j=>TILE[j]===68||TILE[j]===69;RAILM[i]=(r(i-MW)?1:0)|(r(i+MW)?2:0)|(r(i-1)?4:0)|(r(i+1)?8:0);}for(let i=0;i<N;i++){const c=FLCH[i],t=TILE[i];if(c===47){FLOORTEX[i]=TX.siloF;ZONE[i]=Z_OUT;continue;}if(c===118){FLOORTEX[i]=TX.siloHole;CEILTEX[i]=TX.siloC;CEILW[i]=1;continue;}if(c===114)FLOORTEX[i]=TX.siloStep;else if(c===101)FLOORTEX[i]=TX.siloF;if(c===126){CEILTEX[i]=TX.liftCeil;continue;}if(t===12){ZONE[i]=Z_LIFT;FLOORTEX[i]=TX.rubber;CEILTEX[i]=TX.liftCeil;continue;}if(c===46||t===68||t===69){FLOORTEX[i]=TX.siloF;ZONE[i]=Z_HALL;}CEILTEX[i]=TX.siloC;if(t===66||t===70)TALLOK[i]=1;if(t===70){const x=i%MW,y=(i/MW)|0;WH12[i]=3+((hash2(((x/2)|0)*7+y*13,((y/2)|0)*5+x*3)*4)|0);}}},
+    init(){siloInit();},update(dt){updateSilo(dt);}},
   11:{lights:LIGHTS11,start:{x:22.6,y:54.5,a:0},obj:'КЛЮЧ',amb:1.3,fog:40,cull:1600,hz:1,oob:0xff8a8e92,sky:()=>SKYDAY,secrets:1,
     cells(){for(let i=0;i<N;i++){const c=FLCH[i],t=TILE[i];if(c===44)FLOORTEX[i]=TX.lane;else if(c===91){FLOORTEX[i]=TX.goil;CEILTEX[i]=TX.rawc;}else if(c===46||c===59){FLOORTEX[i]=TX.rawf;CEILTEX[i]=TX.rawc;}if(t===1)FLOORTEX[i]=TX.tar;if(t>=51&&t<=55){FLOORTEX[i]=TX.lane;ZONE[i]=Z_OUT;}if(t===62){FLOORTEX[i]=TX.goil;CEILTEX[i]=TX.rawc;ZONE[i]=Z_HALL;}else if(t>=60&&t<=65){FLOORTEX[i]=TX.lane;CEILTEX[i]=TX.rawc;ZONE[i]=Z_OUT;}}
       for(let i=MW;i<N-MW;i++){const t=TILE[i];if(t>=60&&t<=64&&(ZONE[i-1]===Z_HALL||ZONE[i+1]===Z_HALL||ZONE[i-MW]===Z_HALL||ZONE[i+MW]===Z_HALL))CEILW[i]=1;}},
