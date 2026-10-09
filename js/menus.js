@@ -21,7 +21,7 @@ function retryLevel(){const c=G.cp;if(!c||c.level===1){newGame();return;}
   loadLevel(c.level);G.rub=c.rub;G.hasKey=c.hasKey;Object.assign(UP,c.UP);Object.assign(P,{ammo9:c.P.ammo9,shells:c.P.shells,vodka:c.P.vodka,kefir:c.P.kefir||0,has:c.P.has.slice(),w:c.P.w});
   resetLevel(true);G.hasKey=c.hasKey;G.state='play';G.page=null;keys.clear();if(c.level===7&&c.chase){roofSkipToChase();return;}if(c.level===9&&c.metroMid){metroSkipMid();return;}if(c.level===10&&c.crane){siteSkipToCrane();msg('СТРОЙКА · КРАН');return;}if(c.level===10&&c.arena){siteSkipToArena();msg('СТРОЙКА · БРИГАДИР');return;}msg(c.level===10?'СТРОЙКА':c.level===9?'МЕТРО':c.level===8?'ГОРОД':c.level===7?'КРЫША':c.level===2?'ЭТАЖ 2':c.level===4?'ДОМ 11':c.level===5?'ЛЕСТНИЦА':c.level===6?'ЭТАЖ 2':'ПОДВАЛ');}
 function newGame(){G.cp=null;loadLevel(1);resetLevel(false);G.state='play';G.page=null;keys.clear();}
-function nextFloor(){if(G.level>=4){loadLevel(1);resetLevel(true);G.floorN++;G.cp=null;G.state='play';G.page=null;keys.clear();return;}enterLevel(4);msg('ДОМ 11 · ЭТАЖ 1');}
+function nextFloor(){if(G.level===12){siloHome();return;}if(G.level>=4){loadLevel(1);resetLevel(true);G.floorN++;G.cp=null;G.state='play';G.page=null;keys.clear();return;}enterLevel(4);msg('ДОМ 11 · ЭТАЖ 1');}
 function resume(){G.state=G.prevState||'play';G.page=null;keys.clear();}
 function pauseGame(){if(G.state!=='play'&&G.state!=='lift')return;G.prevState=G.state;G.loot=false;G.state='pause';openPage('pause');keys.clear();mouseFire=false;exitLock();}
 const LNAME={1:'ДОМ 9 · ЭТАЖ 1',2:'ДОМ 9 · ЭТАЖ 2',3:'ДОМ 9 · ПОДВАЛ',4:'ДОМ 11 · ЭТАЖ 1',5:'ДОМ 11 · ЛЕСТНИЦА',6:'ДОМ 11 · ЭТАЖ 2',7:'ДОМ 11 · КРЫША',8:'ГОРОД',9:'МЕТРО',10:'СТРОЙКА',11:'ГАРАЖИ',12:'ЭЛЕВАТОР'};

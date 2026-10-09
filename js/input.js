@@ -66,6 +66,7 @@ document.querySelectorAll('[data-dbg]').forEach(b=>b.addEventListener('click',()
   if(a==='kill'){if(G.state==='pause')resume();if(G.state!=='play')return;for(const e of ents)if(e.kind==='enemy'&&!e.dead&&e.k!=='bb'&&e.k!=='gg')killEnemy(e);msg('DEBUG  ВСЕ УБИТЫ');return;}
   if(a==='f4'){if(G.state==='pause')resume();if(G.state!=='play'&&G.state!=='lift')newGame();enterLevel(4);G.loot=false;return;}
   if(a==='f11'){if(G.state==='pause')resume();if(G.state==='talk')talkClose();if(G.state!=='play'&&G.state!=='lift')newGame();enterLevel(11);G.loot=false;msg('ГАРАЖИ');return;}
+  if(a==='sem'){if(G.state==='pause')resume();if(G.state==='talk')talkClose();if(G.state!=='play'&&G.state!=='lift')newGame();enterLevel(12);G.loot=false;P.x=107.5;P.y=74;P.a=-Math.PI/2;return;}
   if(a==='f12'){if(G.state==='pause')resume();if(G.state==='talk')talkClose();if(G.state!=='play'&&G.state!=='lift')newGame();enterLevel(12);G.loot=false;msg('ЭЛЕВАТОР · 1 ЭТАЖ');return;}
   if(a==='f10'||a==='duel'){if(G.state==='pause')resume();if(G.state==='talk')talkClose();if(G.state!=='play'&&G.state!=='lift')newGame();enterLevel(10);G.loot=false;msg('СТРОЙКА');if(a==='duel'){siteSkipToCrane();P.x=CRB.x+2;P.y=CRB.y;}return;}
   if(a==='f9'){if(G.state==='pause')resume();if(G.state==='talk')talkClose();if(G.state!=='play'&&G.state!=='lift')newGame();enterLevel(9);G.loot=false;msg('МЕТРО');return;}

@@ -48,6 +48,7 @@ function take(e){
   switch(e.t){
     case 'kvass':if(P.hp>=maxHP()&&!(P.bleed>0))return false;P.bleed=0;P.hp=Math.min(maxHP(),P.hp+8);msg('КВАС  +8');break;
     case 'pelmeni':if(P.hp>=maxHP()&&!(P.bleed>0))return false;P.bleed=0;P.hp=Math.min(maxHP(),P.hp+20);msg('ПЕЛЬМЕНИ  +20');break;
+    case 'vatnikS':P.seedproof=true;P.armor=Math.max(P.armor,maxAR());msg('ВАТНИК СЕМЁНА — СЕМКИ НЕ БЕРУТ');sfx.ding();G.semWinT=2.6;break;
     case 'vatnik':if(P.armor>=maxAR())return false;P.armor=Math.min(maxAR(),P.armor+50);msg('ВАТНИК  +50 БРОНИ');break;
     case 'ammo9':{if(P.ammo9>=cap9())return false;const n=Math.round(8*am);P.ammo9=Math.min(cap9(),P.ammo9+n);msg('ПАТРОНЫ 9ММ  +'+n);break;}
     case 'ammo9s':{if(P.ammo9>=cap9())return false;const n=Math.round(4*am);P.ammo9=Math.min(cap9(),P.ammo9+n);msg('ПАТРОНЫ 9ММ  +'+n);break;}

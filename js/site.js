@@ -125,6 +125,7 @@ function useAction(){
   if(f.t==='gshut'){sfx.click();msg(pick(['ЗАПЕРТО НАГЛУХО','НА ЗАМКЕ','ЭТОТ НЕ ОТКРЫТЬ']));return;}
   if(f.t==='door'){
     if(f.i===BDOOR&&G.bossOn){sfx.click();msg('ЗАПЕРТО');return;}
+    if(G.level===12&&G.semLock&&f.i===SEM_DOOR){sfx.click();msg('ЗАПЕРТО');return;}
     if(G.level===9&&f.i===G.lockDoor){sfx.click();msg('ЗАПЕРТО');return;}
     if(doorTarget[f.i]<.5){doorTarget[f.i]=1;doorTimer[f.i]=0;sfx.door();if(TILE[f.i]===10&&!FOUND.has(f.i)){FOUND.add(f.i);G.secrets++;msg('ТАЙНИК!');}}
     else if(!occupied(f.i)&&TILE[f.i]!==10&&TILE[f.i]!==62){doorTarget[f.i]=0;sfx.door();}

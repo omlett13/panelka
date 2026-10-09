@@ -73,7 +73,8 @@ function bossMusic(){if(!AU.c)return;const c=AU.c,t=c.currentTime;
   const on=bossFightOn();
   if(on&&!AU.bossSrc&&AU.bossBuf){const src=c.createBufferSource();src.buffer=AU.bossBuf;src.loop=true;src.connect(AU.bossG);src.start();AU.bossSrc=src;AU.bossG.gain.cancelScheduledValues(t);AU.bossG.gain.setTargetAtTime(.6,t,.5);}
   else if(!on&&AU.bossSrc){AU.bossG.gain.setTargetAtTime(0,t,.6);const src=AU.bossSrc;AU.bossSrc=null;try{src.stop(t+1.4);}catch(e){}}
-  else if(on&&AU.bossSrc){AU.bossG.gain.setTargetAtTime(.6,t,.5);}}
+  else if(on&&AU.bossSrc){AU.bossG.gain.setTargetAtTime(.6,t,.5);}
+  if(AU.bossSrc){const rage=G.level===12&&ents.some(e=>e.k==='se'&&e.phase2&&!e.dead);AU.bossSrc.playbackRate.setTargetAtTime(rage?1.18:1,t,.4);}}
 function updateCityAudio(){if(!AU.c||G.level!==8)return;const t=AU.c.currentTime,live=G.state==='play';
   if(!AU.crowd){const c=AU.c,gn=c.createGain();gn.gain.value=0;gn.connect(AU.m);AU.crowd=gn;
     loadMp3('crowd',buf=>{const s=c.createBufferSource();s.buffer=buf;s.loop=true;s.connect(gn);s.start();});}

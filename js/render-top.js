@@ -147,6 +147,8 @@ function frameOf0(e){
   if(e.kind==='item')return {d:SPR[ITEMS[e.t].spr||e.t],sc:ITEMS[e.t].sc};
   if(e.kind==='proj'&&e.hat)return {d:SPR.shHat[(G.t*12|0)%2],sc:.75,lift:.35};
   if(e.kind==='enemy'&&e.k==='sh')return shapkaFrame(e);
+  if(e.kind==='enemy'&&e.k==='se')return semFrame(e);
+  if(e.kind==='enemy'&&e.k==='lz')return luzgaFrame(e);
   if(e.kind==='proj'&&e.big)return {d:SPR.sunhead,sc:1.4,lift:(e.z||0)};
   if(e.kind==='proj')return e.spr?{d:SPR[e.spr],sc:e.spr==='tracer'?.9:.5,lift:e.z!=null?e.z:.3}:{d:SPR.semki,sc:.35,lift:.45};
   if(e.kind==='fx')return {d:SPR[e.t],sc:.45,lift:.3};
@@ -311,6 +313,7 @@ function drawTopOverlay(){
     if(G.clearT>0){g.save();g.globalAlpha=Math.min(1,G.clearT);R(g,'rgba(6,8,10,.75)',70,78,260,58);stxt(g,'ПОДЪЕЗД ЗАЧИЩЕН',200,88,VFD,'center',16);stxt(g,'КЛЮЧ ОТ ПОДВАЛА',200,114,WARN,'center');g.restore();}
     if(G.state==='play')for(const e of ents)if(e.kind==='enemy'&&KINDS[e.k].boss&&e.alert&&!e.dead){stxt(g,e.phase2?(KINDS[e.k].name+' В ЯРОСТИ'):(KINDS[e.k].name||'БАТЯ'),200,10,e.phase2?'#ff7a2a':DANGER,'center');R(g,'#1a0a08',130,22,140,5);R(g,DANGER,130,22,Math.max(0,e.hp/e.max)*140|0,5);}
   }
+  if(G.semCard>0&&G.level===12){g.save();g.globalAlpha=Math.min(1,G.semCard,(3.2-G.semCard)*3);R(g,'rgba(6,8,10,.75)',0,150,W,46);stxt(g,'СЕМЁН',200,156,WARN,'center',16);stxt(g,'ГЛАВНЫЙ ПО СЕМКАМ',200,180,'#d8d4c8','center');g.restore();}
   if(G.state==='lift'&&G.statsT>0){
     g.save();g.globalAlpha=Math.min(1,G.statsT);R(g,'rgba(6,8,10,.72)',112,34,176,92);
     stxt(g,'ЭТАЖ ПРОЙДЕН',200,42,VFD,'center');
@@ -326,7 +329,8 @@ function drawTopOverlay(){
   if(G.state==='pause'){g.fillStyle='rgba(6,8,10,'+(G.page==='settings'?.15:.6)+')';g.fillRect(0,0,W,H);if(G.page!=='settings')stxt(g,'ПАУЗА',200,108,WARN,'center',16);}
   if(G.state==='dead'){g.fillStyle='rgba(90,6,4,'+Math.min(.6,G.deadT*.5).toFixed(3)+')';g.fillRect(0,0,W,H);if(G.deadT>.6)stxt(g,G.dropDead?'СОРВАЛСЯ':'ТЕБЯ УЛОЖИЛИ',200,104,DANGER,'center',16);}
   if(G.state==='win'){g.fillStyle='rgba(6,8,10,.82)';g.fillRect(0,0,W,H);
-    if(G.level===11){stxt(g,'ГАРАЖИ ПРОЙДЕНЫ',200,60,VFD,'center',16);stxt(g,'КООПЕРАТИВ ЗАКРЫТ',200,92,WARN,'center',16);stxt(g,'СЕКРЕТЫ: '+G.secrets+'/1',200,112,G.secrets?VFD:'#d8d4c8','center');stxt(g,'ДАЛЬШЕ — СКОРО',200,130,'#d8d4c8','center');stxt(g,'ДАЛЬШЕ — СНОВА ДОМ 9',200,146,'#d8d4c8','center');}
+    if(G.level===12){stxt(g,'ЭЛЕВАТОР ПРОЙДЕН',200,56,VFD,'center',16);stxt(g,'СЕМЁН СЛОЖИЛСЯ',200,86,WARN,'center',16);stxt(g,'СЕКРЕТЫ: '+G.secrets+'/1',200,112,G.secrets?VFD:'#d8d4c8','center');stxt(g,'ВАТНИК: СЕМКИ НЕ БЕРУТ',200,128,VFD,'center');stxt(g,'ДАЛЬШЕ — ГАРАЖИ, ЗАКАТ',200,148,'#d8d4c8','center');}
+    else if(G.level===11){stxt(g,'ГАРАЖИ ПРОЙДЕНЫ',200,60,VFD,'center',16);stxt(g,'КООПЕРАТИВ ЗАКРЫТ',200,92,WARN,'center',16);stxt(g,'СЕКРЕТЫ: '+G.secrets+'/1',200,112,G.secrets?VFD:'#d8d4c8','center');stxt(g,'ДАЛЬШЕ — СКОРО',200,130,'#d8d4c8','center');stxt(g,'ДАЛЬШЕ — СНОВА ДОМ 9',200,146,'#d8d4c8','center');}
     else if(G.level===10){stxt(g,'СТРОЙКА СДАНА',200,60,VFD,'center',16);stxt(g,'ОБРЕЗ ВЕРНУЛСЯ',200,92,WARN,'center',16);stxt(g,'ДАЛЬШЕ — СКОРО',200,126,'#d8d4c8','center');stxt(g,'ДАЛЬШЕ — СНОВА ДОМ 9',200,146,'#d8d4c8','center');}
     else if(G.level===9){stxt(g,'СТРОЙКА',200,60,VFD,'center',16);stxt(g,'СКОРО',200,92,WARN,'center',16);stxt(g,'КРАНЫ СТОЯТ. БРИГАДИР ЖДЁТ.',200,126,'#d8d4c8','center');stxt(g,'ДАЛЬШЕ — СНОВА ДОМ 9',200,146,'#d8d4c8','center');}
     else if(G.level===7){stxt(g,'ДОМ 11 ПРОЙДЕН',200,64,VFD,'center',16);stxt(g,'С КРЫШИ — В СЕНО. ОСТАЛСЯ ПМ',200,98,WARN,'center');stxt(g,'УЛИЦА — СКОРО',200,126,'#d8d4c8','center');stxt(g,'ДАЛЬШЕ — СНОВА ДОМ 9',200,146,'#d8d4c8','center');}

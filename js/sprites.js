@@ -437,3 +437,54 @@ const ART={};
   SPR.shHat=[0,1].map(f=>bake(g=>{const r=rng(677);if(f){R(g,F2,30,30,5,22);}else{R(g,F2,10,39,44,4);}ell(g,F2,32,41,15,6);ell(g,F1,32,40,13,4);R(g,F1,26,34,12,4);fur(g,r,18,34,28,12,24);}));
   SPR.shHatG=bake(g=>{const r=rng(678);bowl(g,r,32,56,14,6,0,true);seeds(g,r,10,58,44,6,18);});
 })();
+/* СЕМЁН (ЭЛЕВАТОР boss): a reed of a man — big round ribcage on a 3-pixel waist, stick limbs, flat cap, one cheek full of seeds.
+   Drawn narrow in the 64px frame and scaled 1.4 by KINDS.se, so he's taller than everyone but half as wide.
+   p2: jacket off, ribs and stuck husks show, angry brows */
+(function(){const SK='#d4a888',SKD='#a87a5c',SKS='#8a5e44',BL='#2a46a8',BLD='#1c3278',ST='#eeeeee',CAP='#3a4048',CAPD='#262a30',SH='#d8d8d8',HUSK=['#1a1a14','#3a3020','#d8d0b8'];
+  function head(g,hx,hy,face,p2){R(g,SK,hx,hy+2,8,9);R(g,SKS,hx,hy+5,2,5);R(g,SKS,hx+6,hy+5,2,4);R(g,SKD,hx+2,hy+10,4,1);
+    if(face==='puff'){R(g,SK,hx-2,hy+5,3,5);R(g,SK,hx+7,hy+4,4,6);}else{R(g,SK,hx+7,hy+5,3,4);R(g,SKD,hx+9,hy+6,1,3);}   // one cheek stuffed
+    R(g,'#101010',hx+2,hy+5,1,1);R(g,'#101010',hx+5,hy+5,1,1);EYE(g,'#101010',hx+2,hy+5,1,1);EYE(g,'#101010',hx+5,hy+5,1,1);
+    if(p2){R(g,'#3a1a10',hx+1,hy+3,3,1);R(g,'#3a1a10',hx+4,hy+3,3,1);R(g,'#3a1a10',hx+1,hy+4,1,1);R(g,'#3a1a10',hx+6,hy+4,1,1);}else R(g,SKD,hx+1,hy+4,6,1);
+    if(face==='open'){R(g,'#3a0d0d',hx+2,hy+8,4,3);}else if(face==='cough'){R(g,'#3a0d0d',hx+3,hy+8,2,2);}else if(face==='chew'){R(g,'#5a3022',hx+3,hy+9,3,1);}else R(g,'#5a3022',hx+2,hy+8,4,1);
+    R(g,CAP,hx-1,hy,10,3);R(g,CAPD,hx-1,hy+2,10,1);R(g,CAP,hx+7,hy+2,4,1);}
+  function seeds(g,r,x,y,w,h,n){for(let i=0;i<n;i++){const sx=x+((r()*w)|0),sy=y+((r()*h)|0);R(g,HUSK[0],sx,sy,2,1);if(r()<.5)R(g,HUSK[2],sx+1,sy,1,1);}}
+  function body(g,r,o){const {dx=0,p2=false,face='',arms='down',lean=0,knees=0}=o;const cx=32+dx;
+    // legs: two sticks with stripes, sneakers
+    const ly=40+knees;R(g,BL,cx-3,ly,2,61-ly);R(g,BL,cx+1,ly,2,61-ly);R(g,ST,cx-3,ly,1,61-ly);R(g,ST,cx+2,ly,1,61-ly);R(g,SH,cx-5,61,4,2);R(g,SH,cx+1,61,4,2);
+    R(g,BL,cx-4,37+knees,8,4);R(g,BLD,cx-4,40+knees,8,1);                   // hips
+    const tx=cx+lean;R(g,p2?SK:BL,tx-1,30,3,8);                                // the 3-pixel waist
+    // ribcage: a barrel on a stick
+    if(p2){R(g,SK,tx-6,18,13,12);R(g,SK,tx-5,17,11,1);R(g,SK,tx-5,30,11,1);for(let y=19;y<29;y+=2){R(g,SKS,tx-6,y,4,1);R(g,SKS,tx+3,y,4,1);}R(g,SKD,tx,18,1,12);}
+    else{R(g,BL,tx-7,17,15,14);R(g,BLD,tx-7,29,15,2);R(g,ST,tx,17,1,14);R(g,'#c8c8c8',tx,20,1,1);R(g,BLD,tx-7,17,1,14);R(g,BLD,tx+7,17,1,14);}
+    // arms: two sticks
+    const AR=p2?SK:BL;
+    if(arms==='down'){R(g,AR,tx-9,18,2,22);R(g,AR,tx+8,18,2,22);if(!p2){R(g,ST,tx-9,18,1,22);R(g,ST,tx+9,18,1,22);}R(g,SK,tx-9,40,2,3);R(g,SK,tx+8,40,2,3);}
+    else if(arms==='out'){R(g,AR,tx-20,18,12,2);R(g,AR,tx+8,18,12,2);if(!p2){R(g,ST,tx-20,18,12,1);R(g,ST,tx+8,18,12,1);}R(g,SK,tx-22,18,2,2);R(g,SK,tx+20,18,2,2);}
+    else if(arms==='mouth'){R(g,AR,tx-9,18,2,12);R(g,AR,tx-9,18,6,2);R(g,SK,tx-3,13,2,3);R(g,AR,tx+8,18,2,22);R(g,SK,tx+8,40,2,3);}
+    R(g,SK,tx-1+(face==='cough'?2:0),14,2,4);                                 // long neck
+    head(g,tx-4+(face==='cough'?3:0),3+(face==='cough'?3:0),face,p2);
+    if(p2)seeds(g,r,tx-7,17,15,24,16);}
+  const S=SPR.se={};
+  for(const p2 of [false,true]){const k=p2?'2':'',rr=()=>rng(681);
+    S['stand'+k]=bakeH(g=>body(g,rr(),{p2}));
+    S['chew'+k]=bakeH(g=>body(g,rr(),{p2,face:'chew'}));
+    S['swayL'+k]=bakeH(g=>body(g,rr(),{p2,lean:-2}));
+    S['swayR'+k]=bakeH(g=>body(g,rr(),{p2,lean:2,face:'chew'}));
+    S['walk1'+k]=bakeH(g=>body(g,rr(),{p2,dx:-1,lean:1}));
+    S['walk2'+k]=bakeH(g=>body(g,rr(),{p2,dx:1,lean:-1}));
+    S['puff'+k]=bakeH(g=>body(g,rr(),{p2,face:'puff'}));
+    S['attack'+k]=bakeH(g=>{const r=rr();body(g,r,{p2,face:'open'});seeds(g,r,24,6,16,10,10);});
+    S['cough'+k]=bakeH(g=>body(g,rr(),{p2,face:'cough',arms:'mouth',lean:2}));
+    S['spin1'+k]=bakeH(g=>{const r=rr();body(g,r,{p2,face:'open',arms:'out'});seeds(g,r,8,10,48,8,8);});
+    S['spin2'+k]=bakeH(g=>{const r=rr();body(g,r,{p2,face:'open',arms:'out',lean:1});seeds(g,r,8,12,48,8,8);});
+    S['fold'+k]=bake(g=>{const r=rr();R(g,BL,29,48,2,13);R(g,BL,33,48,2,13);R(g,SH,27,61,4,2);R(g,SH,33,61,4,2);R(g,p2?SK:BL,22,40,14,10);R(g,SK,18,46,6,7);R(g,CAP,17,45,8,2);R(g,p2?SK:BL,20,49,2,12);seeds(g,r,16,38,24,24,p2?18:6);});}
+  S.sit=bakeH(g=>{const r=rng(682);R(g,'#c8b88a',18,50,28,12);R(g,'#a89868',18,58,28,4);R(g,'#8a7a50',30,50,1,12);
+    R(g,BL,24,44,16,4);R(g,BL,24,44,2,17);R(g,BL,38,44,2,17);R(g,ST,24,44,1,17);R(g,ST,39,44,1,17);R(g,SH,22,61,4,2);R(g,SH,38,61,4,2);
+    R(g,BL,25,27,15,17);R(g,ST,32,27,1,17);R(g,BL,23,28,2,15);R(g,BL,40,28,2,15);R(g,SK,23,43,2,2);R(g,SK,40,43,2,2);R(g,SK,31,24,2,4);head(g,28,13,'chew',false);seeds(g,r,30,38,8,6,3);});
+  S.rise=bakeH(g=>body(g,rng(683),{knees:8,lean:-1,face:'chew'}));
+  S.pile=bake(g=>{const r=rng(684);g.fillStyle='#2a2216';g.beginPath();g.ellipse(32,58,22,7,0,0,7);g.fill();g.fillStyle='#3a3020';g.beginPath();g.ellipse(32,56,16,6,0,0,7);g.fill();seeds(g,r,10,50,44,13,60);R(g,CAP,38,52,8,2);});
+  SPR.husk=bake(g=>{R(g,'#1a1a14',29,30,6,3);R(g,'#3a3020',30,29,4,1);R(g,'#d8d0b8',33,30,1,2);});
+  /* Лузга-малые: husk kids in blue rags, only in the Семён fight */
+  const PL={suit:'#2a3a7a',top:'#34449a',stripe:'#1c2a5a',skin:'#c4946e',hair:'#2a1e12',shoe:'#3a3024'};SPR.lz={};
+  for(const p of ['stand','walk1','walk2','attack','spit','dead'])SPR.lz[p]=bakeH(g=>{const r=rng(685);drawGop(g,p,PL);if(p!=='dead'){R(g,'#1a2450',21,38,4,3);R(g,'#1a2450',37,36,4,4);seeds(g,r,20,20,24,30,10);}});
+})();

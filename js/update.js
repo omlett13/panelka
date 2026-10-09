@@ -101,6 +101,8 @@ function updateEnemy(e,dt){
   if(K.ctrl){updateCtrl(e,dt);return;}
   if(K.harkun){updateHarkun(e,dt);return;}
   if(K.shapka){updateShapka(e,dt);return;}
+  if(K.semyon){updateSemyon(e,dt);return;}
+  if(K.luzga){updateLuzga(e,dt);return;}
   if(K.ochered){updateOchered(e,dt);return;}
   if(K.semyanka){updateSemyanka(e,dt);return;}
   if(K.storozh){updateStorozh(e,dt);return;}

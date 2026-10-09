@@ -62,6 +62,7 @@ function drawLoot(g){
   txt(g,'СНАРЯГА',6,96,DIM);drawGear(g,108);
   txt(g,'РУБ '+G.rub,314,96,VFD,'right');
   if(P.kefir)txt(g,'КЕФИР x'+P.kefir,314,86,LABEL,'right');
+  if(P.seedproof)txt(g,'ВАТНИК: СЕМКИ НЕ БЕРУТ',6,86,VFD);
   drawSlots(g,G.lootSlot>=0?G.lootSlot:(G.lootCur>=LN?G.lootCur-LN:-1));
 }
 function drawShopBottom(g){
@@ -81,7 +82,7 @@ function renderBottom(){
   if(G.state==='breaker')return drawBreakerBottom(g);
   if(G.state==='keypad')return drawKeypadBottom(g);
   if(G.loot)return drawLoot(g);
-  if(G.barkT>0)txt(g,G.bark,6,4,WARN);else if(G.msgT>0)txt(g,G.msg,6,4,LABEL);else txt(g,(G.level===3?'':G.level===10?'':G.level===9?'МЕТРО · ':G.level===8?'ГОРОД · ':G.level>=4?'ДОМ 11 · ':'ЭТАЖ '+G.level+' · ')+zoneName(),6,4,LABEL);
+  if(G.barkT>0)txt(g,G.bark,6,4,WARN);else if(G.msgT>0)txt(g,G.msg,6,4,LABEL);else txt(g,(G.level===3?'':G.level===10?'':G.level===9?'МЕТРО · ':G.level===8?'ГОРОД · ':G.level>=11?'':G.level>=4?'ДОМ 11 · ':'ЭТАЖ '+G.level+' · ')+zoneName(),6,4,LABEL);
   txt(g,fmtTime(G.time),314,4,VFD,'right');
   /* left column */
   R(g,'#0b0f0e',18,20,44,44);frame(g,18,20,44,44,'#2c4a40');drawFace(g,20,22);
@@ -142,7 +143,7 @@ function bottomMenu(g){
   if(G.page==='controls'){CONTROLS.forEach(([a,b],i)=>{txt(g,a,16,26+i*17,VFD);txt(g,b,304,26+i*17,LABEL,'right');});}
   if(G.page==='dead'||G.page==='win'||G.page==='liftChoice'){
     txt(g,G.page==='dead'?'ПОПРОБУЙ ЕЩЕ':G.page==='liftChoice'?'КУДА ЕДЕМ?':'ДОМ ЗАЧИЩЕН',160,40,G.page==='dead'?DANGER:WARN,'center');
-    txt(g,G.page==='win'?'РУБЛИ '+G.rub+'   ВОДКА x'+P.vodka:G.page==='dead'?'СНОВА: '+(G.cp&&G.cp.level===2?'ЭТАЖ 2':G.cp&&G.cp.level===3?'ПОДВАЛ':G.cp&&G.cp.level===4?'ДОМ 11':G.cp&&G.cp.level===5?'ЛЕСТНИЦА':G.cp&&G.cp.level===6?'ДОМ 11 · ЭТАЖ 2':G.cp&&G.cp.level===7?'КРЫША':G.cp&&G.cp.level===8?'ГОРОД':G.cp&&G.cp.level===9?'МЕТРО':G.cp&&G.cp.level===10?'СТРОЙКА':'ЭТАЖ 1'):'ГОПНИКИ '+G.kills+'/'+G.killTotal+'   ВРЕМЯ '+fmtTime(G.time),160,70,LABEL,'center');
+    txt(g,G.page==='win'?'РУБЛИ '+G.rub+'   ВОДКА x'+P.vodka:G.page==='dead'?'СНОВА: '+(G.cp&&G.cp.level===2?'ЭТАЖ 2':G.cp&&G.cp.level===3?'ПОДВАЛ':G.cp&&G.cp.level===4?'ДОМ 11':G.cp&&G.cp.level===5?'ЛЕСТНИЦА':G.cp&&G.cp.level===6?'ДОМ 11 · ЭТАЖ 2':G.cp&&G.cp.level===7?'КРЫША':G.cp&&G.cp.level===8?'ГОРОД':G.cp&&G.cp.level===9?'МЕТРО':G.cp&&G.cp.level===10?'СТРОЙКА':G.cp&&G.cp.level===11?'ГАРАЖИ':G.cp&&G.cp.level===12?'ЭЛЕВАТОР':'ЭТАЖ 1'):'ГОПНИКИ '+G.kills+'/'+G.killTotal+'   ВРЕМЯ '+fmtTime(G.time),160,70,LABEL,'center');
     if(G.page==='dead'&&G.deadT<.6)return;}
   rows.forEach(r=>{const sel=G.sel===r.i;R(g,sel?'#1e2e29':'#141b19',r.x,r.y,r.w,r.h);frame(g,r.x,r.y,r.w,r.h,sel?VFD:'#22362f');
     txt(g,MENUS[G.page][r.i],r.x+r.w/2,r.y+7,sel?VFD:LABEL,'center');});

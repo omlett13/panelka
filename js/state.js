@@ -5,7 +5,7 @@
    - runState(): progress for one playthrough, reset by resetLevel(false) (new game, level select, menu);
    - levelState(): everything that belongs to the current level, reset by every resetLevel.
    Add new fields to one of these, never ad hoc. With ?debug, touching an undeclared field warns. */
-const runState=()=>({rub:0,floorN:1,candy:0,foundHQ:false,gReturn:null});
+const runState=()=>({rub:0,floorN:1,candy:0,foundHQ:false,gReturn:null,sunset:false});
 const levelState=()=>({
   time:0,kills:0,killTotal:0,items:0,itemTotal:0,secrets:0,msg:'',msgT:0,bark:'',barkT:0,flash:0,hurt:0,bonus:0,power:false,trans:null,loot:false,
   cleared:false,bossOn:false,healT:6,brawlUsed:false,firstDeadT:-1,clearT:0,face:null,goo:0,grab:null,grannyN:0,
@@ -15,7 +15,7 @@ const levelState=()=>({
   outside:false,siteDone:false,trainMove:false,departed:false,departT:0,ghostOn:false,ghostDone:false,ghostEnd:false,ghostT:0,lockDoor:-1,wave:null, // metro
   brig:null,siteEnd:0,obrezEnt:null,arena:false,breach:false,breachHole:false,                  // site
   gkey:false,gateOpen:false,garDone:false,knock:null,seedFound:false,                                    // garages
-  siloCage:false});                                                                          // silo
+  siloCage:false,semOn:false,semCard:0,semLock:false,semWinT:0});                                                                          // silo
 const G=watchKeys('G',Object.assign({
   state:'menu',page:'main',sel:0,parent:'main',prevState:'play',t:0,deadT:0,zoom:0,winTime:0,navT:0,hadLock:false,noiseT:0,god:false,
   lootHeld:-1,lootSlot:-1,lootCur:0,statsT:0,rideT:0,rideDing:false,rideTarget:0,hiT:0,talk:null,noteI:0,house:9,
@@ -23,7 +23,7 @@ const G=watchKeys('G',Object.assign({
   level:1,secretTotal:0,hasKey:false,cp:null,menuCam:null,menuLoad:false,menuLvl:1,shotId:0,
   dawn:0 // roof sunrise; deliberately carried into later levels (nofog sprites use it)
 },runState(),levelState()));
-const P={x:3.5,y:18.5,a:-0.9,hp:100,armor:0,ammo9:8,shells:0,has:[1,1,0],w:1,cool:0,anim:9,punch:0,bob:0,bobAmt:0,camZ:.5,switchT:0,faceHurt:0,faceGrin:0,faceLook:0,faceLookT:0,stepPh:0,vodka:0,throwT:0,kefir:0};
+const P={x:3.5,y:18.5,a:-0.9,hp:100,armor:0,ammo9:8,shells:0,has:[1,1,0],w:1,cool:0,anim:9,punch:0,bob:0,bobAmt:0,camZ:.5,switchT:0,faceHurt:0,faceGrin:0,faceLook:0,faceLookT:0,stepPh:0,vodka:0,throwT:0,kefir:0,seedproof:false};
 const UP={kastet:0,tt:0,dvust:0,krossy:0,vest:0,bando:0,salo:0,tapok2:0,gvozd:0};
 const maxHP=()=>UP.salo?125:100,maxAR=()=>UP.vest?150:100,cap9=()=>UP.bando?150:99,capS=()=>UP.bando?60:40;
 /* quick-slots on the bottom screen: 0 fist, 1 pistol, 2 shotgun, 3 vodka, 4 use, 5 slipper */
@@ -53,6 +53,8 @@ const KINDS={
   hk:{who:'ХАРКУН',hp:80,speed:1.7,reach:1.1,dmg:[6,9],wind:.3,rate:1.1,sight:9,scale:1.3,pitch:120,idle:'stand',harkun:1,bark:['Хрр-тьфу!','Подходи ближе!','Полный рот!']},
   oc:{who:'ОЧЕРЕДНИК',hp:34,speed:2.4,reach:0,dmg:[3,5],wind:.3,rate:1.6,sight:12,scale:1,pitch:200,idle:'stand',ochered:1,bark:['Тр-р-р-р!','Очередь держи!','Щёлк-щёлк-щёлк!']},
   sy:{who:'СЕМЯНКА',hp:130,speed:1.3,reach:1.1,dmg:[6,9],wind:.6,rate:2.4,sight:13,scale:1.35,pitch:95,idle:'stand',semyanka:1,bark:['Шляпку лови!','С горкой!','На, подсолнух!']},
+  se:{who:'СЕМЁН',name:'СЕМЁН',hp:2700,speed:1.5,reach:0,dmg:[4,7],wind:.6,rate:1,sight:30,scale:1.4,pitch:82,idle:'stand',boss:1,semyon:1,rad:.2,bark:['Тьфу.','…','Хрум.','Ш-ш-ш…']},
+  lz:{who:'ЛУЗГА',hp:22,speed:3.4,reach:.85,dmg:[4,6],wind:.2,rate:.8,sight:30,scale:.55,pitch:290,idle:'stand',luzga:1,minion:1,rad:.2,bark:['']},
   sh:{who:'ШАПКА',hp:30,speed:1.8,reach:0,dmg:[6,9],wind:.4,rate:1.2,sight:11,scale:1.05,pitch:150,idle:'stand',shapka:1,bark:['Шапку не трожь!','Семки — в шапке!','Ушанка — бронь!','Лови, пока горячие!']},
   mx:{who:'МЕХАНИК',hp:48,speed:2.3,reach:1.1,dmg:[10,15],wind:.32,rate:.8,sight:9,scale:1.05,pitch:115,idle:'stand',bark:['Ключ на двенадцать!','Не трожь машину!','Ща подкручу тебе!','Карбюратор не дам!']},
   kd:{who:'МАЛОЙ',hp:14,speed:3.6,reach:.9,dmg:[4,7],wind:.22,rate:.6,sight:10,scale:.62,pitch:270,idle:'stand',jumper:1,kid:1,rad:.24,bark:['Дядя, лови!','Петушка хочешь?','Ха-ха, попался!']},
@@ -74,7 +76,7 @@ const KINDS={
 const PROPS={crane:{sc:11,block:.9},craneX:{sc:4,block:0},scaff:{sc:3.4,block:.12},pipe:{sc:1.3,block:.55},pipes:{sc:2.3,block:1.05},carP:{sc:1.55,block:.85},carP2:{sc:1.55,block:.85},carW:{sc:1.5,block:.8},tires:{sc:.9,block:.4},husks:{sc:.7,block:0},sack:{sc:1,block:.45},seedpile:{sc:1.1,block:0},conveyor:{sc:1.3,block:.5},flywheel:{sc:1.7,block:.6},motor:{sc:1.15,block:.5},panel:{sc:1.1,block:.4},hlamp:{sc:1.1,block:0},silo:{sc:5.2,block:1},ladder:{sc:1.5,block:0},cabinet:{sc:1.25,block:.45},ibeam:{sc:2.4,block:.35},valve:{sc:.9,block:0},duct:{sc:1.8,block:0},mixer:{sc:1.6,block:.6},bricks:{sc:1,block:.45},rebar:{sc:.9,block:.3},sand:{sc:1.1,block:.5},slab:{sc:1.3,block:.45},kassa:{sc:.95,block:.45},turnstile:{sc:1,block:.35},msign:{sc:2.2,block:.12},tseat:{sc:.9,block:.3},tpole:{sc:1,block:.1},lenin:{sc:4.2,block:.9},fountain:{sc:2.8,block:.9},tramstop:{sc:2.2,block:.4},chess:{sc:.8,block:.3},counter:{sc:1,block:.5},stall:{sc:1.8,block:.7},antenna:{sc:2.2,block:.1},truck:{sc:2.5,block:.95},birch:{sc:3,block:.22},lamp:{sc:2.6,block:.15},bench:{sc:1,block:.42},urn:{sc:1,block:.26},bottle:{sc:.6,block:0},bulb:{sc:1,block:0},dealer:{sc:1.05,block:.32},
   couch:{sc:1,block:.45},table:{sc:1,block:.38},tv:{sc:.9,block:.3},stove:{sc:1,block:.35},chand:{sc:1,block:0},laundry:{sc:1,block:0},rubble:{sc:.8,block:0},rail:{sc:1,block:0},furnace:{sc:1,block:.4},throne:{sc:1.3,block:.5},rug:{sc:1.6,block:0},flamp:{sc:1.5,block:.15},barrel:{sc:1,block:.3},coalpile:{sc:1,block:.4},crate:{sc:1,block:.35},jars:{sc:1,block:0},pump:{sc:1,block:.4},
   leaves:{sc:1,block:0},broom:{sc:1.3,block:0},poplar:{sc:3.8,block:.2},fir:{sc:2.8,block:.35},deadtree:{sc:3,block:.2},appletree:{sc:2.6,block:.3},rocket:{sc:2.6,block:.45},carousel:{sc:1.3,block:.7},sandbox:{sc:1,block:.5}};
-const ITEMS={pmGround:{sc:1},kvass:{sc:.7},pelmeni:{sc:.7},vatnik:{sc:.8},ammo9:{sc:.7},ammo9s:{sc:.5,spr:'ammo9'},shells:{sc:.7},obrez:{sc:.9},rub:{sc:.45,money:1},rubS:{sc:.6,spr:'rub',money:1},safe:{sc:.8,money:1},vodkaI:{sc:.6},note1:{sc:.5,spr:'note',lore:1},note2:{sc:.5,spr:'note',lore:1},note3:{sc:.5,spr:'note',lore:1},note4:{sc:.5,spr:'note',lore:1},note5:{sc:.5,spr:'note',lore:1},note6:{sc:.5,spr:'note',lore:1},note7:{sc:.5,spr:'note',lore:1},note8:{sc:.5,spr:'note',lore:1},
+const ITEMS={pmGround:{sc:1},kvass:{sc:.7},pelmeni:{sc:.7},vatnik:{sc:.8},vatnikS:{sc:.9,spr:'vatnik'},ammo9:{sc:.7},ammo9s:{sc:.5,spr:'ammo9'},shells:{sc:.7},obrez:{sc:.9},rub:{sc:.45,money:1},rubS:{sc:.6,spr:'rub',money:1},safe:{sc:.8,money:1},vodkaI:{sc:.6},note1:{sc:.5,spr:'note',lore:1},note2:{sc:.5,spr:'note',lore:1},note3:{sc:.5,spr:'note',lore:1},note4:{sc:.5,spr:'note',lore:1},note5:{sc:.5,spr:'note',lore:1},note6:{sc:.5,spr:'note',lore:1},note7:{sc:.5,spr:'note',lore:1},note8:{sc:.5,spr:'note',lore:1},
   note12:{sc:.5,spr:'note',lore:1},flatkey:{sc:.55,spr:'liftkey'},fuse:{sc:.6},liftkey:{sc:.55},tapok:{sc:.8},apple:{sc:.45},gkey:{sc:.55,spr:'liftkey'}};
 const NOTES=[
  {id:'note1',title:'ДВОР НА ЛЕНИНА',kind:'ГАЗЕТА «ВЕЧЕРНИЙ ГОРОД»',text:['Жильцы дома 9 снова жалуются','на подростков во дворе.','Лампочки в подъезде бьют,','почтовые ящики жгут.','Милиция приезжала дважды.','Уехала — один раз.']},
@@ -163,7 +165,7 @@ const LEVELDEF={
       /* walls that touch open sky count as outdoors, so no ceiling is drawn on top of them */
       for(let i=MW;i<N-MW;i++){const t=TILE[i];if(t===0||t===70)continue;for(const o of [1,-1,MW,-MW])if(TILE[i+o]===0&&ZONE[i+o]===Z_OUT){ZONE[i]=Z_OUT;break;}}},
     init(){siloInit();},update(dt){updateSilo(dt);}},
-  11:{lights:LIGHTS11,start:{x:22.6,y:54.5,a:0},obj:'КЛЮЧ',amb:1.3,fog:40,cull:1600,hz:1,oob:0xff8a8e92,sky:()=>SKYDAY,secrets:1,
+  11:{lights:LIGHTS11,start:{x:22.6,y:54.5,a:0},obj:'КЛЮЧ',amb:1.3,fog:40,cull:1600,hz:1,oob:0xff8a8e92,sky:()=>G.sunset?SKYD1:SKYDAY,secrets:1,
     cells(){for(let i=0;i<N;i++){const c=FLCH[i],t=TILE[i];if(c===44)FLOORTEX[i]=TX.lane;else if(c===91){FLOORTEX[i]=TX.goil;CEILTEX[i]=TX.rawc;}else if(c===46||c===59){FLOORTEX[i]=TX.rawf;CEILTEX[i]=TX.rawc;}if(t===1)FLOORTEX[i]=TX.tar;if(t>=51&&t<=55){FLOORTEX[i]=TX.lane;ZONE[i]=Z_OUT;}if(t===62){FLOORTEX[i]=TX.goil;CEILTEX[i]=TX.rawc;ZONE[i]=Z_HALL;}else if(t>=60&&t<=65){FLOORTEX[i]=TX.lane;CEILTEX[i]=TX.rawc;ZONE[i]=Z_OUT;}}
       for(let i=MW;i<N-MW;i++){const t=TILE[i];if(t>=60&&t<=64&&(ZONE[i-1]===Z_HALL||ZONE[i+1]===Z_HALL||ZONE[i-MW]===Z_HALL||ZONE[i+MW]===Z_HALL))CEILW[i]=1;}},
     init(){garInit();},update(dt){updateGar(dt);}},
@@ -268,7 +270,7 @@ function updateLights(t){
   LR.set(BR_);LG.set(BG_);LB.set(BB_);
   for(const l of LIGHTS){const f=flick(l,t);for(let k=0;k<l.cells.length;k++){const c=l.cells[k],w=l.w[k]*f;LR[c]+=w*l.c[0];LG[c]+=w*l.c[1];LB[c]+=w*l.c[2];}}
   for(const i of DOORS){let r=0,g=0,b=0,n=0;for(const o of [1,-1,MW,-MW]){const j=i+o;if(j>=0&&j<N&&TILE[j]===0){r+=LR[j];g+=LG[j];b+=LB[j];n++;}}if(n){LR[i]=r/n;LG[i]=g/n;LB[i]=b/n;}}
-  if(G.level===8||G.level===9||G.level===10||G.level===11){const L10=G.level===10||G.level===11;for(let i=0;i<N;i++){const z=ZONE[i];if(z===Z_OUT||z===Z_WATER||(L10&&TILE[i]!==0&&TILE[i]!==62)){LR[i]+=178;LG[i]+=172;LB[i]+=156;}else if(L10&&z===Z_HALL){const q=G.level===11?48:70;LR[i]+=q;LG[i]+=q*.97;LB[i]+=q*.9;}}}
+  if(G.level===8||G.level===9||G.level===10||G.level===11){const L10=G.level===10||G.level===11,SS=G.level===11&&G.sunset,dr=SS?210:178,dg=SS?138:172,db=SS?100:156;for(let i=0;i<N;i++){const z=ZONE[i];if(z===Z_OUT||z===Z_WATER||(L10&&TILE[i]!==0&&TILE[i]!==62)){LR[i]+=dr;LG[i]+=dg;LB[i]+=db;}else if(L10&&z===Z_HALL){const q=G.level===11?48:70;LR[i]+=q;LG[i]+=q*.97;LB[i]+=q*.9;}}}
   if(G.level===12)for(let i=0;i<N;i++){LR[i]+=SUNR[i];LG[i]+=SUNG[i];LB[i]+=SUNB[i];}
   if(G.level===7){const d=G.dawn||0,ar=d*125,ag=d*88,ab=d*78;for(let i=0;i<N;i++)if(ZONE[i]===Z_OUT||ZONE[i]===Z_VOID){LR[i]+=ar;LG[i]+=ag;LB[i]+=ab;}
     const h=RF.heli;if(h&&RF.spot){const cx=h.x,cy=h.y,rr=2.8;for(let y=Math.max(0,(cy-rr)|0);y<=Math.min(MH-1,(cy+rr)|0);y++)for(let x=Math.max(0,(cx-rr)|0);x<=Math.min(MW-1,(cx+rr)|0);x++){const dd=Math.hypot(x+.5-cx,y+.5-cy);if(dd<rr){const w=Math.pow(1-dd/rr,1.3)*230;const i=y*MW+x;LR[i]+=w;LG[i]+=w;LB[i]+=w*.95;}}}}
@@ -283,7 +285,7 @@ function resetLevel(keep){
   const D=DIFF[SET.diff];
   ents=[];
   doorOpen.fill(0);doorTarget.fill(0);doorTimer.fill(0);SEEN.fill(0);
-  if(!keep){Object.assign(G,runState());for(const k in UP)UP[k]=0;Object.assign(P,{ammo9:8,shells:0,has:[1,1,0,0],w:1,vodka:0,kefir:0});}
+  if(!keep){Object.assign(G,runState());for(const k in UP)UP[k]=0;Object.assign(P,{ammo9:8,shells:0,has:[1,1,0,0],w:1,vodka:0,kefir:0,seedproof:false});}
   else{P.ammo9=Math.max(P.ammo9,8);}
   const ST=LEVELDEF[G.level].start;G.hasKey=G.hasKey&&keep;G.code=[1,2,3].map(()=>1+((Math.random()*9)|0));
   Object.assign(P,{x:ST.x,y:ST.y,a:ST.a,bleed:0,hp:maxHP(),armor:UP.vest?50:0,cool:0,anim:9,punch:0,bob:0,bobAmt:0,camZ:.5,switchT:0,faceHurt:0,faceGrin:0,throwT:0});
