@@ -96,7 +96,7 @@ function updateDoors(dt){
     if(TILE[i]!==10&&TILE[i]!==42&&TILE[i]!==50&&TILE[i]!==62&&doorTarget[i]===1&&doorOpen[i]>=1){doorTimer[i]+=dt;if(doorTimer[i]>5&&!occupied(i)){doorTarget[i]=0;doorTimer[i]=0;if(Math.hypot((i%MW)+.5-P.x,((i/MW)|0)+.5-P.y)<8)sfx.door();}}}
 }
 function updateEnemy(e,dt){
-  if(e.dead)return;const K=KINDS[e.k],D=DIFF[SET.diff];e.pain-=dt;e.cool-=dt;if(e.buffT>0){e.buffT-=dt;e.cool-=dt*.6;}
+  if(e.dead)return;if(G.level===12&&siloArea(e.x,e.y)!==siloArea(P.x,P.y))return;const K=KINDS[e.k],D=DIFF[SET.diff];e.pain-=dt;e.cool-=dt;if(e.buffT>0){e.buffT-=dt;e.cool-=dt*.6;}
   if(K.rf){if(e.k==='gt')updateGuitar(e,dt);else if(e.k==='dz')updateDancer(e,dt);return;}
   if(K.ctrl){updateCtrl(e,dt);return;}
   if(K.harkun){updateHarkun(e,dt);return;}

@@ -9,23 +9,29 @@ function updateHarkun(e,dt){const K=KINDS.hk,D=DIFF[SET.diff],dx=P.x-e.x,dy=P.y-
   if(e.see&&d<5&&e.cool<=0){e.state='spitWind';e.t=K.wind;G.bark='ХАРКУН: «'+pick(K.bark)+'»';G.barkT=1.4;return;}
   let vx=dx/d,vy=dy/d;if(!e.see){const n=flowNext(e.x|0,e.y|0);if(n){const tx=n[0]+.5-e.x,ty=n[1]+.5-e.y,l=Math.hypot(tx,ty)||1;vx=tx/l;vy=ty/l;}}
   if(d>3.4||!e.see){const ox=e.x,oy=e.y,wob=Math.sin(G.time*3+e.id)*.4,s=K.speed*D.spd;moveBody(e,(vx-vy*wob)*s,(vy+vx*wob)*s,dt,e.rad);e.walk+=Math.hypot(e.x-ox,e.y-oy)*3;}}
-/* floor 1 is rows <61, floor 2 rows 63+, the stairwell tower is x>=88 (13x13 inside, like Дом 11).
+/* floor 1 is rows <61, floor 2 rows 63+, the stairwell tower is x>=88 (13x13 inside, like Дом 11), floor 3 (boss arena + the climb to it) is x>=88, y>=38.
    Each floor has an old-style lift (Y walls, P panel, Z door, '~' cabin) that is broken: inside it tells you to take the stairs.
-   'e' = doorway between areas: floor 1 <-> stairwell bottom, stairwell top <-> floor 2. 'r' = stair flights. 'v' = dark holes */
-const SILO_UP={x:11.5,y:90},SILO_F2=61,SILO_SW=88;
-const SILO_GO={f1:{x:102,y:32.5,a:0},swB:{x:76,y:10.5,a:Math.PI/2},swT:{x:76,y:67.5,a:Math.PI/2},f2:{x:102,y:25,a:-Math.PI/2}};
-let SILO_DOORS=[];
-function siloInit(){SILO_DOORS=[];for(let i=0;i<N;i++)if(TILE[i]===12)SILO_DOORS.push({i,x:i%MW+.5,y:((i/MW)|0)-1.5,t:0});}
+   'e' = doorway between areas: floor 1 <-> stairwell bottom, stairwell top <-> floor 2, floor 2 south-west nook <-> foot of the climb to floor 3.
+   'r' = stair flights. 'v' = dark holes. Floor 3: 'm' / ';' = conveyor belts that carry you (and enemies) east / west,
+   '[' = the crusher each belt runs into (instant death).
+   Enemies only act while the player is in their area, so ones left on another floor stay quiet */
+const SILO_F2=61,SILO_SW=88,SILO_F3=38;
+const SILO_GO={f1:{x:102,y:32.5,a:0},swB:{x:76,y:10.5,a:Math.PI/2},swT:{x:76,y:67.5,a:Math.PI/2},f2:{x:102,y:25,a:-Math.PI/2},f2up:{x:107.5,y:91.5,a:-Math.PI/2},f3:{x:11.5,y:87.5,a:-Math.PI/2}};
+const SILO_MSG={swT:'ЭЛЕВАТОР · 2 ЭТАЖ',swB:'ЭЛЕВАТОР · 1 ЭТАЖ',f2up:'ЭЛЕВАТОР · 3 ЭТАЖ',f3:'ЭЛЕВАТОР · 2 ЭТАЖ'};
+let SILO_DOORS=[],SILO_BELT=[],SILO_CRUSH=[];
+function siloArea(x,y){return x>=SILO_SW?(y>=SILO_F3?3:4):y<SILO_F2?1:2;}
+function siloInit(){SILO_DOORS=[];SILO_BELT=[];for(let i=0;i<N;i++){if(TILE[i]===12)SILO_DOORS.push({i,x:i%MW+.5,y:((i/MW)|0)-1.5,t:0});if(FLCH[i]===109||FLCH[i]===59)SILO_BELT.push(i);if(FLCH[i]===91)SILO_CRUSH.push(i);}}
+function beltDir(x,y){const c=FLCH[(y|0)*MW+(x|0)];return c===109?1:c===59?-1:0;}
 function siloBroken(){sfx.clunk();G.shake=.2;G.msgT=0;msg('ЛИФТ СЛОМАН · ИДИ ПО ЛЕСТНИЦЕ');}
-function siloStairs(){const k=P.x>=SILO_SW?(P.y<30?'swT':'swB'):P.y<SILO_F2?'f1':'f2',T=SILO_GO[k];keys.clear();mouseFire=false;sfx.door();
-  transition(()=>{P.x=T.x;P.y=T.y;P.a=T.a;P.bobAmt=0;lure=null;msg(k==='swT'?'ЭЛЕВАТОР · 2 ЭТАЖ':k==='swB'?'ЭЛЕВАТОР · 1 ЭТАЖ':'ЛЕСТНИЦА');computeFlow();},.6);}
+function siloStairs(){const k=P.x>=SILO_SW?(P.y>=SILO_F3?'f3':P.y<30?'swT':'swB'):P.y<SILO_F2?'f1':P.x<40?'f2up':'f2',T=SILO_GO[k];keys.clear();mouseFire=false;sfx.door();
+  transition(()=>{P.x=T.x;P.y=T.y;P.a=T.a;P.bobAmt=0;lure=null;msg(SILO_MSG[k]||'ЛЕСТНИЦА');computeFlow();},.6);}
 function updateSilo(dt){
   const c=FLCH[(P.y|0)*MW+(P.x|0)];
   if(c===101&&!G.trans){siloStairs();return;}
   if(c===126){if(!G.siloCage){G.siloCage=true;siloBroken();}else if(!(G.msgT>0))msg('ЛИФТ СЛОМАН · ИДИ ПО ЛЕСТНИЦЕ');}else G.siloCage=false;
   for(const d of SILO_DOORS){if(doorTarget[d.i]<.5){d.t=0;continue;}doorTimer[d.i]=-999;
     if(Math.hypot(P.x-d.x,P.y-d.y)<3.2){d.t=0;continue;}d.t+=dt;if(d.t>3&&!occupied(d.i)){doorTarget[d.i]=0;d.t=0;sfx.door();}}
-  if(Math.hypot(P.x-SILO_UP.x,P.y-SILO_UP.y)<2.2){if(!(G.msgT>0))msg('ЛЕСТНИЦА НАВЕРХ · СКОРО');}
+  if(SILO_BELT.length&&siloArea(P.x,P.y)===3)siloFloor3(dt);
   if(P.y>58.2&&P.y<SILO_F2&&P.x<SILO_SW&&G.gReturn){const r=G.gReturn;G.gReturn=null;keys.clear();transition(()=>{enterLevel(11);P.x=r.x;P.y=r.y+1;P.a=Math.PI/2;msg('ГАРАЖИ');},.6);}}
 /* ШАПКА: hides under a giant seed-filled ушанка (bullets thud off), pops up (tell), dumps a 50° fan of семки, then stands
    refilling it — the window to hit him. Every ~8 s at 4–12 tiles he throws the hat like a boomerang instead: bald, he can't
@@ -64,3 +70,9 @@ function shapkaDie(e){const h=e.hat;if(h&&!h.dead){h.dead=true;ents.push({kind:'
 function shapkaFrame(e){const S=SPR.sh,w=((e.walk|0)%2)?'walk1':'walk2';let p;
   if(e.dead)p=e.bald?'deadB':'dead';else if(!e.alert)p='stand';else if(e.state==='hide'||e.state==='pop'||e.state==='spray'||e.state==='open')p=e.state;else if(e.state==='catch')p='open';else if(e.bald)p='b'+w;else p=w;
   return {d:S[p],sc:KINDS.sh.scale,tint:e.pain>0&&!e.dead};}
+/* floor 3 machinery: belts carry everything toward the crushers */
+function siloFloor3(dt){const f=(G.time*12|0)&3,fc=(G.time*16|0)&1;for(const i of SILO_BELT)FLOORTEX[i]=FLCH[i]===109?TX.siloBelt[f]:TX.siloBeltW[f];for(const i of SILO_CRUSH)FLOORTEX[i]=TX.siloCrush[fc];
+  const b=beltDir(P.x,P.y);if(b)moveBody(P,b*2.4,0,dt,.24);
+  if(FLCH[(P.y|0)*MW+(P.x|0)]===91&&G.state==='play'&&!G.god){msg('ДРОБИЛКА!');sfx.smash();G.shake=.6;spawnFx('blood',P.x,P.y,.6);hurtPlayer(999);}
+  for(const e of ents){if(e.kind!=='enemy'||e.dead)continue;const be=beltDir(e.x,e.y);if(be)moveBody(e,be*2.4,0,dt,e.rad);
+    if(FLCH[(e.y|0)*MW+(e.x|0)]===91&&!KINDS[e.k].boss){spawnFx('blood',e.x,e.y,.6);sfx.smash();killEnemy(e);}}}

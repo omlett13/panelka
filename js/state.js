@@ -150,7 +150,7 @@ const LIGHTS9=(function(){const L=[],W=[1,.85,.6],C=[.85,.9,1];L.push({x:8,y:8,c
     {x:110,y:44.5,c:[1,.8,.55],r:7,i:1.1,fl:1},{x:119,y:44.5,c:[1,.8,.55],r:7,i:1.1},{x:101.5,y:49.5,c:[1,.8,.55],r:6,i:1},{x:101.5,y:59.5,c:[1,.8,.55],r:6,i:1,fl:2},{x:111.5,y:59.5,c:[1,.8,.55],r:6,i:1},{x:111.5,y:53.5,c:[1,.8,.55],r:6,i:1});return L;})();
 const LIGHTS8=[{x:72,y:38,c:[1,.9,.75],r:6,i:1},{x:82,y:38,c:[1,.9,.75],r:5,i:1},{x:91,y:38,c:[.85,1,.9],r:5,i:1},{x:70,y:53,c:[1,.85,.6],r:5,i:.9,fl:1},{x:98,y:38,c:[1,.3,.2],r:3,i:.6,fl:2}];
 const LIGHTS7=[{x:5,y:7.5,c:[1,.75,.45],r:4,i:.8,fl:1},{x:33,y:7,c:[1,.8,.5],r:4.5,i:.9,fl:2},{x:20,y:36,c:[1,.75,.45],r:5,i:.7},{x:44,y:36,c:[1,.75,.45],r:5,i:.7}];
-const LIGHTS12=[{x:107,y:22,c:[1,.86,.6],r:6,i:.8,fl:1},{x:107,y:32.5,c:[1,.86,.6],r:6,i:.8},{x:79.5,y:9.5,c:[.9,.97,.95],r:3.2,i:.75,fl:1},{x:79.5,y:66.5,c:[.9,.97,.95],r:3.2,i:.75,fl:1},{x:44,y:11,c:[1,.9,.7],r:6,i:.7},{x:30,y:30,c:[1,.86,.6],r:6,i:.5},{x:58,y:30,c:[1,.86,.6],r:6,i:.5},{x:44,y:48,c:[1,.9,.7],r:6,i:.6},
+const LIGHTS12=[{x:121.5,y:54,c:[1,.25,.15],r:4,i:.9,fl:2},{x:95.5,y:58,c:[1,.25,.15],r:4,i:.9,fl:2},{x:121.5,y:62,c:[1,.25,.15],r:4,i:.9,fl:2},{x:95.5,y:66,c:[1,.25,.15],r:4,i:.9,fl:2},{x:121.5,y:70,c:[1,.25,.15],r:4,i:.9,fl:2},{x:108,y:56,c:[1,.86,.6],r:8,i:.6},{x:100,y:66,c:[1,.86,.6],r:7,i:.6,fl:1},{x:116,y:66,c:[1,.86,.6],r:7,i:.6},{x:108,y:72,c:[1,.5,.25],r:6,i:.7,fl:3},{x:107,y:79,c:[1,.86,.6],r:5,i:.8,fl:1},{x:107,y:90,c:[1,.86,.6],r:5,i:.7},{x:107,y:22,c:[1,.86,.6],r:6,i:.8,fl:1},{x:107,y:32.5,c:[1,.86,.6],r:6,i:.8},{x:79.5,y:9.5,c:[.9,.97,.95],r:3.2,i:.75,fl:1},{x:79.5,y:66.5,c:[.9,.97,.95],r:3.2,i:.75,fl:1},{x:44,y:11,c:[1,.9,.7],r:6,i:.7},{x:30,y:30,c:[1,.86,.6],r:6,i:.5},{x:58,y:30,c:[1,.86,.6],r:6,i:.5},{x:44,y:48,c:[1,.9,.7],r:6,i:.6},
   {x:76,y:70,c:[1,.9,.7],r:6,i:.6},{x:48,y:72,c:[1,.86,.6],r:6,i:.5},{x:48,y:86,c:[1,.86,.6],r:6,i:.5},{x:20,y:70,c:[1,.9,.7],r:6,i:.6},{x:22,y:84,c:[1,.86,.6],r:6,i:.5}];
 const LIGHTS11=[{x:24,y:9.5,c:[1,.85,.6],r:5,i:1}];
 const LIGHTS10=[{x:77.5,y:77,c:[1,.85,.6],r:5,i:1},{x:48,y:42,c:[1,.92,.8],r:7,i:.8},{x:60,y:40,c:[1,.92,.8],r:7,i:.8},{x:72,y:42,c:[1,.92,.8],r:7,i:.8},{x:55,y:45,c:[1,.92,.8],r:6,i:.6},{x:66,y:45,c:[1,.92,.8],r:6,i:.6}];
@@ -159,7 +159,9 @@ const LIGHTS10=[{x:77.5,y:77,c:[1,.85,.6],r:5,i:1},{x:48,y:42,c:[1,.92,.8],r:7,i
 const LVDEF0={fog:12.5,cull:196,ceilH:1,hz:0,oob:0xff000000,sky:()=>SKYN};
 const LEVELDEF={
   12:{lights:LIGHTS12,start:{x:44,y:51,a:-Math.PI/2},obj:'ВЕРХ',amb:1.5,fog:60,cull:900,ceilH:5,oob:0xffb88a5a,sky:()=>SKYD1,
-    cells(){WH12.fill(0);RAILM.fill(0);for(let i=MW;i<N-MW;i++){const t=TILE[i];if(t!==68&&t!==69)continue;const r=j=>TILE[j]===68||TILE[j]===69;RAILM[i]=(r(i-MW)?1:0)|(r(i+MW)?2:0)|(r(i-1)?4:0)|(r(i+1)?8:0);}for(let i=0;i<N;i++){const c=FLCH[i],t=TILE[i];if(c===47){FLOORTEX[i]=TX.siloF;ZONE[i]=Z_OUT;continue;}if(c===118){FLOORTEX[i]=TX.siloHole;CEILTEX[i]=TX.siloC;CEILW[i]=1;continue;}if(c===114)FLOORTEX[i]=TX.siloStep;else if(c===101)FLOORTEX[i]=TX.siloF;if(c===126){CEILTEX[i]=TX.liftCeil;continue;}if(t===12){ZONE[i]=Z_LIFT;FLOORTEX[i]=TX.rubber;CEILTEX[i]=TX.liftCeil;continue;}if(c===46||t===68||t===69){FLOORTEX[i]=TX.siloF;ZONE[i]=Z_HALL;}CEILTEX[i]=TX.siloC;if(t===66||t===70)TALLOK[i]=1;if(t===70){const x=i%MW,y=(i/MW)|0;WH12[i]=3+((hash2(((x/2)|0)*7+y*13,((y/2)|0)*5+x*3)*4)|0);}}},
+    cells(){WH12.fill(0);RAILM.fill(0);for(let i=MW;i<N-MW;i++){const t=TILE[i];if(t!==68&&t!==69)continue;const r=j=>TILE[j]===68||TILE[j]===69;RAILM[i]=(r(i-MW)?1:0)|(r(i+MW)?2:0)|(r(i-1)?4:0)|(r(i+1)?8:0);}for(let i=0;i<N;i++){const c=FLCH[i],t=TILE[i];if(c===47){FLOORTEX[i]=TX.siloF;ZONE[i]=Z_OUT;continue;}if(c===118){FLOORTEX[i]=TX.siloHole;CEILTEX[i]=TX.siloC;CEILW[i]=1;continue;}if(c===109)FLOORTEX[i]=TX.siloBelt[0];else if(c===59)FLOORTEX[i]=TX.siloBeltW[0];else if(c===91)FLOORTEX[i]=TX.siloCrush[0];if(c===114)FLOORTEX[i]=TX.siloStep;else if(c===101)FLOORTEX[i]=TX.siloF;if(c===126){CEILTEX[i]=TX.liftCeil;continue;}if(t===12){ZONE[i]=Z_LIFT;FLOORTEX[i]=TX.rubber;CEILTEX[i]=TX.liftCeil;continue;}if(c===46||t===68||t===69){FLOORTEX[i]=TX.siloF;ZONE[i]=Z_HALL;}CEILTEX[i]=TX.siloC;if(t===66||t===70)TALLOK[i]=1;if(t===70){const x=i%MW,y=(i/MW)|0;WH12[i]=3+((hash2(((x/2)|0)*7+y*13,((y/2)|0)*5+x*3)*4)|0);if(x>=SILO_SW&&y>=SILO_F3&&y<45){WH12[i]=2;ZONE[i]=Z_OUT;}}}
+      /* walls that touch open sky count as outdoors, so no ceiling is drawn on top of them */
+      for(let i=MW;i<N-MW;i++){const t=TILE[i];if(t===0||t===70)continue;for(const o of [1,-1,MW,-MW])if(TILE[i+o]===0&&ZONE[i+o]===Z_OUT){ZONE[i]=Z_OUT;break;}}},
     init(){siloInit();},update(dt){updateSilo(dt);}},
   11:{lights:LIGHTS11,start:{x:22.6,y:54.5,a:0},obj:'КЛЮЧ',amb:1.3,fog:40,cull:1600,hz:1,oob:0xff8a8e92,sky:()=>SKYDAY,secrets:1,
     cells(){for(let i=0;i<N;i++){const c=FLCH[i],t=TILE[i];if(c===44)FLOORTEX[i]=TX.lane;else if(c===91){FLOORTEX[i]=TX.goil;CEILTEX[i]=TX.rawc;}else if(c===46||c===59){FLOORTEX[i]=TX.rawf;CEILTEX[i]=TX.rawc;}if(t===1)FLOORTEX[i]=TX.tar;if(t>=51&&t<=55){FLOORTEX[i]=TX.lane;ZONE[i]=Z_OUT;}if(t===62){FLOORTEX[i]=TX.goil;CEILTEX[i]=TX.rawc;ZONE[i]=Z_HALL;}else if(t>=60&&t<=65){FLOORTEX[i]=TX.lane;CEILTEX[i]=TX.rawc;ZONE[i]=Z_OUT;}}
@@ -198,10 +200,17 @@ const LEVELDEF={
 let LIGHTS=[];
 const AMB=[[.16,.17,.27],[.2,.22,.2],[.19,.16,.12],[.06,.06,.06],[.34,.33,.3],[.12,.13,.2],[.36,.32,.28],[.05,.07,.08],[.12,.06,.03]];
 const BR_=new Float32Array(N),BG_=new Float32Array(N),BB_=new Float32Array(N),LR=new Float32Array(N),LG=new Float32Array(N),LB=new Float32Array(N);
+/* ЭЛЕВАТОР sunlight is static: trace it once per level load (was every frame) */
+const SUNR=new Float32Array(N),SUNG=new Float32Array(N),SUNB=new Float32Array(N);
+function bakeSun12(){const DX=-.94,DY=-.34;for(let i=0;i<N;i++){const x=i%MW,y=(i/MW)|0,t=TILE[i];
+    if(t!==0&&t!==68&&t!==69){SUNR[i]=150;SUNG[i]=124;SUNB[i]=104;continue;}if(ZONE[i]===Z_OUT){SUNR[i]=300;SUNG[i]=200;SUNB[i]=110;continue;}
+    let sun=0,fx=x+.5,fy=y+.5;for(let d=.5;d<20;d+=.5){fx+=DX*.5;fy+=DY*.5;const cx=fx|0,cy=fy|0;if(cx<0||cy<0||cx>=MW||cy>=MH)break;const c=cy*MW+cx,tt=TILE[c];if((ZONE[c]===Z_OUT&&tt===0)||tt===70){sun=Math.max(0,1-d/22);break;}if(tt===66||tt===67)break;}
+    const f=Math.max(0,Math.min(1,(60-x)/50))*.35+.15;SUNR[i]=sun*300+f*90+44;SUNG[i]=sun*190+f*70+44;SUNB[i]=sun*80+f*50+60;}}
 function initLights(){
   BR_.fill(0);BG_.fill(0);BB_.fill(0);
   const am=(LEVELDEF[G.level]&&LEVELDEF[G.level].amb)||1;
   for(let i=0;i<N;i++){const z=ZONE[i];if(TILE[i]===0&&z>=0&&z!==Z_LIFT){BR_[i]=AMB[z][0]*256*am;BG_[i]=AMB[z][1]*256*am;BB_[i]=AMB[z][2]*256*am;}else if(TILE[i]===0&&z===Z_LIFT){BR_[i]=AMB[z][0]*256;BG_[i]=AMB[z][1]*256;BB_[i]=AMB[z][2]*256;}}
+  if(G.level===12)bakeSun12();
   for(const l of LIGHTS){l.cells=[];l.w=[];const room=ROOM[(l.y|0)*MW+(l.x|0)];
     for(let i=0;i<N;i++){if(ROOM[i]!==room||room<0)continue;const cx=i%MW+.5,cy=((i/MW)|0)+.5,d=Math.hypot(cx-l.x,cy-l.y);if(d>=l.r)continue;l.cells.push(i);l.w.push(Math.pow(1-d/l.r,2)*l.i*256);}}
 }
@@ -260,8 +269,7 @@ function updateLights(t){
   for(const l of LIGHTS){const f=flick(l,t);for(let k=0;k<l.cells.length;k++){const c=l.cells[k],w=l.w[k]*f;LR[c]+=w*l.c[0];LG[c]+=w*l.c[1];LB[c]+=w*l.c[2];}}
   for(const i of DOORS){let r=0,g=0,b=0,n=0;for(const o of [1,-1,MW,-MW]){const j=i+o;if(j>=0&&j<N&&TILE[j]===0){r+=LR[j];g+=LG[j];b+=LB[j];n++;}}if(n){LR[i]=r/n;LG[i]=g/n;LB[i]=b/n;}}
   if(G.level===8||G.level===9||G.level===10||G.level===11){const L10=G.level===10||G.level===11;for(let i=0;i<N;i++){const z=ZONE[i];if(z===Z_OUT||z===Z_WATER||(L10&&TILE[i]!==0&&TILE[i]!==62)){LR[i]+=178;LG[i]+=172;LB[i]+=156;}else if(L10&&z===Z_HALL){const q=G.level===11?48:70;LR[i]+=q;LG[i]+=q*.97;LB[i]+=q*.9;}}}
-  if(G.level===12){const DX=-.94,DY=-.34;for(let i=0;i<N;i++){const x=i%MW,y=(i/MW)|0;if(ZONE[i]===Z_OUT){LR[i]+=300;LG[i]+=200;LB[i]+=110;continue;}let sun=0;if(TILE[i]===0||TILE[i]===68||TILE[i]===69){let fx=x+.5,fy=y+.5;for(let d=.5;d<20;d+=.5){fx+=DX*.5;fy+=DY*.5;const cx=fx|0,cy=fy|0;if(cx<0||cy<0||cx>=MW||cy>=MH)break;const c=cy*MW+cx,tt=TILE[c];if(ZONE[c]===Z_OUT||tt===70){sun=Math.max(0,1-d/22);break;}if(tt===66||tt===67)break;}}
-    const f=Math.max(0,Math.min(1,(60-x)/50))*.35+.15;if(TILE[i]!==0&&TILE[i]!==68&&TILE[i]!==69){LR[i]+=150;LG[i]+=124;LB[i]+=104;continue;}LR[i]+=sun*300+f*90+44;LG[i]+=sun*190+f*70+44;LB[i]+=sun*80+f*50+60;}}
+  if(G.level===12)for(let i=0;i<N;i++){LR[i]+=SUNR[i];LG[i]+=SUNG[i];LB[i]+=SUNB[i];}
   if(G.level===7){const d=G.dawn||0,ar=d*125,ag=d*88,ab=d*78;for(let i=0;i<N;i++)if(ZONE[i]===Z_OUT||ZONE[i]===Z_VOID){LR[i]+=ar;LG[i]+=ag;LB[i]+=ab;}
     const h=RF.heli;if(h&&RF.spot){const cx=h.x,cy=h.y,rr=2.8;for(let y=Math.max(0,(cy-rr)|0);y<=Math.min(MH-1,(cy+rr)|0);y++)for(let x=Math.max(0,(cx-rr)|0);x<=Math.min(MW-1,(cx+rr)|0);x++){const dd=Math.hypot(x+.5-cx,y+.5-cy);if(dd<rr){const w=Math.pow(1-dd/rr,1.3)*230;const i=y*MW+x;LR[i]+=w;LG[i]+=w;LB[i]+=w*.95;}}}}
   const bm=BRIGHT[SET.bright];if(bm!==1)for(let i=0;i<N;i++){LR[i]*=bm;LG[i]*=bm;LB[i]*=bm;}

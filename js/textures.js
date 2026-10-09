@@ -246,6 +246,15 @@ function siteTextures(){
    TX.siloShaft=bake(g=>{const r=rng(669);R(g,'#5e6466',0,0,64,64);for(let x=0;x<64;x+=16){R(g,'#4a5052',x,0,2,64);R(g,'#727a7c',x+2,0,1,64);}R(g,'#4a5052',0,31,64,2);R(g,'#727a7c',0,33,64,1);
      for(let x=6;x<64;x+=16)for(let y=4;y<64;y+=28){R(g,'#3a3e40',x,y,2,2);R(g,'#8a9294',x,y,1,1);R(g,'#3a3e40',x+4,y,2,2);R(g,'#8a9294',x+4,y,1,1);}
      for(let i=0;i<8;i++){const x=(r()*62)|0,y=(r()*40)|0;R(g,'rgba(120,64,24,.5)',x,y,1+((r()*2)|0),6+((r()*16)|0));}for(let i=0;i<50;i++)R(g,'rgba(30,30,30,.25)',(r()*64)|0,(r()*64)|0,2,1);});
+   /* floor 3 conveyor belt: 4 frames, the ribs slide along x so the belt visibly runs */
+   const belt=(g,f)=>{R(g,'#2c2a26',0,0,64,64);for(let x=0;x<64;x+=8){const q=(x+f*16)&63;R(g,'#1c1a18',q,0,3,64);R(g,'#4a4640',(q+3)&63,0,1,64);}
+     for(let k=0;k<2;k++){const ax=(20+k*32+f*16)&63;poly(g,'#c8a030',[[ax,24],[ax+8,32],[ax,40],[ax-3,40],[ax+5,32],[ax-3,24]]);}R(g,'#6a6258',0,0,64,2);R(g,'#6a6258',0,62,64,2);};
+   TX.siloBelt=[0,1,2,3].map(f=>bake(g=>belt(g,f)));
+   TX.siloBeltW=[0,1,2,3].map(f=>bake(g=>{g.translate(64,0);g.scale(-1,1);belt(g,f);}));
+   /* crusher at the end of each belt: two toothed rollers turning, hazard stripes */
+   TX.siloCrush=[0,1].map(f=>bake(g=>{R(g,'#140c0a',0,0,64,64);for(let y=-8;y<64;y+=8)poly(g,'#d8b030',[[0,y],[6,y],[0,y+6]]);for(let y=-8;y<64;y+=8)poly(g,'#d8b030',[[64,y+4],[58,y+4],[64,y+10]]);
+     for(const cx of [22,42]){R(g,'#4a4a4e',cx-8,0,16,64);for(let y=(f*4+(cx>30?4:0))%8;y<64;y+=8){R(g,'#9a9aa2',cx-8,y,16,2);R(g,'#c8c8d0',cx-8,y,3,2);}R(g,'#2a2a2e',cx-8,0,1,64);}
+     R(g,'#6a1010',30,0,4,64);for(let i=0;i<10;i++)R(g,'#8a1a12',28+((i*7)%8),(i*13)%64,2,2);}));
    TX.liftPanelR=bake(g=>{const r=rng(667);tLiftPanel(g,rng(62));R(g,'#0c0807',39,7,16,9);R(g,'#1e1612',40,8,5,1);
      for(let j=0;j<5;j++)for(let i=0;i<2;i++){const x=41+i*8,y=20+j*7;R(g,'#5a3418',x,y,5,5);R(g,r()<.5?'#8a4a1e':'#7a5030',x+1+((r()*3)|0),y+1+((r()*3)|0),2,2);R(g,'#3a200e',x,y+4,5,1);if(r()<.6)R(g,'rgba(110,60,25,.6)',x+2,y+5,1,2+((r()*4)|0));}
      for(let i=0;i<30;i++)R(g,r()<.5?'rgba(120,64,24,.55)':'rgba(70,40,18,.5)',36+((r()*22)|0),4+((r()*56)|0),1+((r()*2)|0),1+((r()*3)|0));});

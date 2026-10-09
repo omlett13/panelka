@@ -48,7 +48,7 @@ function renderTop(){
       if((t>=51&&t<=55)||t===57||(L10R&&(t===49||(t===2&&OUTP)))||(L11R&&(t===62||t===63||t===64||((t===60||t===61||t===65)&&(OUTP||BEX[x]<1e8))))||(L12R&&t>=68&&t<=70)){const hh=t===70?WH12[ci]*.5:(LOWB[t]?LOWB[t][4]:9);if(LOWN<12&&!(lowFull>camZ&&hh<=lowFull)){if(t===68||t===69){const m=RAILM[ci];if((m&3)||!(m&12)){LOWC[LOWN]=ci;LOWP[LOWN]=prev;LOWT[LOWN]=68;LOWN++;}if((m&12)&&LOWN<12){LOWC[LOWN]=ci;LOWP[LOWN]=prev;LOWT[LOWN]=69;LOWN++;}}else{LOWC[LOWN]=ci;LOWP[LOWN]=prev;LOWT[LOWN]=t;LOWN++;}const B2=LOWB[t];if(B2&&t!==62&&B2[0]===0&&B2[1]===1&&B2[2]===0&&B2[3]===1&&!(B2[6]>0)&&hh>lowFull)lowFull=hh;}SEEN[ci]=1;prev=ci;continue;}
       if(ISD[t]&&!(L11R&&t===62)){const o=doorOpen[ci];if(o>0){const pd=side===0?sdx-ddx:sdy-ddy;let w=side===0?py+pd*rdy:px+pd*rdx;w-=Math.floor(w);if(w<o){
         /* open doorway in a tall facade: remember it so the wall above the door still gets drawn */
-        if(ovI<0&&((TALLOK[ci]&&(ZONE[prev]===Z_OUT||ZONE[prev]===Z_VOID))||(RZON&&t===12))){ovD=pd;ovI=ci;ovSide=side;let q=(w*64)|0;if(q>63)q=63;if((side===0&&rdx<0)||(side===1&&rdy>0))q=63-q;ovTx=q;}
+        if(ovI<0&&((TALLOK[ci]&&(ZONE[prev]===Z_OUT||ZONE[prev]===Z_VOID))||(RZON&&(t===12||t===7)))){ovD=pd;ovI=ci;ovSide=side;let q=(w*64)|0;if(q>63)q=63;if((side===0&&rdx<0)||(side===1&&rdy>0))q=63-q;ovTx=q;}
         if(RZON&&cabIn<0&&ZONE[ci]===Z_LIFT)cabIn=pd;SEEN[ci]=1;prev=ci;continue;}}dOff=o;}
       SEEN[ci]=1;hitT=t;hitI=ci;break;
     }
@@ -103,13 +103,13 @@ function renderTop(){
     for(let y=y0;y<=y1;y++){if(y>=hA&&y<hB)continue;
       const v=(fl-y)*inv;let s=v|0;if(s>=st)s=st-1;let ty=63-(((v-s)*64)|0);if(ty<0)ty=0;
       let tex=base,lr=lr0,lg=lg0,lb=lb0;
-      let cx2=tx;if(G.level===12&&(hitT===66||(s>0&&hitT===71))){tex=TX.siloW;cx2=tx;}else if(RZON&&s>0&&hitT>=11&&hitT<=13){tex=TX.siloShaft;cx2=tx;}else if(tall&&(s>0||!base)&&hitT!==48){if(hitT===56||hitT===50||hitT===58){tex=s===4?TX.skelTop:TX.skelF[WINV[hitI*5+s]&1];cx2=txU;}else{tex=TX.panel[WINV[hitI*5+s]];cx2=txU;if(s>0&&!L10D){lr=ur;lg=ug;lb=ub;}}}
+      let cx2=tx;if(G.level===12&&(hitT===66||(s>0&&hitT===71))){tex=TX.siloW;cx2=tx;}else if(RZON&&s>0&&hitT>=11&&hitT<=13){tex=TX.siloShaft;cx2=tx;}else if(RZON&&s>0&&hitT===7){tex=TX.siloW;cx2=tx;}else if(tall&&(s>0||!base)&&hitT!==48){if(hitT===56||hitT===50||hitT===58){tex=s===4?TX.skelTop:TX.skelF[WINV[hitI*5+s]&1];cx2=txU;}else{tex=TX.panel[WINV[hitI*5+s]];cx2=txU;if(s>0&&!L10D){lr=ur;lg=ug;lb=ub;}}}
       const c=tex[(ty<<6)|cx2];if(c===0)continue;
       const tw=tW?tW*TROW[y]:0;FB[y*RW+x]=(c>>>24)===254?sh(c,fe,fe,fe):sh(c,(lr+tw)|0,(lg+tw*.95)|0,(lb+tw*.8)|0);if(hk)FB[y*RW+x]=hzA(FB[y*RW+x],hr,hg,hb);
     }
     if(ovI>=0&&ovD<perp){const d=Math.max(.05,ovD),lh=RPROJ/d,f2=RHOR+camZ*lh,ya=Math.max(0,Math.ceil(f2-5*lh)),yb=Math.min(RH-1,Math.floor(f2-lh));
-      let fg=1-d/FOGD;if(fg<0)fg=0;const s2=ovSide===1?.78:1,sk=TILE[ovI]===50||TILE[ovI]===12,r2=(sk?LR[ovI]*fg:ar*fg)*s2,g2=(sk?LG[ovI]*fg:ag*fg)*s2,b2=(sk?LB[ovI]*fg:ab*fg)*s2,fe2=Math.min(256,fg*256*1.5+40)|0;
-      for(let y=ya;y<=yb;y++){const v=(f2-y)/lh;let s=v|0;if(s<1)s=1;if(s>4)s=4;let ty=63-(((v-s)*64)|0);if(ty<0)ty=0;const c=(TILE[ovI]===12?TX.siloShaft:TILE[ovI]===50?(s===4?TX.skelTop:TX.skelF[WINV[ovI*5+s]&1]):TX.panel[WINV[ovI*5+s]])[(ty<<6)|ovTx];if(c===0)continue;
+      let fg=1-d/FOGD;if(fg<0)fg=0;const s2=ovSide===1?.78:1,sk=TILE[ovI]===50||TILE[ovI]===12||TILE[ovI]===7,r2=(sk?LR[ovI]*fg:ar*fg)*s2,g2=(sk?LG[ovI]*fg:ag*fg)*s2,b2=(sk?LB[ovI]*fg:ab*fg)*s2,fe2=Math.min(256,fg*256*1.5+40)|0;
+      for(let y=ya;y<=yb;y++){const v=(f2-y)/lh;let s=v|0;if(s<1)s=1;if(s>4)s=4;let ty=63-(((v-s)*64)|0);if(ty<0)ty=0;const c=(TILE[ovI]===12?TX.siloShaft:TILE[ovI]===7?TX.siloW:TILE[ovI]===50?(s===4?TX.skelTop:TX.skelF[WINV[ovI*5+s]&1]):TX.panel[WINV[ovI*5+s]])[(ty<<6)|ovTx];if(c===0)continue;
         FB[y*RW+x]=(c>>>24)===254?sh(c,fe2,fe2,fe2):sh(c,r2|0,g2|0,b2|0);}}
     if(cabOut>cabIn)drawCab(x,cabIn,cabOut,px,py,rdx,rdy,camZ,flash);
     if(railD&&railD<perp)drawRail(x,railD,railW,camZ);
