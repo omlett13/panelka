@@ -82,6 +82,7 @@ function siloFloor3(dt){const f=(G.time*12|0)&3,fc=(G.time*16|0)&1;for(const i o
    He sways side to side across your line of fire (his real position moves, so shots are tested where he's drawn);
    the sway stops while he commits to the minigun, the husk storm and the cough after the minigun — the windows to hit him.
    Phase 2 (half HP): jacket off, wider/faster sway, longer sweeping minigun, 4th storm wave, Лузга-малые. All damage is seed damage */
+function semSay(s){G.bark='СЕМЁН: «'+s+'»';G.barkT=1.8;sfx.bark(KINDS.se.pitch);}
 const SEMSTILL={mgWind:1,mg:1,cough:1,storm:1,summon:1,scream:1};
 function semShot(e,a,sp,life,dmg,spr){ents.push({kind:'proj',spr:spr||'semki',seed:1,x:e.x+Math.cos(a)*.4,y:e.y+Math.sin(a)*.4,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life,dmg});}
 function semIntro(e){if(G.semOn)return;G.semOn=true;G.semLock=true;G.semCard=3.2;e.alert=true;e.state='fight';e.st='rise';e.t=1.6;e.bx=e.x;e.by=e.y;e.swP=0;e.swA=0;e.cd=2.2;e.sumT=0;
@@ -91,18 +92,18 @@ function updateSemyon(e,dt){const K=KINDS.se,D=DIFF[SET.diff],dx=P.x-e.x,dy=P.y-
     if(e.alert||(siloArea(P.x,P.y)===3&&P.y<73.5&&P.y>41&&P.x>93.5&&P.x<122.5))semIntro(e);return;}
   e.losT-=dt;if(e.losT<=0){e.losT=.15;e.see=los(e.x,e.y,P.x,P.y);}
   e.t-=dt;e.cd-=dt;e.sumT-=dt;
-  if(!p2&&e.hp<=e.max*.5&&e.st!=='rise'){e.phase2=true;e.st='scream';e.t=1.4;sfx.roar();G.shake=.6;G.bark='СЕМЁН: «А-А-А-ТЬФУ!!»';G.barkT=2.4;msg('СЕМЁН В ЯРОСТИ');e.sumT=1.5;}
+  if(!p2&&e.hp<=e.max*.5&&e.st!=='rise'){e.phase2=true;e.st='scream';e.t=1.4;sfx.roar();G.shake=.6;G.bark='СЕМЁН: «А-А-А-ТЬФУ!!»';G.barkT=2.4;msg('СЕМЁН В ЯРОСТИ');e.sumT=1.5;e.vest={kind:'prop',t:'semVest',x:e.x+.5,y:e.y+.3,sc:.8,block:0};if(solidR(e.vest.x,e.vest.y,.2)){e.vest.x=e.x;e.vest.y=e.y;}ents.push(e.vest);}
   const base={x:e.bx,y:e.by};let mvx=0,mvy=0,ms=0;
   switch(e.st){
-    case 'rise':if(e.t<=0){e.st='fight';G.bark='СЕМЁН: «Тьфу.»';G.barkT=1.6;}break;
+    case 'rise':if(e.t<=0){e.st='fight';semSay('Хрум… Тьфу. Семки мои.');}break;
     case 'scream':if(e.t<=0){e.st='fight';e.cd=.6;}break;
     case 'fight':{
       if(d>9){mvx=dx/d;mvy=dy/d;ms=1;}else if(d<5.5){mvx=-dx/d;mvy=-dy/d;ms=.7;}
       if(e.cd<=0){const lz=ents.filter(o=>o.k==='lz'&&!o.dead).length;
-        if(d<4&&e.see){e.st='step';e.t=.7;}
-        else if(p2&&lz<6&&e.sumT<=0){e.st='summon';e.t=.9;e.spat=false;}
-        else if(e.see&&Math.random()<.55){e.st='mgWind';e.t=.6;tone('square',140,520,.6,.05);}
-        else{e.st='storm';e.wv=0;e.wT=0;e.rot=Math.random()*6.3;}}
+        if(d<4&&e.see){e.st='step';e.t=.7;semSay('Не подходи. Тьфу.');}
+        else if(p2&&lz<6&&e.sumT<=0){e.st='summon';e.t=.9;e.spat=false;semSay('Малые, налетай!');}
+        else if(e.see&&Math.random()<.55){e.st='mgWind';e.t=.6;tone('square',140,520,.6,.05);semSay('Семки — очередью!');}
+        else{e.st='storm';e.wv=0;e.wT=0;e.rot=Math.random()*6.3;semSay('Лузга по кругу!');}}
       break;}
     case 'mgWind':if(e.t<=0){e.st='mg';e.t=p2?3.5:2.5;e.mT=0;e.fT=0;e.ma=Math.atan2(dy,dx);e.ma0=e.ma;}break;
     case 'mg':{e.mT+=dt;const want=Math.atan2(dy,dx);
@@ -131,9 +132,9 @@ function updateLuzga(e,dt){const K=KINDS.lz,D=DIFF[SET.diff],dx=P.x-e.x,dy=P.y-e
   if(d<K.reach&&e.cool<=0){seedHurt(4+Math.random()*2);sfx.punch();e.cool=.8;e.atkT=.25;return;}
   let vx=dx/d,vy=dy/d;if(!e.see){const n=flowNext(e.x|0,e.y|0);if(n){const tx=n[0]+.5-e.x,ty=n[1]+.5-e.y,l=Math.hypot(tx,ty)||1;vx=tx/l;vy=ty/l;}}
   if(d<.6)return;const ox=e.x,oy=e.y,s=K.speed*D.spd;moveBody(e,vx*s,vy*s,dt,e.rad);e.walk+=Math.hypot(e.x-ox,e.y-oy)*4;}
-function semDie(e){e.diedAt=G.time;G.semLock=false;G.secrets=1;G.secretTotal=1;G.bark='СЕМЁН: «…тьфу.»';G.barkT=2.4;msg('ВАТНИК СЕМЁНА — ЗАБЕРИ');
+function semDie(e){e.diedAt=G.time;G.semLock=false;G.secrets=1;G.secretTotal=1;G.bark='СЕМЁН: «…тьфу.»';G.barkT=2.4;msg('ЖИЛЕТКА СЕМЁНА — ЗАБЕРИ');
   for(const o of ents)if(o.kind==='enemy'&&o.k==='lz'&&!o.dead){o.dead=true;o.hidden=true;spawnFx('puff',o.x,o.y,.4);ents.push({kind:'prop',t:'seedpile',x:o.x,y:o.y,sc:.45,block:0});}
-  const a=Math.atan2(P.y-e.y,P.x-e.x);ents.push({kind:'item',t:'vatnikS',x:e.x+Math.cos(a)*.6,y:e.y+Math.sin(a)*.6,drop:1});}
+  const v=e.vest;let vx=e.x,vy=e.y;if(v){vx=v.x;vy=v.y;ents=ents.filter(o=>o!==v);e.vest=null;}ents.push({kind:'item',t:'semVest',x:vx,y:vy,drop:1});}
 function semFrame(e){const S=SPR.se,k=e.phase2?'2':'',sc=KINDS.se.scale;let p;
   if(e.dead){const t=G.time-(e.diedAt||0);return {d:t<.5?S['swayL'+k]:t<1.1?S['fold'+k]:S.pile,sc};}
   if(!G.semOn)return {d:S.sit,sc};
@@ -147,3 +148,6 @@ function luzgaFrame(e){const S=SPR.lz;if(e.dead)return e.hidden?null:{d:S.dead,s
 /* after Семён: back to the seed garage, and the garages stay at sunset for the rest of the run */
 function siloHome(){const r=G.gReturn;G.gReturn=null;G.sunset=true;enterLevel(11);
   if(r){P.x=r.x;P.y=r.y+1;}else{for(let i=0;i<N;i++)if(TILE[i]===65){P.x=i%MW+.5;P.y=((i/MW)|0)+1.5;break;}}P.a=Math.PI/2;msg('ГАРАЖИ · ЗАКАТ');}
+/* a found item you read before carrying on: title, a few lines, the effect; A closes it */
+function openRead(title,lines,effect,then){G.read={title,lines,effect,then};G.state='read';keys.clear();mouseFire=false;exitLock();}
+function readClose(){const r=G.read;G.read=null;G.state='play';keys.clear();sfx.tick();if(r&&r.then)r.then();}

@@ -62,7 +62,7 @@ function drawLoot(g){
   txt(g,'СНАРЯГА',6,96,DIM);drawGear(g,108);
   txt(g,'РУБ '+G.rub,314,96,VFD,'right');
   if(P.kefir)txt(g,'КЕФИР x'+P.kefir,314,86,LABEL,'right');
-  if(P.seedproof)txt(g,'ВАТНИК: СЕМКИ НЕ БЕРУТ',6,86,VFD);
+  if(P.seedproof)txt(g,'ЖИЛЕТКА: СЕМКИ НЕ БЕРУТ',6,86,VFD);
   drawSlots(g,G.lootSlot>=0?G.lootSlot:(G.lootCur>=LN?G.lootCur-LN:-1));
 }
 function drawShopBottom(g){

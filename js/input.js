@@ -30,6 +30,7 @@ addEventListener('keydown',e=>{const k=e.code;if(['Space','ArrowUp','ArrowDown',
   if(G.trans)return;
   if(G.state==='breaker'||G.state==='keypad'){if(!e.repeat)puzzleKey(k);return;}
   if(G.state==='talk'){if(!e.repeat)talkKey(k);return;}
+  if(G.state==='read'){if(!e.repeat&&(k==='Enter'||k==='Space'||k==='KeyE'||k==='Escape'))readClose();return;}
   if(G.state==='shop'){keys.add(k);if(e.repeat)return;if(k==='Escape'||k==='Backspace'||k==='Tab')shopBack();else if(k==='Enter'||k==='Space'||k==='KeyE')shopClick();return;}
   if(G.state==='play'||G.state==='lift'){if(e.repeat)return;
     if(G.loot){lootKey(k);return;}
@@ -84,6 +85,7 @@ document.querySelectorAll('[data-btn]').forEach(b=>{const id=b.dataset.btn;
     if(G.trans||G.state==='ride'){/* buttons do nothing mid-transition or riding */}
     else if(G.state==='shop'){if(id==='A')shopClick();else if(id==='B'||id==='START')shopBack();}
     else if(G.state==='breaker'||G.state==='keypad')puzzleBtn(id);
+    else if(G.state==='read'){if(id==='A'||id==='B'||id==='START')readClose();}
     else if(G.state==='talk'){if(id==='A')talkChoose();else if(id==='B'||id==='START')talkClose();else if(id==='X')talkMove(-1);else if(id==='Y')talkMove(1);}
     else if((G.state==='play'||G.state==='lift')&&G.loot){if(id==='B'||id==='START')toggleLoot();else if(id==='A')lootKey('Enter');else if(id==='L')lootKey('ArrowLeft');else if(id==='R')lootKey('ArrowRight');else if(id==='X')lootKey('ArrowUp');else if(id==='Y')lootKey('ArrowDown');}
     else if(id==='START'){if(G.state==='play'||G.state==='lift')pauseGame();else if(G.state==='pause'&&G.page==='pause')resume();else menuAct('ok');}

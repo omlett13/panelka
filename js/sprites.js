@@ -488,3 +488,7 @@ const ART={};
   const PL={suit:'#2a3a7a',top:'#34449a',stripe:'#1c2a5a',skin:'#c4946e',hair:'#2a1e12',shoe:'#3a3024'};SPR.lz={};
   for(const p of ['stand','walk1','walk2','attack','spit','dead'])SPR.lz[p]=bakeH(g=>{const r=rng(685);drawGop(g,p,PL);if(p!=='dead'){R(g,'#1a2450',21,38,4,3);R(g,'#1a2450',37,36,4,4);seeds(g,r,20,20,24,30,10);}});
 })();
+/* Семён's vest, lying on the floor: blue, stretched, stripes, husks stuck to it */
+SPR.semVest=bake(g=>{const r=rng(686);g.fillStyle='#2a46a8';g.beginPath();g.moveTo(16,50);g.lineTo(26,46);g.lineTo(32,49);g.lineTo(38,46);g.lineTo(48,50);g.lineTo(50,62);g.lineTo(14,62);g.closePath();g.fill();
+  R(g,'#1c3278',14,60,36,2);R(g,'#eeeeee',31,49,2,13);R(g,'#eeeeee',17,51,1,10);R(g,'#eeeeee',46,51,1,10);R(g,'#121a3a',26,47,4,3);R(g,'#121a3a',34,47,4,3);
+  for(let i=0;i<14;i++){const x=16+((r()*32)|0),y=50+((r()*11)|0);R(g,'#1a1a14',x,y,2,1);if(r()<.5)R(g,'#d8d0b8',x+1,y,1,1);}});

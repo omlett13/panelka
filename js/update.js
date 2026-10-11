@@ -13,7 +13,7 @@ function update(dt){
   G.statsT-=dt;G.shopMsgT-=dt;G.shake=Math.max(0,G.shake-dt);G.pokeT=Math.max(0,G.pokeT-dt);
   if(G.trans){const T=G.trans;T.t+=dt;if(!T.fired&&T.t>=T.dur){T.fired=true;T.mid();}if(T.t>=T.dur*2)G.trans=null;return;}
   if(G.state==='menu'){const c=G.menuCam||{x:8.5,y:11.5};P.x=c.x;P.y=c.y;P.a+=dt*.12;P.camZ=.5+(G.level===9?Math.sin(G.t*8.5)*.006:0);return;}
-  if(G.state==='pause'||G.state==='win'||G.state==='liftMenu'||G.state==='talk')return;
+  if(G.state==='pause'||G.state==='win'||G.state==='liftMenu'||G.state==='talk'||G.state==='read')return;
   if(G.loot)return;
   if(G.state==='lift'){
     if(G.hiT>0){G.hiT-=dt;if(G.hiT<=0)dealerSay(['Чё надо? Всё есть.','О, живой. Заходи, не стесняйся.','Тише. Тут свои.'][(Math.random()*3)|0]);}
