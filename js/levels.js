@@ -258,7 +258,7 @@ const LEVEL_SRC={12:{map:[
  ['barrel',86,33],['barrel',30,44],['barrel',76,10],['barrel',58,55],['rubble',21.6,53.5],['rubble',21.5,56],
  ['rubble',22.4,56.3],['husks',102.4,10.3],['husks',103.5,10.5],['husks',101.6,10.9],['husks',104.3,10.2],['husks',102.9,11.4],
  ['husks',100.8,10.4],['ammo9',23,55],['kvass',48,21.5],['shells',77,33],['pelmeni',49,44],['ammo9',104,21.5],
- ['kvass',22,21.5]
+ ['kvass',22,21.5],['note15',25,8.5],['note16',100.5,11.5],['note17',102,53.5]
 ]},1:{map:[
  "BBBBBBBBBBBBBBBB################################BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
  "B,,,,,,,,,,,,,,,#######:::#::::#:#::############BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",

@@ -22,6 +22,7 @@ function buy(it){
   if(it.multi)it.add();else UP[it.id]=1;
   if(it.id==='dvust'){P.has[2]=1;P.shells=Math.max(P.shells,8);}
   if(it.id==='vest')P.armor=Math.max(P.armor,50);
+  if(it.id==='krossy')wearNew('krossy');
   if(it.id==='salo')P.hp=Math.min(maxHP(),P.hp+25);
   dealerSay(['Носи на здоровье.','Хороший выбор.','Бери, пока дают.'][(Math.random()*3)|0]);
 }
@@ -48,7 +49,7 @@ function take(e){
   switch(e.t){
     case 'kvass':if(P.hp>=maxHP()&&!(P.bleed>0))return false;P.bleed=0;P.hp=Math.min(maxHP(),P.hp+8);msg('КВАС  +8');break;
     case 'pelmeni':if(P.hp>=maxHP()&&!(P.bleed>0))return false;P.bleed=0;P.hp=Math.min(maxHP(),P.hp+20);msg('ПЕЛЬМЕНИ  +20');break;
-    case 'semVest':P.seedproof=true;sfx.ding();openRead('ЖИЛЕТКА СЕМЁНА',['Синяя, растянутая, вся в лузге.','Семён носил её двадцать лет','и ни разу не стирал.','Семки от неё отскакивают —','теперь и от тебя.'],'ЗАЩИТА ОТ СЕМОК · НАВСЕГДА',()=>{G.semWinT=1.2;});break;
+    case 'semVest':P.seedproof=true;wearNew('semVest');sfx.ding();openRead('ЖИЛЕТКА СЕМЁНА',['Синяя, растянутая, вся в лузге.','Семён носил её двадцать лет','и ни разу не стирал.','Семки от неё отскакивают —','теперь и от тебя.'],'ЗАЩИТА ОТ СЕМОК · СНАРЯГА',()=>{G.semWinT=1.2;});break;
     case 'vatnik':if(P.armor>=maxAR())return false;P.armor=Math.min(maxAR(),P.armor+50);msg('ВАТНИК  +50 БРОНИ');break;
     case 'ammo9':{if(P.ammo9>=cap9())return false;const n=Math.round(8*am);P.ammo9=Math.min(cap9(),P.ammo9+n);msg('ПАТРОНЫ 9ММ  +'+n);break;}
     case 'ammo9s':{if(P.ammo9>=cap9())return false;const n=Math.round(4*am);P.ammo9=Math.min(cap9(),P.ammo9+n);msg('ПАТРОНЫ 9ММ  +'+n);break;}
@@ -64,7 +65,7 @@ function take(e){
     case 'gkey':G.gkey=true;msg('КЛЮЧ ОТ ВОРОТ — ВОРОТА В КОНЦЕ НИЖНЕГО РЯДА');break;
     case 'apple':if(P.hp>=maxHP())return false;P.hp=Math.min(maxHP(),P.hp+5);msg('ЯБЛОКО  +5');break;
     case 'tapok':P.has[3]=1;P.w=3;P.switchT=.25;msg('МАМИН ТАПОК!  [5]');break;
-    case 'note7':case 'note8':case 'note12':if(!NOTESGOT.includes(e.t)){NOTESGOT.push(e.t);saveNotes();}msg('НОВАЯ ЗАМЕТКА');break;
+    case 'note7':case 'note8':case 'note12':case 'note15':case 'note16':case 'note17':if(!NOTESGOT.includes(e.t)){NOTESGOT.push(e.t);saveNotes();}msg('НОВАЯ ЗАМЕТКА');break;
     case 'rub':case 'rubS':G.rub+=e.v||5;msg('РУБЛИ  +'+(e.v||5));break;
   }
   return true;

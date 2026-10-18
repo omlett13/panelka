@@ -1,7 +1,7 @@
 'use strict';
 /* ---------- GAME FLOW / MENUS ---------- */
 const MENUS={pause:['ПРОДОЛЖИТЬ','НАСТРОЙКИ','ЗАМЕТКИ','УПРАВЛЕНИЕ','В МЕНЮ'],dead:['ЕЩЕ РАЗ','В МЕНЮ'],win:['ДАЛЬШЕ','В МЕНЮ'],liftChoice:['ВНИЗ: ПОДВАЛ','ДАЛЬШЕ: НОВЫЙ ДОМ'],controls:['НАЗАД']};
-const CONTROLS=[['WASD','ХОДИТЬ'],['СТРЕЛКИ/МЫШЬ','ПОВОРОТ'],['ПРОБЕЛ/КЛИК','ОГОНЬ'],['E','ИСПОЛЬЗОВАТЬ'],['1 2 3 4 / 5','СЛОТЫ / ТАПОК'],['G','БРОСИТЬ ВОДКУ'],['TAB','ЛУТ'],['SHIFT','БЕГ'],['ENTER/ESC','ПАУЗА'],['A B / L R','ОГОНЬ ИСП / ВБОК']];
+const CONTROLS=[['WASD','ХОДИТЬ'],['СТРЕЛКИ/МЫШЬ','ПОВОРОТ'],['ПРОБЕЛ/КЛИК','ОГОНЬ'],['E','ИСПОЛЬЗОВАТЬ'],['1 2 3 4 / 5','СЛОТЫ / ТАПОК'],['G','БРОСИТЬ ВОДКУ'],['TAB / C','ЛУТ / СНАРЯГА'],['SHIFT','БЕГ'],['ENTER/ESC','ПАУЗА'],['A B / L R','ОГОНЬ ИСП / ВБОК']];
 /* level select: unlocks as you reach floors */
 let UNL=new Set([1]);for(const v of store.get('unlock',[],Array.isArray))if(LEVEL_SRC[v])UNL.add(v);
 function unlock(n){if(UNL.has(n))return;UNL.add(n);store.set('unlock',[...UNL]);}

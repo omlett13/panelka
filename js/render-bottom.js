@@ -59,17 +59,57 @@ function drawLoot(g){
     R(g,held?'#2a3f37':'#161d1b',t.x,t.y,t.w,t.h);frame(g,t.x,t.y,t.w,t.h,held?WARN:cur?VFD:'#2c4a40');
     icon(g,id,t.x+t.w/2,t.y+12,own?(held?WARN:LABEL):DIM);
     const n=(id===2||id===5)&&!own?'———':id===4?'ДВЕРЬ':slotLabel(id);txt(g,n,t.x+t.w/2,t.y+42,own?LABEL:DIM,'center',6);}
-  txt(g,'СНАРЯГА',6,96,DIM);drawGear(g,108);
+  txt(g,'УЛУЧШЕНИЯ',6,96,DIM);drawGear(g,108);
   txt(g,'РУБ '+G.rub,314,96,VFD,'right');
   if(P.kefir)txt(g,'КЕФИР x'+P.kefir,314,86,LABEL,'right');
-  if(P.seedproof)txt(g,'ЖИЛЕТКА: СЕМКИ НЕ БЕРУТ',6,86,VFD);
   drawSlots(g,G.lootSlot>=0?G.lootSlot:(G.lootCur>=LN?G.lootCur-LN:-1));
+}
+/* СНАРЯГА: you in full, what you wear next to you, what you took off next to that, pockets on the right */
+const [HEROC,HEROG]=cv(64,64);
+const HEROPAL={suit:'#2e3036',top:SLV,stripe:SLVD,skin:SKN,hair:'#5e4d3c',shoe:'#1c1a18',hat:'none',hatC:'#222'};
+const SEMPAL=Object.assign({},HEROPAL,{top:'#2a46a8'});
+function drawHero(g,x,y){const h=HEROG,sv=worn('semVest');h.clearRect(0,0,64,64);drawGop(h,'stand',sv?SEMPAL:HEROPAL);
+  R(h,'#5e4d3c',25,3,14,6);R(h,'#836c55',25,7,14,2);R(h,'#5e4d3c',25,9,2,7);R(h,'#5e4d3c',37,9,2,7);R(h,'#c0302a',31,4,2,2);
+  if(!sv)for(let k=0;k<3;k++)R(h,SLVD,21,27+k*5,22,1);
+  else{for(const ax of [16,18,45,47])R(h,'#eeeeee',ax,24,1,15);R(h,'#eeeeee',32,23,1,16);for(const [a,b] of [[24,30],[38,27],[27,35],[36,33],[40,36],[19,31],[44,28]]){R(h,'#1a1a14',a,b,2,1);R(h,'#d8d0b8',a+1,b,1,1);}}
+  if(UP.bando)for(let k=0;k<9;k++){R(h,'#5a3a1a',22+k*2,23+k*2,3,3);if(k%2)R(h,'#b8302a',23+k*2,22+k*2,1,2);}
+  if(UP.kastet)R(h,'#c9a54a',43,40,5,2);
+  if(worn('krossy'))for(const sx of [23,33]){R(h,'#efefe9',sx,59,8,4);R(h,'#2a4a9c',sx,62,8,1);}
+  R(g,'#0b100e',x-24,y+120,48,4);g.imageSmoothingEnabled=false;g.drawImage(HEROC,x-64,y-8,128,128);}
+function wearIcon(g,id,cx,y){
+  if(id==='semVest'){R(g,'#2a46a8',cx-9,y+1,18,10);R(g,'#2a46a8',cx-6,y,12,1);R(g,'#eeeeee',cx,y,1,11);R(g,'#eeeeee',cx-8,y+2,1,9);R(g,'#eeeeee',cx+7,y+2,1,9);R(g,'#111715',cx-2,y,4,2);R(g,'#d8d0b8',cx-4,y+5,1,1);R(g,'#d8d0b8',cx+3,y+7,1,1);}
+  else if(id==='krossy'){R(g,'#efefe9',cx-7,y+3,6,4);R(g,'#efefe9',cx-7,y+6,14,4);R(g,'#2a4a9c',cx-7,y+9,14,1);}}
+function pockets(){const o=[];
+  if(G.hasKey&&G.level<=3)o.push(['КЛЮЧ ОТ ПОДВАЛА','']);
+  if(G.level===4&&G.fuses>0&&!G.power)o.push(['ПРЕДОХР.',G.fuses+'/3']);
+  if(G.liftKey)o.push(['КЛЮЧ ОТ ЛИФТА','']);
+  if(G.flatKey)o.push(['КЛЮЧ КВАРТИРЫ','']);
+  if(G.gkey)o.push(['КЛЮЧ ОТ ВОРОТ','']);
+  if(G.candy>0)o.push(['«МИШКА»','x'+G.candy]);
+  return o;}
+function drawWear(g){
+  txt(g,'СНАРЯГА',6,4,WARN);txt(g,'ЗАКРЫТЬ',314,4,LABEL,'right');
+  g.save();g.beginPath();g.rect(0,16,82,162);g.clip();drawHero(g,42,40);g.restore();
+  txt(g,'НАДЕТО',108,21,DIM,'center',6);txt(g,'СНЯТО',160,21,DIM,'center',6);
+  let tip=null;
+  for(let c=0;c<8;c++){const t=gearTile(c),s=c&3,cur=G.lootCur===c,on=wornAt(s),off=wearOff(s),it=c<4?on:off[0];
+    if(cur&&it)tip=it;
+    R(g,c<4&&on?'#1e2e29':'#161d1b',t.x,t.y,t.w,t.h);frame(g,t.x,t.y,t.w,t.h,cur?WARN:c<4&&on?VFD:'#2c4a40');
+    if(c<4)txt(g,WSLOT[s],t.x+3,t.y+3,DIM,'left',6);
+    if(it){wearIcon(g,it.id,t.x+t.w/2,t.y+12);txt(g,it.name,t.x+t.w/2,t.y+25,c<4?VFD:LABEL,'center',6);if(c>=4&&off.length>1)txt(g,'+'+(off.length-1),t.x+t.w-3,t.y+3,DIM,'right',6);}
+    else if(c<4)txt(g,'—',t.x+t.w/2,t.y+17,DIM,'center',6);}
+  R(g,'#0b100e',190,20,124,156);frame(g,190,20,124,156,'#2c4a40');
+  txt(g,'В КАРМАНАХ',196,26,DIM,'left',6);
+  const pk=pockets();pk.forEach(([n,v],i)=>{txt(g,n,196,42+i*14,LABEL,'left',6);if(v)txt(g,v,308,42+i*14,VFD,'right',6);});
+  if(!pk.length)txt(g,'ПУСТО',252,90,DIM,'center',6);
+  if(tip){R(g,'#2c4a40',190,152,124,1);txt(g,tip.desc,252,160,VFD,'center',6);}
+  drawSlots(g,-1);
 }
 function drawShopBottom(g){
   txt(g,'ЧЕМОДАН БАРЫГИ',6,4,WARN);
   if(G.barkT>0)txt(g,G.bark,160,26,LABEL,'center');
   txt(g,'РУБЛИ',160,52,DIM,'center');txt(g,String(G.rub),160,64,VFD,'center',16);
-  txt(g,'СНАРЯГА',6,96,DIM);txt(g,'ВОДКА x'+P.vodka+(P.kefir?'  КЕФИР x'+P.kefir:''),314,96,LABEL,'right');drawGear(g,108);
+  txt(g,'УЛУЧШЕНИЯ',6,96,DIM);txt(g,'ВОДКА x'+P.vodka+(P.kefir?'  КЕФИР x'+P.kefir:''),314,96,LABEL,'right');drawGear(g,108);
   drawSlots(g,-1);
 }
 function stat(g,label,val,y,c,hl){if(hl)R(g,'#1d2c27',240,y-2,78,24);txt(g,label,244,y,hl?LABEL:'#8f998f');txt(g,String(val),244,y+11,c||LABEL);}
@@ -81,7 +121,7 @@ function renderBottom(){
   if(G.state==='talk'&&G.talk)return drawTalkBottom(g);
   if(G.state==='breaker')return drawBreakerBottom(g);
   if(G.state==='keypad')return drawKeypadBottom(g);
-  if(G.loot)return drawLoot(g);
+  if(G.loot)return G.loot==='gear'?drawWear(g):drawLoot(g);
   if(G.barkT>0)txt(g,G.bark,6,4,WARN);else if(G.msgT>0)txt(g,G.msg,6,4,LABEL);else txt(g,(G.level===3?'':G.level===10?'':G.level===9?'МЕТРО · ':G.level===8?'ГОРОД · ':G.level>=11?'':G.level>=4?'ДОМ 11 · ':'ЭТАЖ '+G.level+' · ')+zoneName(),6,4,LABEL);
   txt(g,fmtTime(G.time),314,4,VFD,'right');
   /* left column */
@@ -89,7 +129,7 @@ function renderBottom(){
   const hc=P.hp<30?DANGER:VFD;
   txt(g,'ЗДОРОВЬЕ',42,70,LABEL,'center');txt(g,String(P.hp),42,81,hc,'center',16);bar(g,8,100,68,5,P.hp/maxHP(),hc);
   txt(g,'ВАТНИК',42,114,LABEL,'center');txt(g,String(P.armor),42,125,'#c9d1bb','center');bar(g,8,136,68,3,P.armor/maxAR(),'#9aa58a');
-  R(g,'#161d1b',LOOTBTN.x,LOOTBTN.y,LOOTBTN.w,LOOTBTN.h);frame(g,LOOTBTN.x,LOOTBTN.y,LOOTBTN.w,LOOTBTN.h,'#2c4a40');txt(g,'ЛУТ',42,155,LABEL,'center');
+  for(const [b,n] of [[GEARBTN,'СНАРЯГА'],[LOOTBTN,'ЛУТ']]){R(g,'#161d1b',b.x,b.y,b.w,b.h);frame(g,b.x,b.y,b.w,b.h,'#2c4a40');txt(g,n,b.x+b.w/2,b.y+5,LABEL,'center');}
   /* center map */
   drawMap(g,84,20,152,156);
   /* right column */
@@ -121,7 +161,7 @@ function drawNote(g,N){
     g.font='10px "Times New Roman", serif';g.textAlign='left';N.text.forEach((l,i)=>g.fillText(l,x+14,y+58+i*15));
     for(let i=0;i<3;i++)R(g,'rgba(42,36,28,.25)',x+14,y+160+i*9,w-28-(i*31%50),3);}
   else{R(g,'rgba(90,120,170,.35)',x,y+20,w,1);for(let i=1;i<13;i++)R(g,'rgba(90,120,170,.22)',x,y+20+i*14,w,1);R(g,'rgba(190,70,60,.35)',x+22,y,1,h);
-    g.font='italic 12px "Comic Sans MS", cursive';g.fillStyle='#1c2a5a';g.textAlign='left';N.text.forEach((l,i)=>g.fillText(l,x+30,y+22+i*14+ (i?14:0)));}
+    g.font='italic 12px "Comic Sans MS", cursive';g.fillStyle='#1c2a5a';g.textAlign='left';N.text.forEach((l,i)=>g.fillText(l,x+30,y+22+i*14+ (i?14:0),w-36));}
   g.restore();
 }
 function bottomMenu(g){

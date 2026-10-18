@@ -4,7 +4,7 @@ const keys=new Set(), btn={A:0,B:0,X:0,Y:0,L:0,R:0}, pad={x:0,y:0};
 let mouseDX=0, mouseFire=false;
 const MENUKEYS={ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',Enter:'ok',Space:'ok',KeyE:'ok',Escape:'back',Backspace:'back'};
 function useSlot(i){const id=SLOTS[i];if(id<=2)selectW(id);else if(id===5)selectW(3);else if(id===3)throwVodka();else useAction();}
-function toggleLoot(){if(G.state!=='play'&&G.state!=='lift')return;G.loot=!G.loot;G.lootHeld=-1;G.lootSlot=-1;G.lootCur=0;keys.clear();mouseFire=false;sfx.latch();if(G.loot)exitLock();}
+function toggleLoot(w){if(G.state!=='play'&&G.state!=='lift')return;w=w||'loot';G.loot=G.loot===w?false:w;G.lootHeld=-1;G.lootSlot=-1;G.lootCur=0;keys.clear();mouseFire=false;sfx.latch();if(G.loot)exitLock();}
 const LOOTS=[0,1,2,5,3,4],LN=6;
 function lootOwned(id){return id===2?!!P.has[2]:id===5?!!P.has[3]:true;}
 function lootPick(kind,idx){
@@ -13,7 +13,18 @@ function lootPick(kind,idx){
   else{if(G.lootHeld>=0){assignSlot(idx,G.lootHeld);G.lootHeld=-1;G.lootSlot=-1;}else{G.lootSlot=G.lootSlot===idx?-1:idx;sfx.tick();}}
 }
 function assignSlot(s,id){const prev=SLOTS.indexOf(id);if(prev>=0)SLOTS[prev]=SLOTS[s];SLOTS[s]=id;saveSlots();sfx.swap();}
+/* СНАРЯГА cursor (G.lootCur): 0-3 НАДЕТО rows, 4-7 СНЯТО rows */
+function gearPick(c){const s=c&3;
+  if(c<4){if(!wornAt(s)){sfx.click();return;}P.wear[s]=null;sfx.latch();}
+  else{const o=wearOff(s);if(!o.length){sfx.click();return;}P.wear[s]=o[0].id;sfx.swap();}}
+function gearKey(k){const c=G.lootCur;
+  if(k==='Escape'||k==='Backspace'||k==='KeyC')toggleLoot('gear');else if(k==='Tab')toggleLoot('loot');
+  else if(k==='ArrowLeft'||k==='KeyA')G.lootCur=c&3;else if(k==='ArrowRight'||k==='KeyD')G.lootCur=4+(c&3);
+  else if(k==='ArrowUp'||k==='KeyW')G.lootCur=(c&4)+Math.max(0,(c&3)-1);else if(k==='ArrowDown'||k==='KeyS')G.lootCur=(c&4)+Math.min(3,(c&3)+1);
+  else if(k==='Enter'||k==='Space'||k==='KeyE')gearPick(c);}
 function lootKey(k){
+  if(G.loot==='gear'){gearKey(k);return;}
+  if(k==='KeyC'){toggleLoot('gear');return;}
   if(k==='Tab'||k==='Escape'||k==='Backspace'){toggleLoot();return;}
   const c=G.lootCur;
   if(k==='ArrowLeft'||k==='KeyA')G.lootCur=c<LN?Math.max(0,c-1):Math.max(LN,c-1);
@@ -35,7 +46,7 @@ addEventListener('keydown',e=>{const k=e.code;if(['Space','ArrowUp','ArrowDown',
   if(G.state==='play'||G.state==='lift'){if(e.repeat)return;
     if(G.loot){lootKey(k);return;}
     keys.add(k);
-    if(k==='Enter'||k==='Escape'||k==='KeyP')pauseGame();else if(k==='KeyE')useAction();else if(k==='Tab')toggleLoot();
+    if(k==='Enter'||k==='Escape'||k==='KeyP')pauseGame();else if(k==='KeyE')useAction();else if(k==='Tab')toggleLoot();else if(k==='KeyC')toggleLoot('gear');
     else if(k==='Digit1')useSlot(0);else if(k==='Digit2')useSlot(1);else if(k==='Digit3')useSlot(2);else if(k==='Digit4')useSlot(3);else if(k==='Digit5')selectW(3);
     else if(k==='KeyQ')cycleW(1);else if(k==='KeyG')throwVodka();
     return;}
@@ -61,7 +72,7 @@ if(DEBUG)document.getElementById('dbgBtn').addEventListener('click',e=>{toggleDb
 document.querySelectorAll('[data-dbg]').forEach(b=>b.addEventListener('click',()=>{b.blur();const a=b.dataset.dbg;
   if(a==='close'){toggleDbg();return;}
   if(a==='rub'){G.rub+=500;msg('DEBUG  +500 РУБ');return;}
-  if(a==='max'){for(const k in UP)UP[k]=1;P.has=[1,1,1,1];P.ammo9=cap9();P.shells=capS();P.vodka=3;P.kefir=2;P.hp=maxHP();P.armor=maxAR();msg('DEBUG  ВСЁ КУПЛЕНО');return;}
+  if(a==='max'){for(const k in UP)UP[k]=1;for(const w of WEAR)if(w.own())wearNew(w.id);P.has=[1,1,1,1];P.ammo9=cap9();P.shells=capS();P.vodka=3;P.kefir=2;P.hp=maxHP();P.armor=maxAR();for(const N of NOTES)if(!NOTESGOT.includes(N.id))NOTESGOT.push(N.id);saveNotes();msg('DEBUG  ВСЁ КУПЛЕНО · ВСЕ ЗАМЕТКИ');return;}
   if(a==='perf'){PERF.on=!PERF.on;perfReset();b.textContent='frame times: '+(PERF.on?'ON':'off');return;}
   if(a==='god'){G.god=!G.god;b.textContent='god mode: '+(G.god?'ON':'off');return;}
   if(a==='kill'){if(G.state==='pause')resume();if(G.state!=='play')return;for(const e of ents)if(e.kind==='enemy'&&!e.dead&&e.k!=='bb'&&e.k!=='gg')killEnemy(e);msg('DEBUG  ВСЕ УБИТЫ');return;}
@@ -87,7 +98,7 @@ document.querySelectorAll('[data-btn]').forEach(b=>{const id=b.dataset.btn;
     else if(G.state==='breaker'||G.state==='keypad')puzzleBtn(id);
     else if(G.state==='read'){if(id==='A'||id==='B'||id==='START')readClose();}
     else if(G.state==='talk'){if(id==='A')talkChoose();else if(id==='B'||id==='START')talkClose();else if(id==='X')talkMove(-1);else if(id==='Y')talkMove(1);}
-    else if((G.state==='play'||G.state==='lift')&&G.loot){if(id==='B'||id==='START')toggleLoot();else if(id==='A')lootKey('Enter');else if(id==='L')lootKey('ArrowLeft');else if(id==='R')lootKey('ArrowRight');else if(id==='X')lootKey('ArrowUp');else if(id==='Y')lootKey('ArrowDown');}
+    else if((G.state==='play'||G.state==='lift')&&G.loot){if(id==='B'||id==='START')toggleLoot(G.loot);else if(id==='A')lootKey('Enter');else if(id==='L')lootKey('ArrowLeft');else if(id==='R')lootKey('ArrowRight');else if(id==='X')lootKey('ArrowUp');else if(id==='Y')lootKey('ArrowDown');}
     else if(id==='START'){if(G.state==='play'||G.state==='lift')pauseGame();else if(G.state==='pause'&&G.page==='pause')resume();else menuAct('ok');}
     else if(id==='SELECT'){G.zoom^=1;}
     else if(G.state!=='play'&&G.state!=='lift'){if(id==='A')menuAct('ok');else if(id==='B')menuAct('back');else if(id==='L')menuAct('left');else if(id==='R')menuAct('right');else if(id==='X')menuAct('up');else if(id==='Y')menuAct('down');}
@@ -103,14 +114,16 @@ padEl.addEventListener('pointerdown',e=>{e.preventDefault();initAudio();try{padE
 padEl.addEventListener('pointermove',e=>{if(padEl.hasPointerCapture&&padEl.hasPointerCapture(e.pointerId))padMove(e);});
 padEl.addEventListener('pointerup',padEnd);padEl.addEventListener('pointercancel',padEnd);
 const BTNS=[{x:6,y:180,w:74,h:54},{x:84,y:180,w:74,h:54},{x:162,y:180,w:74,h:54},{x:240,y:180,w:74,h:54}];
-const LOOTBTN={x:8,y:146,w:68,h:26},LOOTCLOSE={x:230,y:0,w:90,h:16};
+const GEARBTN={x:6,y:158,w:74,h:18},LOOTBTN={x:240,y:158,w:74,h:18},LOOTCLOSE={x:230,y:0,w:90,h:16};
 function lootTile(i){return {x:7+i*52,y:24,w:48,h:60};}
+function gearTile(c){return {x:c<4?84:136,y:30+(c&3)*36,w:48,h:34};}
 botC.addEventListener('pointerdown',e=>{e.preventDefault();initAudio();const r=botC.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*BW,y=(e.clientY-r.top)/r.height*BH,p={x,y};
   if(G.trans||G.state==='ride'||G.state==='shop')return;
   if(G.state==='breaker'||G.state==='keypad'){puzzleTouch(p);return;}
   if(G.state==='talk'){talkTouch(p);return;}
   if((G.state==='play'||G.state==='lift')&&G.loot){
-    if(inR(p,LOOTCLOSE)){toggleLoot();return;}
+    if(inR(p,LOOTCLOSE)){toggleLoot(G.loot);return;}
+    if(G.loot==='gear'){for(let c=0;c<8;c++)if(inR(p,gearTile(c))){G.lootCur=c;gearPick(c);return;}return;}
     for(let i=0;i<LN;i++)if(inR(p,lootTile(i))){G.lootCur=i;lootPick('item',i);return;}
     for(let i=0;i<4;i++)if(inR(p,BTNS[i])){G.lootCur=LN+i;lootPick('slot',i);return;}
     return;}
@@ -122,6 +135,7 @@ botC.addEventListener('pointerdown',e=>{e.preventDefault();initAudio();const r=b
       return;}
     return;}
   if(inR(p,LOOTBTN)){toggleLoot();return;}
+  if(inR(p,GEARBTN)){toggleLoot('gear');return;}
   for(let i=0;i<4;i++){const b=BTNS[i];if(inR(p,b)){useSlot(i);b.hit=.15;return;}}
   if(x>=84&&x<236&&y>=20&&y<176)G.zoom^=1;});
 

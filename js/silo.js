@@ -1,6 +1,6 @@
 'use strict';
 /* ---------- ЭЛЕВАТОР: seed spitters, sunset grain hall, the way up ---------- */
-function seedHurt(d){if(P.seedproof){spawnFx('puff',P.x+Math.cos(P.a)*.4,P.y+Math.sin(P.a)*.4,.2);return;}hurtPlayer(d);}
+function seedHurt(d){if(worn('semVest')){spawnFx('puff',P.x+Math.cos(P.a)*.4,P.y+Math.sin(P.a)*.4,.2);return;}hurtPlayer(d);}
 function updateHarkun(e,dt){const K=KINDS.hk,D=DIFF[SET.diff],dx=P.x-e.x,dy=P.y-e.y,d=Math.hypot(dx,dy)||.001;
   e.losT-=dt;if(e.losT<=0){e.losT=.15;e.see=los(e.x,e.y,P.x,P.y);}
   if(!e.alert){if(d<K.sight&&e.see){e.alert=true;e.cool=.6;bark(e);}return;}

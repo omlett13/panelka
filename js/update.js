@@ -75,7 +75,7 @@ function updatePlayer(dt){
   const trn=(k('ArrowRight')?1:0)-(k('ArrowLeft')?1:0)+pad.x;
   P.a+=trn*2.6*dt+mouseDX*.0024*(SET.sens+1)/5;mouseDX=0;
   fwd=Math.max(-1,Math.min(1,fwd));str=Math.max(-1,Math.min(1,str));if(G.grab){fwd=0;str=0;}const m=Math.hypot(fwd,str);if(m>1){fwd/=m;str/=m;}
-  const run=k('ShiftLeft')||k('ShiftRight'),inWater=ZONE[(P.y|0)*MW+(P.x|0)]===Z_WATER,sp=(run?4.4:2.9)*(UP.krossy?1.2:1)*(inWater?.7:1)*(G.face?.55:1),cs=Math.cos(P.a),sn=Math.sin(P.a);
+  const run=k('ShiftLeft')||k('ShiftRight'),inWater=ZONE[(P.y|0)*MW+(P.x|0)]===Z_WATER,sp=(run?4.4:2.9)*(worn('krossy')?1.2:1)*(inWater?.7:1)*(G.face?.55:1),cs=Math.cos(P.a),sn=Math.sin(P.a);
   const vx=(cs*fwd-sn*str)*sp,vy=(sn*fwd+cs*str)*sp;
   const ox=P.x,oy=P.y;VOIDOK=G.level===7;moveBody(P,vx,vy,dt,.24);VOIDOK=false;P.vx=(P.x-ox)/dt;P.vy=(P.y-oy)/dt;
   const moved=Math.hypot(P.x-ox,P.y-oy)/dt;

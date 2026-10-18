@@ -23,8 +23,16 @@ const G=watchKeys('G',Object.assign({
   level:1,secretTotal:0,hasKey:false,cp:null,menuCam:null,menuLoad:false,menuLvl:1,shotId:0,
   dawn:0 // roof sunrise; deliberately carried into later levels (nofog sprites use it)
 },runState(),levelState()));
-const P={x:3.5,y:18.5,a:-0.9,hp:100,armor:0,ammo9:8,shells:0,has:[1,1,0],w:1,cool:0,anim:9,punch:0,bob:0,bobAmt:0,camZ:.5,switchT:0,faceHurt:0,faceGrin:0,faceLook:0,faceLookT:0,stepPh:0,vodka:0,throwT:0,kefir:0,seedproof:false};
+const P={x:3.5,y:18.5,a:-0.9,hp:100,armor:0,ammo9:8,shells:0,has:[1,1,0],w:1,cool:0,anim:9,punch:0,bob:0,bobAmt:0,camZ:.5,switchT:0,faceHurt:0,faceGrin:0,faceLook:0,faceLookT:0,stepPh:0,vodka:0,throwT:0,kefir:0,seedproof:false,wear:[null,null,null,null]};
 const UP={kastet:0,tt:0,dvust:0,krossy:0,vest:0,bando:0,salo:0,tapok2:0,gvozd:0};
+/* wearables: P.wear[slot] holds the id worn there (ГОЛОВА, ТЕЛО, НОГИ, ОБУВЬ); what you own but don't wear lies in СНЯТО */
+const WSLOT=['ГОЛОВА','ТЕЛО','НОГИ','ОБУВЬ'];
+const WEAR=[{id:'semVest',slot:1,name:'ЖИЛЕТКА',desc:'СЕМКИ НЕ БЕРУТ',own:()=>P.seedproof},{id:'krossy',slot:3,name:'КРОССЫ',desc:'СКОРОСТЬ +20%',own:()=>!!UP.krossy}];
+function wearDef(id){return WEAR.find(w=>w.id===id);}
+function wornAt(s){const d=wearDef(P.wear[s]);return d&&d.own()?d:null;}
+function worn(id){const d=wearDef(id);return !!d&&P.wear[d.slot]===id&&d.own();}
+function wearOff(s){return WEAR.filter(w=>w.slot===s&&w.own()&&P.wear[s]!==w.id);}
+function wearNew(id){const d=wearDef(id);if(!wornAt(d.slot))P.wear[d.slot]=id;}
 const maxHP=()=>UP.salo?125:100,maxAR=()=>UP.vest?150:100,cap9=()=>UP.bando?150:99,capS=()=>UP.bando?60:40;
 /* quick-slots on the bottom screen: 0 fist, 1 pistol, 2 shotgun, 3 vodka, 4 use, 5 slipper */
 let SLOTS=[0,1,2,3];
@@ -77,7 +85,7 @@ const PROPS={crane:{sc:11,block:.9},craneX:{sc:4,block:0},scaff:{sc:3.4,block:.1
   couch:{sc:1,block:.45},table:{sc:1,block:.38},tv:{sc:.9,block:.3},stove:{sc:1,block:.35},chand:{sc:1,block:0},laundry:{sc:1,block:0},rubble:{sc:.8,block:0},rail:{sc:1,block:0},furnace:{sc:1,block:.4},throne:{sc:1.3,block:.5},rug:{sc:1.6,block:0},flamp:{sc:1.5,block:.15},barrel:{sc:1,block:.3},coalpile:{sc:1,block:.4},crate:{sc:1,block:.35},jars:{sc:1,block:0},pump:{sc:1,block:.4},
   leaves:{sc:1,block:0},broom:{sc:1.3,block:0},poplar:{sc:3.8,block:.2},fir:{sc:2.8,block:.35},deadtree:{sc:3,block:.2},appletree:{sc:2.6,block:.3},rocket:{sc:2.6,block:.45},carousel:{sc:1.3,block:.7},sandbox:{sc:1,block:.5}};
 const ITEMS={pmGround:{sc:1},kvass:{sc:.7},pelmeni:{sc:.7},vatnik:{sc:.8},semVest:{sc:.8},ammo9:{sc:.7},ammo9s:{sc:.5,spr:'ammo9'},shells:{sc:.7},obrez:{sc:.9},rub:{sc:.45,money:1},rubS:{sc:.6,spr:'rub',money:1},safe:{sc:.8,money:1},vodkaI:{sc:.6},note1:{sc:.5,spr:'note',lore:1},note2:{sc:.5,spr:'note',lore:1},note3:{sc:.5,spr:'note',lore:1},note4:{sc:.5,spr:'note',lore:1},note5:{sc:.5,spr:'note',lore:1},note6:{sc:.5,spr:'note',lore:1},note7:{sc:.5,spr:'note',lore:1},note8:{sc:.5,spr:'note',lore:1},
-  note12:{sc:.5,spr:'note',lore:1},flatkey:{sc:.55,spr:'liftkey'},fuse:{sc:.6},liftkey:{sc:.55},tapok:{sc:.8},apple:{sc:.45},gkey:{sc:.55,spr:'liftkey'}};
+  note12:{sc:.5,spr:'note',lore:1},note15:{sc:.5,spr:'note',lore:1},note16:{sc:.5,spr:'note',lore:1},note17:{sc:.5,spr:'note',lore:1},flatkey:{sc:.55,spr:'liftkey'},fuse:{sc:.6},liftkey:{sc:.55},tapok:{sc:.8},apple:{sc:.45},gkey:{sc:.55,spr:'liftkey'}};
 const NOTES=[
  {id:'note1',title:'ДВОР НА ЛЕНИНА',kind:'ГАЗЕТА «ВЕЧЕРНИЙ ГОРОД»',text:['Жильцы дома 9 снова жалуются','на подростков во дворе.','Лампочки в подъезде бьют,','почтовые ящики жгут.','Милиция приезжала дважды.','Уехала — один раз.']},
  {id:'note2',title:'ЗАПИСКА НА КУХНЕ',kind:'ЗАПИСКА, ПОЧЕРК КРИВОЙ',text:['Колян!','Щиток в подвале не трогать.','Там кочегар, он нервный.','Свет в доме только наш.','Кто врубит — тому хана.','                    — Толян']},
@@ -92,7 +100,10 @@ const NOTES=[
  {id:'note11',title:'СПЛЕТНИ: ДВОРНИК',kind:'СО СЛОВ БАБЫ НЮРЫ',text:['Дворник наш раньше в охране','служил. Ружьё с тех пор.','«Солью заряжено» — всем','так говорит. Я не проверяла.','Ключ от лифта у него,','ЖЭК ему доплачивает.']},
  {id:'note12',title:'ГРАФИК ДЕЖУРСТВА',kind:'ЛИСТОК НА КУХНЕ, КОММУНАЛКА',text:['Кто моет коридор — Люська.','Кто моет плиту — никто.','Телефон: не занимать дольше','трёх минут! Дежурит смотрящий.','Крыша закрыта, код','написан. Ищите сами.']},
  {id:'note13',title:'СПЛЕТНИ: СМОТРЯЩИЙ',kind:'СО СЛОВ БАБЫ ТОМЫ',text:['Смотрящий наш — Гоша Рыжий.','Раньше у Бати на побегушках.','Ключ от квартиры на замке','всегда при нём — говорят,','там у них общак лежит.','А код с крыши — по стенам.']},
- {id:'note14',title:'ПРАВДА: ВЕРТОЛЁТ',kind:'ГАЗЕТА «ПРАВДА»',text:['Над жилым массивом замечен','вертолёт без опознавательных','знаков. Очевидцы сообщают','о двух гражданах крупного','телосложения. Милиция: «учения».','Редакция просит не паниковать.']}
+ {id:'note14',title:'ПРАВДА: ВЕРТОЛЁТ',kind:'ГАЗЕТА «ПРАВДА»',text:['Над жилым массивом замечен','вертолёт без опознавательных','знаков. Очевидцы сообщают','о двух гражданах крупного','телосложения. Милиция: «учения».','Редакция просит не паниковать.']},
+ {id:'note15',title:'УСТАВ КООПЕРАТИВА',kind:'ЛИСТОК НА ВОРОТАХ',text:['ГСК «Мотор».','Ворота — до 22:00.','Взносы — сторожу, лично.','Без пропуска не пускать.','Кто сдаёт гараж под склад —','штраф и разговор с Семёном.','Председатель (подп. нрзб.)']},
+ {id:'note16',title:'ГАРАЖ С СЕМКАМИ',kind:'ЗАПИСКА ПОД ДВЕРЬЮ',text:['Малые, слушай сюда.','Мешки с элеватора — сюда,','потом на рынок. Не жрать.','Кто лузгу у ворот оставит —','Семён лично разберётся.','Он и так тощий, злой.']},
+ {id:'note17',title:'ВЕДОМОСТЬ СТОРОЖА',kind:'ТЕТРАДЬ НА СТОЛЕ СТОРОЖКИ',text:['Гараж 13 — грузовик в 3:00.','Номеров нет. Пропустил.','Дали пузырь и мешок семок.','Ключ от ворот — при себе.','Никому не отдам.','Через мой труп.']}
 ];
 let NOTESGOT=store.get('notes',[],Array.isArray).filter(v=>typeof v==='string');
 function saveNotes(){store.set('notes',NOTESGOT);}
@@ -285,7 +296,7 @@ function resetLevel(keep){
   const D=DIFF[SET.diff];
   ents=[];
   doorOpen.fill(0);doorTarget.fill(0);doorTimer.fill(0);SEEN.fill(0);
-  if(!keep){Object.assign(G,runState());for(const k in UP)UP[k]=0;Object.assign(P,{ammo9:8,shells:0,has:[1,1,0,0],w:1,vodka:0,kefir:0,seedproof:false});}
+  if(!keep){Object.assign(G,runState());for(const k in UP)UP[k]=0;Object.assign(P,{ammo9:8,shells:0,has:[1,1,0,0],w:1,vodka:0,kefir:0,seedproof:false,wear:[null,null,null,null]});}
   else{P.ammo9=Math.max(P.ammo9,8);}
   const ST=LEVELDEF[G.level].start;G.hasKey=G.hasKey&&keep;G.code=[1,2,3].map(()=>1+((Math.random()*9)|0));
   Object.assign(P,{x:ST.x,y:ST.y,a:ST.a,bleed:0,hp:maxHP(),armor:UP.vest?50:0,cool:0,anim:9,punch:0,bob:0,bobAmt:0,camZ:.5,switchT:0,faceHurt:0,faceGrin:0,throwT:0});
