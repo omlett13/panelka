@@ -358,7 +358,7 @@ const LEVEL_SRC={12:{map:[
  "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
 ],ents:[
  ['birch',2,2],['birch',7,2],['birch',1.8,9],['birch',13,15],['birch',5.5,19.2],['birch',12.3,3.8],
- ['birch',9,12.5],['lamp',4,5],['lamp',11,10],['lamp',6,17],['bb',8.5,7.5],['bench',3.5,13.5],
+ ['birch',9,12.5],['lamp',4,5],['lamp',11,10],['lamp',6,17],['bench',3.5,13.5],
  ['urn',15.2,6.6],['urn',7.3,7.7],['bottle',8.2,8.2],['bottle',9.1,8.1],['bottle',3.2,5.6],['bottle',4.1,14.3],
  ['sq',8.3,6.6],['sq',9.4,6.9],['sq',3.2,12.7],['sq',12.5,16.5],['sp',12.5,1.8],['sp',6.5,3.5],
  ['kvass',1.5,1.5],['lamp',14,23.2],['lamp',28,29],['urn',2.5,28.5],['bottle',10.4,28.6],['bottle',20.3,23.4],
@@ -371,9 +371,9 @@ const LEVEL_SRC={12:{map:[
  ['sq',21.5,12.5],['pelmeni',18.5,12.5],['sp',27.5,12.5],['sq',33.5,12.5],['ammo9',30.5,13.4],['sq',22.5,19.5],
  ['sq',29.5,19.5],['kvass',25.5,20.4],['sp',35.5,19.5],['br',44.5,19.5],['shells',40.5,20.4],['br',41.5,5.5],
  ['sq',44.5,4.5],['sq',40.5,8.5],['kvass',45.4,8.4],['sq',38.5,20.5],['bulb',33.5,24.5],['bulb',39.5,28.5],
- ['bulb',44.5,32.5],['sq',32.5,29.5],['sq',34.5,33.5],['sp',39.5,24.5],['br',38.5,30.5],['sq',40.5,33.2],
- ['br',44.5,29.5],['kc',44.2,25.5],['furnace',45.3,26.8],['coalpile',43.2,27.6],['note1',10,8.4],['note2',24.5,12.5],
- ['obrez',31.5,33.5],['shells',35.5,24.4],['pelmeni',42.5,33.5],['vatnik',37.5,33.5],['ammo9',44.5,34.4],['dealer',4.3,37.4],
+ ['bulb',44.5,32.5],['sq',32.5,29.5],['br',38.5,30.5],['sq',40.5,33.2],
+ ['kc',44.2,25.5],['furnace',45.3,26.8],['coalpile',43.2,27.6],['note1',10,8.4],['note2',24.5,12.5],
+ ['obrez',39.3,28.3],['shells',35.5,24.4],['pelmeni',42.5,33.5],['vatnik',37.5,33.5],['ammo9',44.5,34.4],['dealer',4.3,37.4],
  ['rubS',32.5,2.5],['rubS',18.5,19.5],['rubS',44.5,20.4],['rubS',2.5,33.3],['rubS',31.4,24.4]
 ]},2:{map:[
  "################################################BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
