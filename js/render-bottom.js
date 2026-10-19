@@ -156,12 +156,12 @@ function drawNote(g,N){
   R(g,'rgba(0,0,0,.5)',x+4,y+4,w,h);R(g,news?'#d9d2bc':'#e4ddc8',x,y,w,h);
   const r=rng(N.id.charCodeAt(4)*7);for(let i=0;i<60;i++)R(g,'rgba(120,100,60,.12)',x+r()*w|0,y+r()*h|0,1+r()*3|0,1);
   g.fillStyle='#2a241c';g.textBaseline='top';
-  if(news){g.textAlign='center';g.font='bold 11px "Times New Roman", serif';g.fillText('ВЕЧЕРНИЙ ГОРОД',200,y+8);R(g,'#2a241c',x+10,y+23,w-20,1);R(g,'#2a241c',x+10,y+25,w-20,1);
-    g.font='bold 12px "Times New Roman", serif';g.fillText(N.title,200,y+34);
-    g.font='10px "Times New Roman", serif';g.textAlign='left';N.text.forEach((l,i)=>g.fillText(l,x+14,y+58+i*15));
+  if(news){g.textAlign='center';g.font='bold 11px "Times New Roman", serif';g.fillText(tr('ВЕЧЕРНИЙ ГОРОД'),200,y+8);R(g,'#2a241c',x+10,y+23,w-20,1);R(g,'#2a241c',x+10,y+25,w-20,1);
+    g.font='bold 12px "Times New Roman", serif';g.fillText(tr(N.title),200,y+34);
+    g.font='10px "Times New Roman", serif';g.textAlign='left';N.text.forEach((l,i)=>g.fillText(tr(l),x+14,y+58+i*15));
     for(let i=0;i<3;i++)R(g,'rgba(42,36,28,.25)',x+14,y+160+i*9,w-28-(i*31%50),3);}
   else{R(g,'rgba(90,120,170,.35)',x,y+20,w,1);for(let i=1;i<13;i++)R(g,'rgba(90,120,170,.22)',x,y+20+i*14,w,1);R(g,'rgba(190,70,60,.35)',x+22,y,1,h);
-    g.font='italic 12px "Comic Sans MS", cursive';g.fillStyle='#1c2a5a';g.textAlign='left';N.text.forEach((l,i)=>g.fillText(l,x+30,y+22+i*14+ (i?14:0),w-36));}
+    g.font='italic 12px "Comic Sans MS", cursive';g.fillStyle='#1c2a5a';g.textAlign='left';N.text.forEach((l,i)=>g.fillText(tr(l),x+30,y+22+i*14+ (i?14:0),w-36));}
   g.restore();
 }
 function bottomMenu(g){
@@ -187,5 +187,9 @@ function bottomMenu(g){
     if(G.page==='dead'&&G.deadT<.6)return;}
   rows.forEach(r=>{const sel=G.sel===r.i;R(g,sel?'#1e2e29':'#141b19',r.x,r.y,r.w,r.h);frame(g,r.x,r.y,r.w,r.h,sel?VFD:'#22362f');
     txt(g,MENUS[G.page][r.i],r.x+r.w/2,r.y+7,sel?VFD:LABEL,'center');});
+  if(G.page==='main')drawLangBtn(g);
 }
+function drawLangBtn(g){const b=LANGBTN,cx=b.x+11,cy=b.y+10;R(g,'#141b19',b.x,b.y,b.w,b.h);frame(g,b.x,b.y,b.w,b.h,'#22362f');
+  g.strokeStyle=VFD;g.lineWidth=1;g.beginPath();g.arc(cx,cy,6.5,0,7);g.stroke();g.beginPath();g.ellipse(cx,cy,2.8,6.5,0,0,7);g.stroke();
+  R(g,VFD,cx-6,cy,13,1);R(g,VFD,cx-5,cy-3,11,1);R(g,VFD,cx-5,cy+3,11,1);txt(g,SET.lang?'EN':'RU',b.x+22,b.y+7,LABEL);}
 

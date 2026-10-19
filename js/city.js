@@ -39,7 +39,7 @@ function talkOpts(){const T=TALK[G.talk.id],o=[];
 function openTalk(n){const T=TALK[n.talk];G.talk={n,id:n.talk,who:T.who,text:[],sel:0,pitch:120+((n.x*7+n.y*3)|0)%120};G.state='talk';keys.clear();mouseFire=false;
   const sp=n.talk==='kid'?(P.has[3]?'Спасибо за «Мишку»! Тапок больше не отдам… в смысле, он твой.':(G.candy>0?'Это что у тебя в кармане? «Мишка»?!':null)):n.talk==='sapog'&&P.has[3]?(UP.gvozd?'Ну как тапок? Бьёт? То-то же.':'О, тапок вернул! Давай сюда — подобью гвоздями, будет как кастет.'):null;
   talkSay(sp||(T.hi?pick(T.hi):pick(GOSSIP)));G.talk.opts=talkOpts();sfx.bark(G.talk.pitch);}
-function talkSay(s){G.talk.text=wrapText(s,34);G.talk.tt=0;}
+function talkSay(s){G.talk.text=wrapText(tr(s),34);G.talk.tt=0;}
 function openChoice(who,text,opts){G.talk={n:null,id:null,who,text:[],sel:0,opts,pitch:120};G.state='talk';keys.clear();mouseFire=false;talkSay(text);sfx.tick();}
 function talkClose(){G.talk=null;G.state='play';keys.clear();sfx.tick();}
 function talkMove(d){const t=G.talk;if(!t)return;t.sel=(t.sel+d+t.opts.length)%t.opts.length;sfx.tick();}

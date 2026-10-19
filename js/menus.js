@@ -10,6 +10,9 @@ Object.defineProperty(MENUS,'main',{get:()=>UNL.size>1?['ИГРАТЬ','УРОВ
 Object.defineProperty(MENUS,'levels',{get:()=>['ДОМ 9',UNL.has(4)?'ДОМ 11':'ДОМ 11 · ЗАКРЫТО',UNL.has(8)?'ГОРОД':'ГОРОД · ЗАКРЫТО',UNL.has(9)?'МЕТРО':'МЕТРО · ЗАКРЫТО',UNL.has(11)?'ГАРАЖИ':'ГАРАЖИ · ЗАКРЫТО','НАЗАД']});
 Object.assign(sfx,{brake(){nz(1.3,'bandpass',2600,6,.3,1.2);tone('sawtooth',900,480,1.1,.06);},tink(){tone('square',2600,1900,.05,.22);nz(.04,'highpass',5000,.7,.2,.03);},thud(){tone('sine',80,28,.5,1.4);nz(.35,'lowpass',260,.8,1.1,.3);},thudS(){tone('sine',65,35,.18,.55);nz(.12,'lowpass',200,.8,.35,.1);},twang(){tone('sawtooth',330,150,.5,.4);tone('sawtooth',335,160,.5,.3);}});
 Object.defineProperty(MENUS,'floors',{get:()=>HOUSES[G.house].map(([n,l])=>n===0?l+' · СКОРО':UNL.has(n)?l:l+' · ЗАКРЫТО').concat(['НАЗАД'])});
+/* globe in the bottom-left of the main menu: РУССКИЙ ⇄ ENGLISH (same as ЯЗЫК in settings) */
+const LANGBTN={x:6,y:214,w:44,h:20};
+function toggleLang(){SET.lang^=1;saveSet();sfx.tick();}
 function startAt(n){G.cp=null;loadLevel(n);resetLevel(false);G.hasKey=n===3;if(n>1)saveCheckpoint();G.state='play';G.page=null;keys.clear();
   msg(LNAME[n]||'');}
 function openPage(p){G.page=p;G.sel=0;}
