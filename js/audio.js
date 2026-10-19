@@ -48,7 +48,7 @@ const sfx={
   pickup(){tone('square',660,660,.06,.16);tone('square',990,990,.08,.16,.07);},
   hurt(){tone('sawtooth',240,110,.22,.35);},
   spit(){nz(.06,'highpass',2500,.7,.4,.05);},
-  step(out){nz(.08,out?'bandpass':'lowpass',out?1100:380,1,.1,.07);},
+  step(out,soft){nz(.08,out?'bandpass':'lowpass',out?1100:380,1,soft?.035:.1,.07);},
   ding(){tone('sine',880,880,1.2,.4);tone('sine',1320,1320,1,.25,.02);},
   clunk(){nz(.3,'lowpass',700,1,1,.25);tone('square',70,40,.25,.4);tone('sawtooth',50,50,1.2,.15,.1);},
   bark(p){vocal(p,.3,.75,[650,1150,2400]);},

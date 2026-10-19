@@ -19,6 +19,7 @@ const TALK={
   civ:{who:'ПРОХОЖИЙ'},civW:{who:'ПРОХОЖАЯ'},queue:{who:'ОЧЕРЕДЬ',hi:['Молодой человек, вы тут не стояли!','Куда без очереди?!'],gossip:['Я за «Мишкой» с утра стою.','Говорят, завтра колбасу выбросят.']},
   mil:{who:'МИЛИЦИОНЕР',hi:['Гражданин, проходим, не задерживаемся.','Документики… Ладно, иди.'],gossip:['Бугаи? Не положено обсуждать.','Вертолёт был учебный. Всё, разговор окончен.']},
   chess:{who:'ШАХМАТИСТЫ',hi:['Шах. …Не мешай, молодой.','Ходи конём, Петрович!'],gossip:['Вертолёт? Мы тут в шахматы играем, нам некогда.','Президент ваш — пешка. Все мы пешки.']},
+  tech:{who:'ТЕХНИЧКА · ТЁТЯ ЛЮБА',hi:['Куда в уличной?! Сменку надень. Мешки в гардеробе.','Полы мою, не видишь? В обход иди.'],gossip:['Грузовики по ночам во двор заезжают. С завода, шефы наши. Директор велел не смотреть.','Военрук опять в подвале. Чего он там по вечерам стреляет?','Сменку свою вечно в гардеробе бросают. В самом дальнем углу ищи.']},
   kid:{who:'ПАЦАН',hi:['Тапок? Мой теперь!','Чего надо? Тапок не отдам!'],gossip:['Ну… может, поменяю. На что-нибудь сладкое.','А он мягкий, тапок твой. Голубей хорошо гонять.']}
 };
 const NPCS={Ngastro:{spr:'Wseller',talk:'gastro',block:.3},Nbulka:{spr:'Wseller',talk:'bulka',block:.3},Napteka:{spr:'Wpharm',talk:'apteka',block:.3},Nsapog:{spr:'Csapog',talk:'sapog',block:.3},
@@ -27,7 +28,7 @@ const NPCS={Ngastro:{spr:'Wseller',talk:'gastro',block:.3},Nbulka:{spr:'Wseller'
   Nwalk1:{spr:'Cman1',talk:'civ',block:.3,walk:1},Nwalk2:{spr:'Cman2',talk:'civ',block:.3,walk:1},Nwalk3:{spr:'Cman3',talk:'civ',block:.3,walk:1},
   Nstall1:{spr:'stall1',talk:'vend',sc:1.8,block:.7},Nstall2:{spr:'stall2',talk:'vend',sc:1.8,block:.7},Nstall3:{spr:'stall3',talk:'vend',sc:1.8,block:.7},
   Nshout:{spr:'Wciv2',talk:'pirog',block:.3,shout:['Пирожки! Горячие пирожки!','С капустой, с картошкой!']},Nshout2:{spr:'Cman3',talk:'vend',block:.3,shout:['Семечки! Кому семечки!','Стакан — десять копеек!']},
-  Nbar:{spr:'dealer',talk:'bar',sc:1.05,block:.32},
+  Nbar:{spr:'dealer',talk:'bar',sc:1.05,block:.32},Ntech:{spr:'Wtech',talk:'tech',block:.3},
   Nciv1:{spr:'Cman1',talk:'civ',block:.3},Nciv2:{spr:'Wciv1',talk:'civW',block:.3},Nciv3:{spr:'Cman3',talk:'civ',block:.3},Nciv4:{spr:'Wciv2',talk:'civW',block:.3},Nciv5:{spr:'Cman2',talk:'civ',block:.3},
   Nciv6:{spr:'Wciv1',talk:'civW',block:.3},Nciv7:{spr:'Cman1',talk:'civ',block:.3},Nciv8:{spr:'Cman3',talk:'civ',block:.3},Nciv9:{spr:'Wqueue',talk:'queue',block:.3}};
 function facingNPC(){let best=null,bd=1e9;for(const e of ents){if(e.kind!=='npc')continue;const dx=e.x-P.x,dy=e.y-P.y,d=Math.hypot(dx,dy);if(d>1.6+(e.block||0))continue;let da=Math.atan2(dy,dx)-P.a;da=Math.atan2(Math.sin(da),Math.cos(da));if(Math.abs(da)>.55)continue;if(d<bd){bd=d;best=e;}}return best;}
@@ -37,7 +38,7 @@ function talkOpts(){const T=TALK[G.talk.id],o=[];
   if(G.talk.id==='kid'&&!P.has[3]&&(G.candy||0)>0)o.push({l:'ДАТЬ «МИШКУ»',f:()=>{G.candy--;P.has[3]=1;P.w=3;sfx.pickup();talkSay('О! «Мишка на Севере»! …Ладно, держи свой тапок. Он всё равно воняет.');msg('ТАПОК ВЕРНУЛСЯ');G.talk.opts=talkOpts();G.talk.sel=0;}});
   if(G.talk.id==='sapog'&&P.has[3]&&!UP.gvozd)o.push({l:'ПОДБИТЬ ТАПОК ГВОЗДЯМИ · 40 Р',f:()=>{if(G.rub<40){talkSay('Сорок рублей, молодой. Гвозди нынче дорогие.');sfx.click();return;}G.rub-=40;UP.gvozd=1;sfx.cash();sfx.clunk();talkSay('Готово. Подошва — сталь, гвозди — наружу. Бей в лоб, не промахнёшься.');msg('ТАПОК+ : УРОН x2');G.talk.opts=talkOpts();G.talk.sel=0;}});if(T.shop)for(const it of T.shop)o.push({l:it[0]+' · '+it[1]+' Р',f:()=>buyItem(it)});o.push({l:'ПОГОВОРИТЬ',f:()=>{talkSay(pick(T.gossip||GOSSIP));sfx.bark(G.talk.pitch);}});o.push({l:'ПОКА',f:talkClose});return o;}
 function openTalk(n){const T=TALK[n.talk];G.talk={n,id:n.talk,who:T.who,text:[],sel:0,pitch:120+((n.x*7+n.y*3)|0)%120};G.state='talk';keys.clear();mouseFire=false;
-  const sp=n.talk==='kid'?(P.has[3]?'Спасибо за «Мишку»! Тапок больше не отдам… в смысле, он твой.':(G.candy>0?'Это что у тебя в кармане? «Мишка»?!':null)):n.talk==='sapog'&&P.has[3]?(UP.gvozd?'Ну как тапок? Бьёт? То-то же.':'О, тапок вернул! Давай сюда — подобью гвоздями, будет как кастет.'):null;
+  const sp=n.talk==='kid'?(P.has[3]?'Спасибо за «Мишку»! Тапок больше не отдам… в смысле, он твой.':(G.candy>0?'Это что у тебя в кармане? «Мишка»?!':null)):n.talk==='sapog'&&P.has[3]?(UP.gvozd?'Ну как тапок? Бьёт? То-то же.':'О, тапок вернул! Давай сюда — подобью гвоздями, будет как кастет.'):n.talk==='tech'&&worn('smenka')?'Вот, в сменке — другое дело. Проходи, не топчи.':null;
   talkSay(sp||(T.hi?pick(T.hi):pick(GOSSIP)));G.talk.opts=talkOpts();sfx.bark(G.talk.pitch);}
 function talkSay(s){G.talk.text=wrapText(s,34);G.talk.tt=0;}
 function openChoice(who,text,opts){G.talk={n:null,id:null,who,text:[],sel:0,opts,pitch:120};G.state='talk';keys.clear();mouseFire=false;talkSay(text);sfx.tick();}

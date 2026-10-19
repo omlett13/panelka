@@ -15,7 +15,8 @@ const levelState=()=>({
   outside:false,siteDone:false,trainMove:false,departed:false,departT:0,ghostOn:false,ghostDone:false,ghostEnd:false,ghostT:0,lockDoor:-1,wave:null, // metro
   brig:null,siteEnd:0,obrezEnt:null,arena:false,breach:false,breachHole:false,                  // site
   gkey:false,gateOpen:false,garDone:false,knock:null,seedFound:false,                                    // garages
-  siloCage:false,semOn:false,semCard:0,semLock:false,semWinT:0});                                                                          // silo
+  siloCage:false,semOn:false,semCard:0,semLock:false,semWinT:0,                               // silo
+  techOK:false,techT:0});                                                                      // school
 const G=watchKeys('G',Object.assign({
   state:'menu',read:null,page:'main',sel:0,parent:'main',prevState:'play',t:0,deadT:0,zoom:0,winTime:0,navT:0,hadLock:false,noiseT:0,god:false,
   lootHeld:-1,lootSlot:-1,lootCur:0,statsT:0,rideT:0,rideDing:false,rideTarget:0,hiT:0,talk:null,noteI:0,house:9,
@@ -23,11 +24,11 @@ const G=watchKeys('G',Object.assign({
   level:1,secretTotal:0,hasKey:false,cp:null,menuCam:null,menuLoad:false,menuLvl:1,shotId:0,
   dawn:0 // roof sunrise; deliberately carried into later levels (nofog sprites use it)
 },runState(),levelState()));
-const P={x:3.5,y:18.5,a:-0.9,hp:100,armor:0,ammo9:8,shells:0,has:[1,1,0],w:1,cool:0,anim:9,punch:0,bob:0,bobAmt:0,camZ:.5,switchT:0,faceHurt:0,faceGrin:0,faceLook:0,faceLookT:0,stepPh:0,vodka:0,throwT:0,kefir:0,seedproof:false,wear:[null,null,null,null]};
+const P={x:3.5,y:18.5,a:-0.9,hp:100,armor:0,ammo9:8,shells:0,has:[1,1,0],w:1,cool:0,anim:9,punch:0,bob:0,bobAmt:0,camZ:.5,switchT:0,faceHurt:0,faceGrin:0,faceLook:0,faceLookT:0,stepPh:0,vodka:0,throwT:0,kefir:0,seedproof:false,smenka:false,wear:[null,null,null,null]};
 const UP={kastet:0,tt:0,dvust:0,krossy:0,vest:0,bando:0,salo:0,tapok2:0,gvozd:0};
 /* wearables: P.wear[slot] holds the id worn there (ГОЛОВА, ТЕЛО, НОГИ, ОБУВЬ); what you own but don't wear lies in СНЯТО */
 const WSLOT=['ГОЛОВА','ТЕЛО','НОГИ','ОБУВЬ'];
-const WEAR=[{id:'semVest',slot:1,name:'ЖИЛЕТКА',desc:'СЕМКИ НЕ БЕРУТ',own:()=>P.seedproof},{id:'krossy',slot:3,name:'КРОССЫ',desc:'СКОРОСТЬ +20%',own:()=>!!UP.krossy}];
+const WEAR=[{id:'semVest',slot:1,name:'ЖИЛЕТКА',desc:'СЕМКИ НЕ БЕРУТ',own:()=>P.seedproof},{id:'krossy',slot:3,name:'КРОССЫ',desc:'СКОРОСТЬ +20%',own:()=>!!UP.krossy},{id:'smenka',slot:3,name:'СМЕНКА',desc:'ТИХИЙ ШАГ',own:()=>P.smenka}];
 function wearDef(id){return WEAR.find(w=>w.id===id);}
 function wornAt(s){const d=wearDef(P.wear[s]);return d&&d.own()?d:null;}
 function worn(id){const d=wearDef(id);return !!d&&P.wear[d.slot]===id&&d.own();}
@@ -83,8 +84,9 @@ const KINDS={
 };
 const PROPS={crane:{sc:11,block:.9},craneX:{sc:4,block:0},scaff:{sc:3.4,block:.12},pipe:{sc:1.3,block:.55},pipes:{sc:2.3,block:1.05},carP:{sc:1.55,block:.85},carP2:{sc:1.55,block:.85},carW:{sc:1.5,block:.8},tires:{sc:.9,block:.4},husks:{sc:.7,block:0},sack:{sc:1,block:.45},seedpile:{sc:1.1,block:0},conveyor:{sc:1.3,block:.5},flywheel:{sc:1.7,block:.6},motor:{sc:1.15,block:.5},panel:{sc:1.1,block:.4},hlamp:{sc:1.1,block:0},silo:{sc:5.2,block:1},ladder:{sc:1.5,block:0},cabinet:{sc:1.25,block:.45},ibeam:{sc:2.4,block:.35},valve:{sc:.9,block:0},duct:{sc:1.8,block:0},mixer:{sc:1.6,block:.6},bricks:{sc:1,block:.45},rebar:{sc:.9,block:.3},sand:{sc:1.1,block:.5},slab:{sc:1.3,block:.45},kassa:{sc:.95,block:.45},turnstile:{sc:1,block:.35},msign:{sc:2.2,block:.12},tseat:{sc:.9,block:.3},tpole:{sc:1,block:.1},lenin:{sc:4.2,block:.9},fountain:{sc:2.8,block:.9},tramstop:{sc:2.2,block:.4},chess:{sc:.8,block:.3},counter:{sc:1,block:.5},stall:{sc:1.8,block:.7},antenna:{sc:2.2,block:.1},truck:{sc:2.5,block:.95},birch:{sc:3,block:.22},lamp:{sc:2.6,block:.15},bench:{sc:1,block:.42},urn:{sc:1,block:.26},bottle:{sc:.6,block:0},bulb:{sc:1,block:0},dealer:{sc:1.05,block:.32},
   couch:{sc:1,block:.45},table:{sc:1,block:.38},tv:{sc:.9,block:.3},stove:{sc:1,block:.35},chand:{sc:1,block:0},laundry:{sc:1,block:0},rubble:{sc:.8,block:0},rail:{sc:1,block:0},furnace:{sc:1,block:.4},throne:{sc:1.3,block:.5},rug:{sc:1.6,block:0},flamp:{sc:1.5,block:.15},barrel:{sc:1,block:.3},coalpile:{sc:1,block:.4},crate:{sc:1,block:.35},jars:{sc:1,block:0},pump:{sc:1,block:.4},
-  leaves:{sc:1,block:0},broom:{sc:1.3,block:0},poplar:{sc:3.8,block:.2},fir:{sc:2.8,block:.35},deadtree:{sc:3,block:.2},appletree:{sc:2.6,block:.3},rocket:{sc:2.6,block:.45},carousel:{sc:1.3,block:.7},sandbox:{sc:1,block:.5}};
-const ITEMS={pmGround:{sc:1},kvass:{sc:.7},pelmeni:{sc:.7},vatnik:{sc:.8},semVest:{sc:.8},ammo9:{sc:.7},ammo9s:{sc:.5,spr:'ammo9'},shells:{sc:.7},obrez:{sc:.9},rub:{sc:.45,money:1},rubS:{sc:.6,spr:'rub',money:1},safe:{sc:.8,money:1},vodkaI:{sc:.6},note1:{sc:.5,spr:'note',lore:1},note2:{sc:.5,spr:'note',lore:1},note3:{sc:.5,spr:'note',lore:1},note4:{sc:.5,spr:'note',lore:1},note5:{sc:.5,spr:'note',lore:1},note6:{sc:.5,spr:'note',lore:1},note7:{sc:.5,spr:'note',lore:1},note8:{sc:.5,spr:'note',lore:1},
+  leaves:{sc:1,block:0},broom:{sc:1.3,block:0},poplar:{sc:3.8,block:.2},fir:{sc:2.8,block:.35},deadtree:{sc:3,block:.2},appletree:{sc:2.6,block:.3},rocket:{sc:2.6,block:.45},carousel:{sc:1.3,block:.7},sandbox:{sc:1,block:.5},
+  parta:{sc:1,block:.4},bucket:{sc:.6,block:.2},stul:{sc:.8,block:.22},globe:{sc:.6,block:0},flower:{sc:1.1,block:.25},shkaf:{sc:1.4,block:.45},medshkaf:{sc:1.3,block:.4},sink:{sc:.9,block:.3},unitaz:{sc:.8,block:.28},pissuar:{sc:.8,block:.2}};
+const ITEMS={pmGround:{sc:1},kvass:{sc:.7},pelmeni:{sc:.7},vatnik:{sc:.8},semVest:{sc:.8},smenka:{sc:.75},ammo9:{sc:.7},ammo9s:{sc:.5,spr:'ammo9'},shells:{sc:.7},obrez:{sc:.9},rub:{sc:.45,money:1},rubS:{sc:.6,spr:'rub',money:1},safe:{sc:.8,money:1},vodkaI:{sc:.6},note1:{sc:.5,spr:'note',lore:1},note2:{sc:.5,spr:'note',lore:1},note3:{sc:.5,spr:'note',lore:1},note4:{sc:.5,spr:'note',lore:1},note5:{sc:.5,spr:'note',lore:1},note6:{sc:.5,spr:'note',lore:1},note7:{sc:.5,spr:'note',lore:1},note8:{sc:.5,spr:'note',lore:1},
   note12:{sc:.5,spr:'note',lore:1},note15:{sc:.5,spr:'note',lore:1},note16:{sc:.5,spr:'note',lore:1},note17:{sc:.5,spr:'note',lore:1},flatkey:{sc:.55,spr:'liftkey'},fuse:{sc:.6},liftkey:{sc:.55},tapok:{sc:.8},apple:{sc:.45},gkey:{sc:.55,spr:'liftkey'}};
 const NOTES=[
  {id:'note1',title:'ДВОР НА ЛЕНИНА',kind:'ГАЗЕТА «ВЕЧЕРНИЙ ГОРОД»',text:['Жильцы дома 9 снова жалуются','на подростков во дворе.','Лампочки в подъезде бьют,','почтовые ящики жгут.','Милиция приезжала дважды.','Уехала — один раз.']},
@@ -163,14 +165,17 @@ const LIGHTS9=(function(){const L=[],W=[1,.85,.6],C=[.85,.9,1];L.push({x:8,y:8,c
     {x:110,y:44.5,c:[1,.8,.55],r:7,i:1.1,fl:1},{x:119,y:44.5,c:[1,.8,.55],r:7,i:1.1},{x:101.5,y:49.5,c:[1,.8,.55],r:6,i:1},{x:101.5,y:59.5,c:[1,.8,.55],r:6,i:1,fl:2},{x:111.5,y:59.5,c:[1,.8,.55],r:6,i:1},{x:111.5,y:53.5,c:[1,.8,.55],r:6,i:1});return L;})();
 const LIGHTS8=[{x:72,y:38,c:[1,.9,.75],r:6,i:1},{x:82,y:38,c:[1,.9,.75],r:5,i:1},{x:91,y:38,c:[.85,1,.9],r:5,i:1},{x:70,y:53,c:[1,.85,.6],r:5,i:.9,fl:1},{x:98,y:38,c:[1,.3,.2],r:3,i:.6,fl:2}];
 const LIGHTS7=[{x:5,y:7.5,c:[1,.75,.45],r:4,i:.8,fl:1},{x:33,y:7,c:[1,.8,.5],r:4.5,i:.9,fl:2},{x:20,y:36,c:[1,.75,.45],r:5,i:.7},{x:44,y:36,c:[1,.75,.45],r:5,i:.7}];
+const LIGHTS13=[{x:12,y:21.5,c:[.82,.95,.92],r:7,i:1},{x:25,y:21.5,c:[.82,.95,.92],r:7,i:1},{x:38,y:21.5,c:[.82,.95,.92],r:7,i:1,fl:1},{x:51,y:21.5,c:[.82,.95,.92],r:7,i:1},{x:62,y:21.5,c:[.82,.95,.92],r:7,i:1},{x:20,y:11.5,c:[.82,.95,.92],r:6,i:.95},{x:20,y:16,c:[.82,.95,.92],r:6,i:.95},{x:33,y:11.5,c:[.82,.95,.92],r:6,i:.95},{x:33,y:16,c:[.82,.95,.92],r:6,i:.95,fl:2},{x:43.5,y:16,c:[.82,.95,.92],r:4.5,i:1},{x:43.5,y:10.5,c:[1,.78,.45],r:3.5,i:.7},{x:53,y:14.5,c:[.82,.95,.92],r:6,i:1},{x:60,y:14.5,c:[.82,.95,.92],r:6,i:1},{x:53,y:6.5,c:[1,.78,.45],r:5,i:.95},{x:60,y:6.5,c:[1,.78,.45],r:5,i:.95},{x:10,y:27.5,c:[.82,.95,.92],r:4,i:.8,fl:3},{x:16,y:27.5,c:[.82,.95,.92],r:4,i:.8},{x:31,y:28,c:[1,.78,.45],r:6,i:1.05},{x:38,y:31,c:[1,.78,.45],r:6,i:1.05},{x:34.5,y:39,c:[1,.78,.45],r:3.5,i:.7},{x:12,y:34,c:[1,.78,.45],r:5,i:.7},{x:20,y:39,c:[1,.78,.45],r:5,i:.7,fl:2},{x:10,y:15,c:[.82,.95,.92],r:5,i:.75}];
 const LIGHTS12=[{x:108,y:44.5,c:[1,.86,.6],r:7,i:.8,fl:1},{x:99,y:48,c:[1,.86,.6],r:6,i:.6},{x:117,y:48,c:[1,.86,.6],r:6,i:.6},{x:121.5,y:54,c:[1,.25,.15],r:4,i:.9,fl:2},{x:95.5,y:58,c:[1,.25,.15],r:4,i:.9,fl:2},{x:121.5,y:62,c:[1,.25,.15],r:4,i:.9,fl:2},{x:95.5,y:66,c:[1,.25,.15],r:4,i:.9,fl:2},{x:121.5,y:70,c:[1,.25,.15],r:4,i:.9,fl:2},{x:108,y:56,c:[1,.86,.6],r:8,i:.6},{x:100,y:66,c:[1,.86,.6],r:7,i:.6,fl:1},{x:116,y:66,c:[1,.86,.6],r:7,i:.6},{x:108,y:72,c:[1,.5,.25],r:6,i:.7,fl:3},{x:107,y:79,c:[1,.86,.6],r:5,i:.8,fl:1},{x:107,y:90,c:[1,.86,.6],r:5,i:.7},{x:107,y:22,c:[1,.86,.6],r:6,i:.8,fl:1},{x:107,y:32.5,c:[1,.86,.6],r:6,i:.8},{x:79.5,y:9.5,c:[.9,.97,.95],r:3.2,i:.75,fl:1},{x:79.5,y:66.5,c:[.9,.97,.95],r:3.2,i:.75,fl:1},{x:44,y:11,c:[1,.9,.7],r:6,i:.7},{x:30,y:30,c:[1,.86,.6],r:6,i:.5},{x:58,y:30,c:[1,.86,.6],r:6,i:.5},{x:44,y:48,c:[1,.9,.7],r:6,i:.6},
   {x:76,y:70,c:[1,.9,.7],r:6,i:.6},{x:48,y:72,c:[1,.86,.6],r:6,i:.5},{x:48,y:86,c:[1,.86,.6],r:6,i:.5},{x:20,y:70,c:[1,.9,.7],r:6,i:.6},{x:22,y:84,c:[1,.86,.6],r:6,i:.5}];
 const LIGHTS11=[{x:24,y:9.5,c:[1,.85,.6],r:5,i:1}];
 const LIGHTS10=[{x:77.5,y:77,c:[1,.85,.6],r:5,i:1},{x:48,y:42,c:[1,.92,.8],r:7,i:.8},{x:60,y:40,c:[1,.92,.8],r:7,i:.8},{x:72,y:42,c:[1,.92,.8],r:7,i:.8},{x:55,y:45,c:[1,.92,.8],r:6,i:.6},{x:66,y:45,c:[1,.92,.8],r:6,i:.6}];
 /* per-level config. Render: fog (FOGD), cull (CULL2), ceilH (CEILH), hz (HZ), oob (OOBF), sky() (SKY); defaults in LVDEF0.
-   Hooks: cells() floor/ceiling/zone overrides after parseMap · init() end of resetLevel · update(dt) each play tick, return true to end the tick */
+   walls() {tile:[textures]} wall overrides (variant by WALLV) · Hooks: cells() floor/ceiling/zone overrides after parseMap · init() end of resetLevel · update(dt) each play tick, return true to end the tick */
 const LVDEF0={fog:12.5,cull:196,ceilH:1,hz:0,oob:0xff000000,sky:()=>SKYN};
 const LEVELDEF={
+  13:{lights:LIGHTS13,start:{x:34.5,y:39.6,a:-Math.PI/2},obj:'СМЕНКА',amb:1.35,fog:30,cull:900,
+    walls:()=>schoolWalls(),cells(){schoolCells();},init(){schInit();},update(dt){updateSchool(dt);}},
   12:{lights:LIGHTS12,start:{x:44,y:51,a:-Math.PI/2},obj:'ВЕРХ',amb:1.5,fog:60,cull:900,ceilH:5,oob:0xffb88a5a,sky:()=>SKYD1,
     cells(){WH12.fill(0);RAILM.fill(0);for(let i=MW;i<N-MW;i++){const t=TILE[i];if(t!==68&&t!==69)continue;const r=j=>TILE[j]===68||TILE[j]===69;RAILM[i]=(r(i-MW)?1:0)|(r(i+MW)?2:0)|(r(i-1)?4:0)|(r(i+1)?8:0);}for(let i=0;i<N;i++){const c=FLCH[i],t=TILE[i];if(c===47){FLOORTEX[i]=TX.siloF;ZONE[i]=Z_OUT;continue;}if(c===118){FLOORTEX[i]=TX.siloHole;CEILTEX[i]=TX.siloC;CEILW[i]=1;continue;}if(c===109)FLOORTEX[i]=TX.siloBelt[0];else if(c===59)FLOORTEX[i]=TX.siloBeltW[0];else if(c===91)FLOORTEX[i]=TX.siloCrush[0];if(c===114)FLOORTEX[i]=TX.siloStep;else if(c===101)FLOORTEX[i]=TX.siloF;if(c===126){CEILTEX[i]=TX.liftCeil;continue;}if(t===12){ZONE[i]=Z_LIFT;FLOORTEX[i]=TX.rubber;CEILTEX[i]=TX.liftCeil;continue;}if(c===46||t===68||t===69){FLOORTEX[i]=TX.siloF;ZONE[i]=Z_HALL;}CEILTEX[i]=TX.siloC;if(t===66||t===70)TALLOK[i]=1;if(t===70){const x=i%MW,y=(i/MW)|0;WH12[i]=3+((hash2(((x/2)|0)*7+y*13,((y/2)|0)*5+x*3)*4)|0);}}
       /* walls that touch open sky count as outdoors, so no ceiling is drawn on top of them */
@@ -210,7 +215,7 @@ const LEVELDEF={
           if(live<2){const pts=LEVELDEF[2].heal.filter(p=>Math.hypot(p[0]-P.x,p[1]-P.y)>2.5);const p=pts[(Math.random()*pts.length)|0];
             if(p){{const r=Math.random();ents.push({kind:'item',t:r<.45?'kvass':r<.75?'pelmeni':'shells',x:p[0],y:p[1],drop:1,heal:1});}spawnFx('puff',p[0],p[1],.5);sfx.pickup();}}}}}}
 };
-let LIGHTS=[];
+let LIGHTS=[],WALLOV=null;
 const AMB=[[.16,.17,.27],[.2,.22,.2],[.19,.16,.12],[.06,.06,.06],[.34,.33,.3],[.12,.13,.2],[.36,.32,.28],[.05,.07,.08],[.12,.06,.03]];
 const BR_=new Float32Array(N),BG_=new Float32Array(N),BB_=new Float32Array(N),LR=new Float32Array(N),LG=new Float32Array(N),LB=new Float32Array(N);
 /* ЭЛЕВАТОР sunlight is static: trace it once per level load (was every frame) */
@@ -230,7 +235,7 @@ function initLights(){
 function loadLevel(n){
   G.level=n;if(!G.menuLoad)store.set('last',n);MWL=n>=8?MW:64;MHL=n>=8?MH:48;unlock(n);parseMap(LEVEL_SRC[n].map);
   for(let i=0;i<N;i++){const z=ZONE[i];FLOORTEX[i]=z===Z_OUT?TX.asph:(z===Z_APT||z===Z_BOSS)?TX.parq:z===Z_BASE?TX.conc:z===Z_LIFT?TX.rubber:z===Z_VOID?TX.far:z===Z_WATER?TX.water:z===Z_BOIL?TX.coalf:TX.tile;CEILTEX[i]=z===Z_LIFT?TX.liftCeil:(z===Z_BASE||z===Z_WATER||z===Z_BOIL)?TX.ceilB:TX.ceil;}
-  const L=Object.assign({},LVDEF0,LEVELDEF[n]);CEILW.fill(0);if(L.cells)L.cells();
+  const L=Object.assign({},LVDEF0,LEVELDEF[n]);CEILW.fill(0);WALLOV=L.walls?L.walls():null;if(L.cells)L.cells();
   FOGD=L.fog;CULL2=L.cull;CEILH=L.ceilH;HZ=L.hz;OOBF=L.oob;SKY=L.sky();
   LIGHTS=L.lights.map(l=>Object.assign({},l));initLights();
   G.secretTotal=0;for(let i=0;i<N;i++)if(TILE[i]===10)G.secretTotal++;if(L.secrets!=null)G.secretTotal=L.secrets;
@@ -296,7 +301,7 @@ function resetLevel(keep){
   const D=DIFF[SET.diff];
   ents=[];
   doorOpen.fill(0);doorTarget.fill(0);doorTimer.fill(0);SEEN.fill(0);
-  if(!keep){Object.assign(G,runState());for(const k in UP)UP[k]=0;Object.assign(P,{ammo9:8,shells:0,has:[1,1,0,0],w:1,vodka:0,kefir:0,seedproof:false,wear:[null,null,null,null]});}
+  if(!keep){Object.assign(G,runState());for(const k in UP)UP[k]=0;Object.assign(P,{ammo9:8,shells:0,has:[1,1,0,0],w:1,vodka:0,kefir:0,seedproof:false,smenka:false,wear:[null,null,null,null]});}
   else{P.ammo9=Math.max(P.ammo9,8);}
   const ST=LEVELDEF[G.level].start;G.hasKey=G.hasKey&&keep;G.code=[1,2,3].map(()=>1+((Math.random()*9)|0));
   Object.assign(P,{x:ST.x,y:ST.y,a:ST.a,bleed:0,hp:maxHP(),armor:UP.vest?50:0,cool:0,anim:9,punch:0,bob:0,bobAmt:0,camZ:.5,switchT:0,faceHurt:0,faceGrin:0,throwT:0});

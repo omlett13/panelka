@@ -91,6 +91,7 @@ function renderTop(){
       case 41:base=TX.tend;break;case 42:base=TX.tdoor;break;case 43:base=TX.tgdoor;break;case 44:base=TX.marble;break;case 45:base=TX.mosaic;break;case 46:base=TX.eswall;break;case 47:base=TX.fence;break;case 48:base=TX.column;break;case 49:base=TX.fbrick;break;case 50:base=TX.skelIn;break;case 58:base=TX.fbrick;break;case 66:base=TX.siloW;break;case 68:base=TX.siloW;break;case 60:base=pz===Z_HALL?TX.gint:TX.gwall;break;case 61:case 62:base=pz===Z_HALL?TX.gint:TX.gdoor[((((hitI%MW)/3)|0)*7+(((hitI/MW)|0))*3)%5];break;case 63:base=TX.ggate;break;case 64:base=TX.plita;break;case 65:base=TX.gdoorS;break;case 67:base=TX.siloBin;break;case 71:base=TX.siloStairs;break;case 56:base=tall?TX.skelG:TX.skelIn;break;case 37:base=TX.glassDoor;break;case 38:base=TX.bdoor;break;
       case 27:case 28:case 29:base=TX.tag[hitT-27];break;
     }
+    if(WALLOV&&WALLOV[hitT]){const o=WALLOV[hitT];base=o[WALLV[hitI]%o.length];}
     if(RZON&&(hitT===11||hitT===13)&&pz!==Z_LIFT)base=TX.siloShaft;
     const lineH=RPROJ/perp,fl=RHOR+camZ*lineH,st=(RZON&&pz===Z_LIFT)?1:(G.level===12&&hitT===66)?CEILH:(tall?5:(CEILH>1&&pz!==Z_OUT&&pz!==Z_VOID?CEILH:1)),top=fl-st*lineH;
     const y0=Math.max(0,Math.ceil(top)),y1=Math.min(RH-1,Math.floor(fl));if(OUTP&&!IND&&BIN[x]>1e8)ZT[x]=Math.max(0,Math.ceil(top));

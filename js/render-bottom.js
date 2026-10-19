@@ -1,6 +1,6 @@
 'use strict';
 /* ---------- RENDER: BOTTOM SCREEN ---------- */
-function zoneName(){const z=ZONE[(P.y|0)*MW+(P.x|0)];if(G.level===11){const c=FLCH[(P.y|0)*MW+(P.x|0)];return c===91?'ГАРАЖ':z===Z_HALL?'СТОРОЖКА':'ГАРАЖИ';}if(G.level===12)return P.x>=SILO_SW?(P.y>=SILO_F3&&P.y<76?'ЭЛЕВАТОР · 3 ЭТАЖ':'ЛЕСТНИЦА'):P.y>SILO_F2?'ЭЛЕВАТОР · 2 ЭТАЖ':'ЭЛЕВАТОР · 1 ЭТАЖ';if(G.level===10)return G.duel?'КРАН':z===Z_HALL?'КОРПУС':'СТРОЙКА';if(G.level===9){const c=FLCH[(P.y|0)*MW+(P.x|0)];return c===114?(G.trainMove?'ВАГОН · В ПУТИ':'ВАГОН'):c===101?'ЭСКАЛАТОР':c===95?(P.y<48?'СТАНЦИЯ «СТРОЙКА»':'ЛЕСТНИЦА'):z===Z_OUT?'У СТРОЙКИ':P.y>41?'ЗАБРОШЕННАЯ СТАНЦИЯ':P.y<12?'ВЕСТИБЮЛЬ':'ПЛАТФОРМА';}if(G.level===8){const x=P.x,y=P.y;return x>96.5&&y<56?'ЗАКОУЛОК':z===Z_HALL?'МАГАЗИН':x<36&&y>36.5&&y<57?'ПАРК':x>66.5&&y<49?'ТОРГОВАЯ УЛИЦА':x>75&&y>=49&&y<57?'РЫНОК':x>=39&&x<64&&y>=37&&y<57?'ПЛОЩАДЬ':'УЛИЦА';}if(G.level===7)return P.y>31?'УЛИЦА':FLCH[(P.y|0)*MW+(P.x|0)]===112?'ДОСКА':z===Z_HALL?'МАШИННОЕ':'КРЫША';if(G.level===5)return 'ЛЕСТНИЦА';if(G.level===6)return z===Z_APT?(P.x>=22&&P.x<34&&P.y>26?'КУХНЯ':'КОМНАТА'):'КОРИДОР';if(G.level===4){if(z===Z_LIFT)return 'ЛИФТ';if(z===Z_BASE)return P.x<20?'САРАЙ':'ГАРАЖ';if(z===Z_OUT)return P.y>35?'ГАРАЖИ':P.x<22&&P.y>21?'ПЛОЩАДКА':'ДВОР';if(z===Z_APT)return 'КВАРТИРА';return 'ПОДЪЕЗД';}if(z===Z_LIFT)return 'ЛИФТ';if(z===Z_BOSS)return G.level===3?'ХАТА БАТИ':'ХАТА БРАТЬЕВ';if(z===Z_WATER)return 'ЗАТОПЛЕНО';if(z===Z_BOIL)return 'КОТЕЛЬНАЯ';if(G.level===3)return 'ПОДВАЛ';if(G.level===2&&z===Z_OUT)return 'БАЛКОН';return z===Z_OUT?(P.y>21?'ГАРАЖИ':'ДВОР'):z===Z_APT?'КВАРТИРА':z===Z_BASE?'ПОДВАЛ':'ПОДЪЕЗД';}
+function zoneName(){const z=ZONE[(P.y|0)*MW+(P.x|0)];if(G.level===13){const c=FLCH[(P.y|0)*MW+(P.x|0)],x=P.x,y=P.y;return c===109?'ЛЕСТНИЦА':c===101?'ТУАЛЕТ':c===59?'СТОЛОВАЯ':c===91?'КУХНЯ':c===58?(x<27?'1 «А»':x<40?'1 «Б»':y<13?'ПОДСОБКА':'МЕДПУНКТ'):c===114?(x<25.5?'ГАРДЕРОБ':y>37?'ТАМБУР':'ВЕСТИБЮЛЬ'):'РЕКРЕАЦИЯ';}if(G.level===11){const c=FLCH[(P.y|0)*MW+(P.x|0)];return c===91?'ГАРАЖ':z===Z_HALL?'СТОРОЖКА':'ГАРАЖИ';}if(G.level===12)return P.x>=SILO_SW?(P.y>=SILO_F3&&P.y<76?'ЭЛЕВАТОР · 3 ЭТАЖ':'ЛЕСТНИЦА'):P.y>SILO_F2?'ЭЛЕВАТОР · 2 ЭТАЖ':'ЭЛЕВАТОР · 1 ЭТАЖ';if(G.level===10)return G.duel?'КРАН':z===Z_HALL?'КОРПУС':'СТРОЙКА';if(G.level===9){const c=FLCH[(P.y|0)*MW+(P.x|0)];return c===114?(G.trainMove?'ВАГОН · В ПУТИ':'ВАГОН'):c===101?'ЭСКАЛАТОР':c===95?(P.y<48?'СТАНЦИЯ «СТРОЙКА»':'ЛЕСТНИЦА'):z===Z_OUT?'У СТРОЙКИ':P.y>41?'ЗАБРОШЕННАЯ СТАНЦИЯ':P.y<12?'ВЕСТИБЮЛЬ':'ПЛАТФОРМА';}if(G.level===8){const x=P.x,y=P.y;return x>96.5&&y<56?'ЗАКОУЛОК':z===Z_HALL?'МАГАЗИН':x<36&&y>36.5&&y<57?'ПАРК':x>66.5&&y<49?'ТОРГОВАЯ УЛИЦА':x>75&&y>=49&&y<57?'РЫНОК':x>=39&&x<64&&y>=37&&y<57?'ПЛОЩАДЬ':'УЛИЦА';}if(G.level===7)return P.y>31?'УЛИЦА':FLCH[(P.y|0)*MW+(P.x|0)]===112?'ДОСКА':z===Z_HALL?'МАШИННОЕ':'КРЫША';if(G.level===5)return 'ЛЕСТНИЦА';if(G.level===6)return z===Z_APT?(P.x>=22&&P.x<34&&P.y>26?'КУХНЯ':'КОМНАТА'):'КОРИДОР';if(G.level===4){if(z===Z_LIFT)return 'ЛИФТ';if(z===Z_BASE)return P.x<20?'САРАЙ':'ГАРАЖ';if(z===Z_OUT)return P.y>35?'ГАРАЖИ':P.x<22&&P.y>21?'ПЛОЩАДКА':'ДВОР';if(z===Z_APT)return 'КВАРТИРА';return 'ПОДЪЕЗД';}if(z===Z_LIFT)return 'ЛИФТ';if(z===Z_BOSS)return G.level===3?'ХАТА БАТИ':'ХАТА БРАТЬЕВ';if(z===Z_WATER)return 'ЗАТОПЛЕНО';if(z===Z_BOIL)return 'КОТЕЛЬНАЯ';if(G.level===3)return 'ПОДВАЛ';if(G.level===2&&z===Z_OUT)return 'БАЛКОН';return z===Z_OUT?(P.y>21?'ГАРАЖИ':'ДВОР'):z===Z_APT?'КВАРТИРА':z===Z_BASE?'ПОДВАЛ':'ПОДЪЕЗД';}
 function frame(g,x,y,w,h,c){g.strokeStyle=c;g.lineWidth=1;g.strokeRect(x+.5,y+.5,w-1,h-1);}
 function bar(g,x,y,w,h,v,c){R(g,'#0a0e0d',x,y,w,h);R(g,c,x,y,Math.max(0,Math.min(1,v))*w|0,h);}
 function drawMap(g,x0,y0,w,h){
@@ -75,10 +75,12 @@ function drawHero(g,x,y){const h=HEROG,sv=worn('semVest');h.clearRect(0,0,64,64)
   if(UP.bando)for(let k=0;k<9;k++){R(h,'#5a3a1a',22+k*2,23+k*2,3,3);if(k%2)R(h,'#b8302a',23+k*2,22+k*2,1,2);}
   if(UP.kastet)R(h,'#c9a54a',43,40,5,2);
   if(worn('krossy'))for(const sx of [23,33]){R(h,'#efefe9',sx,59,8,4);R(h,'#2a4a9c',sx,62,8,1);}
+  if(worn('smenka'))for(const sx of [23,33]){R(h,'#1e1e22',sx,60,8,3);R(h,'#d8d4c8',sx,63,8,1);}
   R(g,'#0b100e',x-24,y+120,48,4);g.imageSmoothingEnabled=false;g.drawImage(HEROC,x-64,y-8,128,128);}
 function wearIcon(g,id,cx,y){
   if(id==='semVest'){R(g,'#2a46a8',cx-9,y+1,18,10);R(g,'#2a46a8',cx-6,y,12,1);R(g,'#eeeeee',cx,y,1,11);R(g,'#eeeeee',cx-8,y+2,1,9);R(g,'#eeeeee',cx+7,y+2,1,9);R(g,'#111715',cx-2,y,4,2);R(g,'#d8d0b8',cx-4,y+5,1,1);R(g,'#d8d0b8',cx+3,y+7,1,1);}
-  else if(id==='krossy'){R(g,'#efefe9',cx-7,y+3,6,4);R(g,'#efefe9',cx-7,y+6,14,4);R(g,'#2a4a9c',cx-7,y+9,14,1);}}
+  else if(id==='krossy'){R(g,'#efefe9',cx-7,y+3,6,4);R(g,'#efefe9',cx-7,y+6,14,4);R(g,'#2a4a9c',cx-7,y+9,14,1);}
+  else if(id==='smenka'){R(g,'#1e1e22',cx-7,y+4,6,3);R(g,'#1e1e22',cx-7,y+6,14,4);R(g,'#d8d4c8',cx-7,y+10,14,1);}}
 function pockets(){const o=[];
   if(G.hasKey&&G.level<=3)o.push(['КЛЮЧ ОТ ПОДВАЛА','']);
   if(G.level===4&&G.fuses>0&&!G.power)o.push(['ПРЕДОХР.',G.fuses+'/3']);
@@ -91,9 +93,9 @@ function drawWear(g){
   txt(g,'СНАРЯГА',6,4,WARN);txt(g,'ЗАКРЫТЬ',314,4,LABEL,'right');
   g.save();g.beginPath();g.rect(0,16,82,162);g.clip();drawHero(g,42,40);g.restore();
   txt(g,'НАДЕТО',108,21,DIM,'center',6);txt(g,'СНЯТО',160,21,DIM,'center',6);
-  let tip=null;
+  let tip=null,tipOff=false;
   for(let c=0;c<8;c++){const t=gearTile(c),s=c&3,cur=G.lootCur===c,on=wornAt(s),off=wearOff(s),it=c<4?on:off[0];
-    if(cur&&it)tip=it;
+    if(cur&&it){tip=it;tipOff=c>=4;}
     R(g,c<4&&on?'#1e2e29':'#161d1b',t.x,t.y,t.w,t.h);frame(g,t.x,t.y,t.w,t.h,cur?WARN:c<4&&on?VFD:'#2c4a40');
     if(c<4)txt(g,WSLOT[s],t.x+3,t.y+3,DIM,'left',6);
     if(it){wearIcon(g,it.id,t.x+t.w/2,t.y+12);txt(g,it.name,t.x+t.w/2,t.y+25,c<4?VFD:LABEL,'center',6);if(c>=4&&off.length>1)txt(g,'+'+(off.length-1),t.x+t.w-3,t.y+3,DIM,'right',6);}
@@ -102,7 +104,7 @@ function drawWear(g){
   txt(g,'В КАРМАНАХ',196,26,DIM,'left',6);
   const pk=pockets();pk.forEach(([n,v],i)=>{txt(g,n,196,42+i*14,LABEL,'left',6);if(v)txt(g,v,308,42+i*14,VFD,'right',6);});
   if(!pk.length)txt(g,'ПУСТО',252,90,DIM,'center',6);
-  if(tip){R(g,'#2c4a40',190,152,124,1);txt(g,tip.desc,252,160,VFD,'center',6);}
+  if(tip){R(g,'#2c4a40',190,152,124,1);if(tipOff){txt(g,'НЕ НАДЕТО',252,156,DIM,'center',6);txt(g,tip.desc,252,166,DIM,'center',6);}else txt(g,tip.desc,252,160,VFD,'center',6);}
   drawSlots(g,-1);
 }
 function drawShopBottom(g){
@@ -146,7 +148,7 @@ function renderBottom(){
   else if(G.level===10){const b=ents.find(e=>e.kind==='enemy'&&e.k==='bg');stat(g,'БРИГАДИР',b&&!b.dead?(G.duel?'НА КРАНЕ':'ЖИВ'):'НЕТ',134,b&&!b.dead?DANGER:VFD);}
   else if(G.level===9){const kt=ents.find(e=>e.kind==='enemy'&&e.k==='kt');stat(g,'КОНТРОЛЁР',kt&&!kt.dead?'ЖИВ':'НЕТ',134,kt&&!kt.dead?DANGER:VFD);}
   else if(G.level===7){const rc=G.rc,o=!rc?['ГИТАРИСТ','ЖИВ',DANGER]:rc.ph==='street'?['ПМ',P.has[1]?'ЕСТЬ':'НЕТ',P.has[1]?VFD:DANGER]:['БЕГИ','!',DANGER];stat(g,o[0],o[1],134,o[2]);}
-  else{const ok=G.level===1?G.power:G.level===2?G.hasKey:G.safeFound;stat(g,LEVELDEF[G.level].obj,ok?'ЕСТЬ':'НЕТ',134,ok?VFD:DANGER);}
+  else{const ok=G.level===13?P.smenka:G.level===1?G.power:G.level===2?G.hasKey:G.safeFound;stat(g,LEVELDEF[G.level].obj,ok?'ЕСТЬ':'НЕТ',134,ok?VFD:DANGER);}
   drawSlots(g,-1);
 }
 function drawNote(g,N){
