@@ -41,9 +41,10 @@ const SETS=[
   {k:'bright',label:'ЯРКОСТЬ',vals:['1','2','3','4','5']},
   {k:'sens',label:'МЫШЬ',vals:['1','2','3','4','5','6','7','8','9','10']},
   {k:'bob',label:'КАЧАНИЕ',vals:['ВЫКЛ','ВКЛ']},
-  {k:'snd',label:'ЗВУК',vals:['ВЫКЛ','ВКЛ']}
+  {k:'snd',label:'ЗВУК',vals:['ВЫКЛ','ВКЛ']},
+  {k:'lang',label:'ЯЗЫК',vals:['РУССКИЙ','ENGLISH']}
 ];
-const SET={px:0,diff:1,bright:1,sens:4,bob:1,snd:1};
+const SET={px:0,diff:1,bright:1,sens:4,bob:1,snd:1,lang:0};
 {const s=store.get('v2',{},o=>o&&typeof o==='object');for(const k in SET)if(typeof s[k]==='number')SET[k]=s[k];}
 function saveSet(){store.set('v2',SET);}
 const PXS=[1,2,3,4],BRIGHT=[.75,1,1.25,1.5,1.8];

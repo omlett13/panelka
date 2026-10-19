@@ -130,6 +130,7 @@ botC.addEventListener('pointerdown',e=>{e.preventDefault();initAudio();const r=b
     return;}
   if(G.state!=='play'&&G.state!=='lift'){
     if(G.state==='dead'&&G.deadT<.6)return;
+    if(G.page==='main'&&inR(p,LANGBTN)){toggleLang();return;}
     for(const row of menuRows())if(x>=row.x&&x<row.x+row.w&&y>=row.y&&y<row.y+row.h){
       G.sel=row.i;
       if(G.page==='settings'&&row.i<SETS.length)changeSet(row.i,x<row.x+row.w*.4?-1:1);else menuAct('ok');

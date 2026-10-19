@@ -297,7 +297,7 @@ function drawShopUI(){
   poly(g,SLV,[[hx-2,hy+60],[hx+27,hy+60],[hx+140,H+60],[hx+40,H+60]]);poly(g,SLVD,[[hx+22,hy+60],[hx+27,hy+60],[hx+140,H+60],[hx+128,H+60]]);
   g.drawImage(ART.hand,hx-16,hy-1);
 }
-function txt(g,s,x,y,c,al,sz){g.font=(sz||8)+'px "Press Start 2P", monospace';g.textAlign=al||'left';g.textBaseline='top';g.fillStyle=c;g.fillText(s,x,y);}
+function txt(g,s,x,y,c,al,sz){g.font=(sz||8)+'px "Press Start 2P", monospace';g.textAlign=al||'left';g.textBaseline='top';g.fillStyle=c;g.fillText(tr(s),x,y);}
 function stxt(g,s,x,y,c,al,sz){txt(g,s,x+1,y+1,'rgba(0,0,0,.8)',al,sz);txt(g,s,x,y,c,al,sz);}
 function drawTopOverlay(){
   const g=tg;
