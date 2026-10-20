@@ -15,8 +15,8 @@ function lootPick(kind,idx){
 function assignSlot(s,id){const prev=SLOTS.indexOf(id);if(prev>=0)SLOTS[prev]=SLOTS[s];SLOTS[s]=id;saveSlots();sfx.swap();}
 /* СНАРЯГА cursor (G.lootCur): 0-3 НАДЕТО rows, 4-7 СНЯТО rows */
 function gearPick(c){const s=c&3;
-  if(c<4){if(!wornAt(s)){sfx.click();return;}P.wear[s]=null;sfx.latch();}
-  else{const o=wearOff(s);if(!o.length){sfx.click();return;}P.wear[s]=o[0].id;sfx.swap();}}
+  if(c<4){if(!wornAt(s)){sfx.click();return;}const o=wearOff(s);if(o.length){P.wear[s]=o[0].id;sfx.swap();return;}P.wear[s]=null;sfx.latch();}
+  else{const o=wearOff(s);if(!o.length){sfx.click();return;}P.wear[s]=o[0].id;G.lootCur=s;sfx.swap();}}
 function gearKey(k){const c=G.lootCur;
   if(k==='Escape'||k==='Backspace'||k==='KeyC')toggleLoot('gear');else if(k==='Tab')toggleLoot('loot');
   else if(k==='ArrowLeft'||k==='KeyA')G.lootCur=c&3;else if(k==='ArrowRight'||k==='KeyD')G.lootCur=4+(c&3);
@@ -72,13 +72,14 @@ if(DEBUG)document.getElementById('dbgBtn').addEventListener('click',e=>{toggleDb
 document.querySelectorAll('[data-dbg]').forEach(b=>b.addEventListener('click',()=>{b.blur();const a=b.dataset.dbg;
   if(a==='close'){toggleDbg();return;}
   if(a==='rub'){G.rub+=500;msg('DEBUG  +500 РУБ');return;}
-  if(a==='max'){for(const k in UP)UP[k]=1;for(const w of WEAR)if(w.own())wearNew(w.id);P.has=[1,1,1,1];P.ammo9=cap9();P.shells=capS();P.vodka=3;P.kefir=2;P.hp=maxHP();P.armor=maxAR();for(const N of NOTES)if(!NOTESGOT.includes(N.id))NOTESGOT.push(N.id);saveNotes();msg('DEBUG  ВСЁ КУПЛЕНО · ВСЕ ЗАМЕТКИ');return;}
+  if(a==='max'){for(const k in UP)UP[k]=1;P.seedproof=true;for(const w of WEAR)if(w.own())wearNew(w.id);P.has=[1,1,1,1];P.ammo9=cap9();P.shells=capS();P.vodka=3;P.kefir=2;P.hp=maxHP();P.armor=maxAR();for(const N of NOTES)if(!NOTESGOT.includes(N.id))NOTESGOT.push(N.id);saveNotes();msg('DEBUG  ВСЁ КУПЛЕНО · ВСЕ ЗАМЕТКИ');return;}
   if(a==='perf'){PERF.on=!PERF.on;perfReset();b.textContent='frame times: '+(PERF.on?'ON':'off');return;}
   if(a==='god'){G.god=!G.god;b.textContent='god mode: '+(G.god?'ON':'off');return;}
   if(a==='kill'){if(G.state==='pause')resume();if(G.state!=='play')return;for(const e of ents)if(e.kind==='enemy'&&!e.dead&&e.k!=='bb'&&e.k!=='gg')killEnemy(e);msg('DEBUG  ВСЕ УБИТЫ');return;}
   if(a==='f4'){if(G.state==='pause')resume();if(G.state!=='play'&&G.state!=='lift')newGame();enterLevel(4);G.loot=false;return;}
   if(a==='f11'){if(G.state==='pause')resume();if(G.state==='talk')talkClose();if(G.state!=='play'&&G.state!=='lift')newGame();enterLevel(11);G.loot=false;msg('ГАРАЖИ');return;}
   if(a==='sem'){if(G.state==='pause')resume();if(G.state==='talk')talkClose();if(G.state!=='play'&&G.state!=='lift')newGame();enterLevel(12);G.loot=false;P.x=107.5;P.y=74;P.a=-Math.PI/2;return;}
+  if(a==='f13'){if(G.state==='pause')resume();if(G.state==='talk')talkClose();if(G.state!=='play'&&G.state!=='lift')newGame();enterLevel(13);G.loot=false;msg('ШКОЛА · ЭТАЖ 1');return;}
   if(a==='f12'){if(G.state==='pause')resume();if(G.state==='talk')talkClose();if(G.state!=='play'&&G.state!=='lift')newGame();enterLevel(12);G.loot=false;msg('ЭЛЕВАТОР · 1 ЭТАЖ');return;}
   if(a==='f10'||a==='duel'){if(G.state==='pause')resume();if(G.state==='talk')talkClose();if(G.state!=='play'&&G.state!=='lift')newGame();enterLevel(10);G.loot=false;msg('СТРОЙКА');if(a==='duel'){siteSkipToCrane();P.x=CRB.x+2;P.y=CRB.y;}return;}
   if(a==='f9'){if(G.state==='pause')resume();if(G.state==='talk')talkClose();if(G.state!=='play'&&G.state!=='lift')newGame();enterLevel(9);G.loot=false;msg('МЕТРО');return;}

@@ -27,7 +27,7 @@ function newGame(){G.cp=null;loadLevel(1);resetLevel(false);G.state='play';G.pag
 function nextFloor(){if(G.level===12){siloHome();return;}if(G.level>=4){loadLevel(1);resetLevel(true);G.floorN++;G.cp=null;G.state='play';G.page=null;keys.clear();return;}enterLevel(4);msg('ДОМ 11 · ЭТАЖ 1');}
 function resume(){G.state=G.prevState||'play';G.page=null;keys.clear();}
 function pauseGame(){if(G.state!=='play'&&G.state!=='lift')return;G.prevState=G.state;G.loot=false;G.state='pause';openPage('pause');keys.clear();mouseFire=false;exitLock();}
-const LNAME={1:'ДОМ 9 · ЭТАЖ 1',2:'ДОМ 9 · ЭТАЖ 2',3:'ДОМ 9 · ПОДВАЛ',4:'ДОМ 11 · ЭТАЖ 1',5:'ДОМ 11 · ЛЕСТНИЦА',6:'ДОМ 11 · ЭТАЖ 2',7:'ДОМ 11 · КРЫША',8:'ГОРОД',9:'МЕТРО',10:'СТРОЙКА',11:'ГАРАЖИ',12:'ЭЛЕВАТОР'};
+const LNAME={1:'ДОМ 9 · ЭТАЖ 1',2:'ДОМ 9 · ЭТАЖ 2',3:'ДОМ 9 · ПОДВАЛ',4:'ДОМ 11 · ЭТАЖ 1',5:'ДОМ 11 · ЛЕСТНИЦА',6:'ДОМ 11 · ЭТАЖ 2',7:'ДОМ 11 · КРЫША',8:'ГОРОД',9:'МЕТРО',10:'СТРОЙКА',11:'ГАРАЖИ',12:'ЭЛЕВАТОР',13:'ШКОЛА · ЭТАЖ 1'};
 const MENUCAM={1:{x:8.5,y:11.5,a:0},7:{x:9,y:9,a:-.3},8:{x:51,y:53,a:-Math.PI/2},9:{x:60,y:39.5,a:0},10:{x:60,y:79,a:-Math.PI/2-.25},11:{x:23,y:54.5,a:-.05},12:{x:44,y:49,a:-Math.PI/2}};
 function lastLevel(){const n=store.get('last',1,Number.isInteger);return LEVEL_SRC[n]&&UNL.has(n)?n:1;}
 function menuScene(){const n=lastLevel();G.menuLoad=true;loadLevel(n);resetLevel(false);G.menuLoad=false;const c=MENUCAM[n]||LEVELDEF[n].start;G.menuCam={x:c.x,y:c.y};P.x=c.x;P.y=c.y;P.a=c.a||0;G.menuLvl=n;

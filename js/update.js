@@ -81,7 +81,7 @@ function updatePlayer(dt){
   const moved=Math.hypot(P.x-ox,P.y-oy)/dt;
   if(G.state==='play'&&run&&moved>1){G.noiseT-=dt;if(G.noiseT<=0){makeNoise(4);G.noiseT=.5;}}
   P.bobAmt+=((SET.bob?Math.min(1,moved/3):0)-P.bobAmt)*Math.min(1,dt*8);P.bob+=dt*moved*2.6;
-  const ph=Math.floor(P.bob/Math.PI);if(ph!==P.stepPh){P.stepPh=ph;if(moved>.5){if(inWater)sfx.splash();else sfx.step(ZONE[(P.y|0)*MW+(P.x|0)]===Z_OUT);}}
+  const ph=Math.floor(P.bob/Math.PI);if(ph!==P.stepPh){P.stepPh=ph;if(moved>.5){if(inWater)sfx.splash();else sfx.step(ZONE[(P.y|0)*MW+(P.x|0)]===Z_OUT,worn('smenka'));}}
   P.camZ=.5+Math.sin(P.bob*2)*.012*P.bobAmt;
   if(P.bleed>0&&G.state==='play'){P.bleed-=dt;P.bleedTick=(P.bleedTick||0)-dt;if(P.bleedTick<=0){P.bleedTick=.5;if(!G.god){P.hp-=1;G.hurt=Math.min(1,G.hurt+.1);if(P.hp<=0){P.hp=0;endGame('dead');return;}}}}
   P.cool-=dt;P.anim+=dt;P.throwT=Math.max(0,P.throwT-dt);P.switchT=Math.max(0,P.switchT-dt);P.faceHurt-=dt;P.faceGrin-=dt;P.faceLookT-=dt;
@@ -202,7 +202,7 @@ function updateEnemy(e,dt){
   if(e.state==='attack'&&K.bro&&!e.throwing&&d>.8){const ox=e.x,oy=e.y;moveBody(e,dx/d*K.speed*.7,dy/d*K.speed*.7,dt,.26);e.walk+=Math.hypot(e.x-ox,e.y-oy)*3.2;}
   if(e.state==='attack'){e.t-=dt;if(e.t<=0){
       if(e.throwing||(ranged&&!K.bro)){e.throwing=false;const lead=K.thrower?Math.min(1,d/10):0,tx2=P.x+(P.vx||0)*lead,ty2=P.y+(P.vy||0)*lead,a=Math.atan2(ty2-e.y,tx2-e.x)+(Math.random()-.5)*.06,sp=K.thrower?10:7,spr=K.coal?'coal':K.seedspit?'seed':K.thrower?['jar','stool','bottleG'][(Math.random()*3)|0]:null;
-        for(const off of (K.coal&&e.phase2)?[-.22,0,.22]:[0])ents.push({kind:'proj',spr,fire:!!K.coal,x:e.x+Math.cos(a+off)*.35,y:e.y+Math.sin(a+off)*.35,vx:Math.cos(a+off)*sp,vy:Math.sin(a+off)*sp,life:3,seed:!!K.seedspit,dmg:K.coal?10:K.thrower?9+Math.random()*6:K.dmg[0]+Math.random()*(K.dmg[1]-K.dmg[0])});(K.thrower||K.coal)?sfx.throwIt():sfx.spit();}
+        for(const off of (K.coal&&e.phase2)?[-.22,0,.22]:[0])ents.push({kind:'proj',spr,fire:!!K.coal,x:e.x+Math.cos(a+off)*.35,y:e.y+Math.sin(a+off)*.35,vx:Math.cos(a+off)*sp,vy:Math.sin(a+off)*sp,life:3,seed:!!K.seedspit||!spr,dmg:K.coal?10:K.thrower?9+Math.random()*6:K.dmg[0]+Math.random()*(K.dmg[1]-K.dmg[0])});(K.thrower||K.coal)?sfx.throwIt():sfx.spit();}
       else if(d<K.reach+(K.bro?.7:.35)&&e.see){hurtPlayer((K.dmg[0]+Math.random()*(K.dmg[1]-K.dmg[0]))*(rage?1.4:1));sfx.punch();if(K.drunk&&G.state==='play'){P.bleed=3;msg('КРОВЬ!');}}
       e.state='chase';e.cool=K.rate*(.8+Math.random()*.4)*(rage?.7:1);if(K.combo&&Math.random()<.5)e.cool=.18;}return;}
   if(e.pain>0&&!K.bro&&!K.boss)return;

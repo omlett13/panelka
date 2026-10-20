@@ -13,7 +13,7 @@ const server = serve();
 await once(server, 'listening');
 const url = `http://127.0.0.1:${server.address().port}/${encodeURI(page_)}?debug`;
 // debug-panel actions, in order: every level plus the boss room, roof chase and crane duel set pieces
-const LEVELS = ['f2', 'boss', 'f3', 'f4', 'd4', 'f5', 'f6', 'f7', 'chase', 'f8', 'f9', 'f10', 'duel', 'f11', 'f12'];
+const LEVELS = ['f2', 'boss', 'f3', 'f4', 'd4', 'f5', 'f6', 'f7', 'chase', 'f8', 'f9', 'f10', 'duel', 'f11', 'f12', 'f13'];
 
 const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
 const page = await browser.newPage();
