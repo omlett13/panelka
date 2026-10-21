@@ -45,7 +45,7 @@ function update(dt){
     else if(f.kind==='vent'){let on;if(f.temp){f.warn-=dt;f.life-=dt;on=f.warn<=0&&f.life>0;}else on=((G.t+f.ph)%3.6)<1.1;if(on&&!f.was&&Math.hypot(f.x-P.x,f.y-P.y)<7)sfx.hiss();f.was=on;f.on=on;
       if(on&&Math.hypot(f.x-P.x,f.y-P.y)<.85&&G.ventT<=0){G.ventT=.4;hurtPlayer(f.temp?14:9);msg('ПАР!');}}}
   for(const e of ents){if(e.kind!=='item'||e.taken)continue;if(Math.hypot(e.x-P.x,e.y-P.y)<.6&&take(e)){e.taken=true;if(!e.drop&&!ITEMS[e.t].money&&!ITEMS[e.t].lore)G.items++;G.bonus=1;ITEMS[e.t].money?sfx.cash():sfx.pickup();}}
-  ents=ents.filter(e=>!(e.kind==='item'&&e.taken)&&!((e.kind==='fx'||e.kind==='puddle'||e.kind==='fire')&&e.life<=0)&&!(e.kind==='vent'&&e.temp&&e.life<=0)&&!((e.kind==='proj'||e.kind==='bottle'||e.kind==='slipper'||e.kind==='roll')&&e.dead)&&!(e.kind==='fluff'&&e.life<=0)&&!(e.kind==='hay'&&e.life<=0)&&!(e.kind==='drop'&&e.done)&&!(e.kind==='boomfx'&&e.life<=0)&&!(e.kind==='car'&&e.dead));
+  ents=ents.filter(e=>!(e.kind==='item'&&e.taken)&&!((e.kind==='fx'||e.kind==='puddle'||e.kind==='fire')&&e.life<=0)&&!(e.kind==='vent'&&e.temp&&e.life<=0)&&!((e.kind==='proj'||e.kind==='bottle'||e.kind==='slipper'||e.kind==='roll')&&e.dead)&&!(e.kind==='fluff'&&e.life<=0)&&!(e.kind==='hay'&&e.life<=0)&&!(e.kind==='drop'&&e.done)&&!(e.kind==='boomfx'&&e.life<=0)&&!(e.kind==='car'&&e.dead)&&!(e.kind==='crowd'&&e.dead));
 }
 function updateBottles(dt){
   for(const b of ents){if(b.kind==='puddle'){b.life-=dt;continue;}if(b.kind!=='bottle'||b.dead)continue;
@@ -201,7 +201,7 @@ function updateEnemy(e,dt){
   const ranged=K.ranged||(K.thrower&&!e.rage&&d>2.6),rage=e.rage?1:0;
   if(e.state==='attack'&&K.bro&&!e.throwing&&d>.8){const ox=e.x,oy=e.y;moveBody(e,dx/d*K.speed*.7,dy/d*K.speed*.7,dt,.26);e.walk+=Math.hypot(e.x-ox,e.y-oy)*3.2;}
   if(e.state==='attack'){e.t-=dt;if(e.t<=0){
-      if(e.throwing||(ranged&&!K.bro)){e.throwing=false;const lead=K.thrower?Math.min(1,d/10):0,tx2=P.x+(P.vx||0)*lead,ty2=P.y+(P.vy||0)*lead,a=Math.atan2(ty2-e.y,tx2-e.x)+(Math.random()-.5)*.06,sp=K.thrower?10:7,spr=K.coal?'coal':K.seedspit?'seed':K.thrower?['jar','stool','bottleG'][(Math.random()*3)|0]:null;
+      if(e.throwing||(ranged&&!K.bro)){e.throwing=false;const lead=K.thrower?Math.min(1,d/10):0,tx2=P.x+(P.vx||0)*lead,ty2=P.y+(P.vy||0)*lead,a=Math.atan2(ty2-e.y,tx2-e.x)+(Math.random()-.5)*.06,sp=K.thrower?10:7,spr=K.coal?'coal':K.seedspit?'seed':K.wad?'wad':K.thrower?['jar','stool','bottleG'][(Math.random()*3)|0]:null;
         for(const off of (K.coal&&e.phase2)?[-.22,0,.22]:[0])ents.push({kind:'proj',spr,fire:!!K.coal,x:e.x+Math.cos(a+off)*.35,y:e.y+Math.sin(a+off)*.35,vx:Math.cos(a+off)*sp,vy:Math.sin(a+off)*sp,life:3,seed:!!K.seedspit||!spr,dmg:K.coal?10:K.thrower?9+Math.random()*6:K.dmg[0]+Math.random()*(K.dmg[1]-K.dmg[0])});(K.thrower||K.coal)?sfx.throwIt():sfx.spit();}
       else if(d<K.reach+(K.bro?.7:.35)&&e.see){hurtPlayer((K.dmg[0]+Math.random()*(K.dmg[1]-K.dmg[0]))*(rage?1.4:1));sfx.punch();if(K.drunk&&G.state==='play'){P.bleed=3;msg('КРОВЬ!');}}
       e.state='chase';e.cool=K.rate*(.8+Math.random()*.4)*(rage?.7:1);if(K.combo&&Math.random()<.5)e.cool=.18;}return;}
@@ -264,5 +264,5 @@ function updateAmbience(){if(!AU.c)return;const z=ZONE[(P.y|0)*MW+(P.x|0)];const
       AU.boomLP.frequency.setTargetAtTime(los(P.x,P.y,best.x,best.y)?5000:650,t,.15);}
     AU.boom.gain.setTargetAtTime(v,t,.12);
     if(v>.004){if(AU.boomNext<t)AU.boomNext=t+.02;while(AU.boomNext<t+.15){boomStep(AU.boomStep++,AU.boomNext);AU.boomNext+=.155;}}}
-  AU.hum.gain.setTargetAtTime(on&&z!==Z_OUT&&z>=0?(z===Z_BASE?(G.power?.05:.02):.035):0,t,.3);AU.wind.gain.setTargetAtTime(on&&z===Z_OUT?(G.level===7?.1:.05):.004,t,.4);updateRoofAudio();cityBirds();bossMusic();updateCityAudio();}
+  AU.hum.gain.setTargetAtTime(on&&z!==Z_OUT&&z>=0?(z===Z_BASE?(G.power?.05:.02):.035):0,t,.3);AU.wind.gain.setTargetAtTime(on&&z===Z_OUT?(G.level===7?.1:.05):.004,t,.4);updateRoofAudio();cityBirds();bossMusic();updateCityAudio();updateSchoolAudio();}
 

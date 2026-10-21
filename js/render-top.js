@@ -153,6 +153,7 @@ function frameOf0(e){
   if(e.kind==='proj'&&e.big)return {d:SPR.sunhead,sc:1.4,lift:(e.z||0)};
   if(e.kind==='proj')return e.spr?{d:SPR[e.spr],sc:e.spr==='tracer'?.9:.5,lift:e.z!=null?e.z:.3}:{d:SPR.semki,sc:.35,lift:.45};
   if(e.kind==='fx')return {d:SPR[e.t],sc:.45,lift:.3};
+  if(e.kind==='crowd')return {d:SPR.crowd[e.s][e.wait>0?'stand':((e.walk|0)%2?'walk1':'walk2')],sc:e.sc};
   if(e.kind==='bottle')return {d:SPR.vodkaFly[(e.spin|0)%2],sc:.4,lift:Math.max(0,e.z-.2)};
   if(e.kind==='slipper')return {d:SPR.slipFly[(e.spin|0)%2],sc:.45,lift:.3};
   if(e.kind==='roll')return {d:SPR.vodkaFly[(e.spin|0)%2],sc:.4,lift:0};
@@ -308,6 +309,7 @@ function drawTopOverlay(){
   if(G.bonus>0){g.fillStyle='rgba(240,190,80,'+(G.bonus*.22).toFixed(3)+')';g.fillRect(0,0,W,H);}
   if(G.state==='play'||G.state==='lift'){
     if(!G.cut&&!(G.rc&&G.rc.lock)){g.fillStyle='rgba(235,230,215,.55)';g.fillRect(199,119,2,2);}
+    if(G.level===13&&G.techOK)schoolHud(g);
     if(G.msgT>0)stxt(g,G.msg,6,6,G.msgT<.5?'rgba(232,226,210,.5)':'#e8e2d2');
     if(G.state==='play'&&G.bossOn){let i=0;for(const e of ents)if(e.kind==='enemy'&&KINDS[e.k].bro){const x=i?214:56,K=KINDS[e.k];
         stxt(g,K.name+(e.rage?' !':''),x+65,8,e.dead?DIM:(e.rage?DANGER:WARN),'center');R(g,'#1a0a08',x,20,130,5);if(!e.dead)R(g,e.rage?DANGER:'#d86a3a',x,20,Math.max(0,e.hp/e.max)*130|0,5);i++;}}

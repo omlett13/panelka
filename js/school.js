@@ -87,7 +87,7 @@ schoolArt();
 function schoolWalls(){return {1:TX.schW,3:[TX.board],6:[TX.schDoor],16:[TX.coats],17:[TX.honor],20:[TX.stall],22:[TX.schWin],37:[TX.wcM],43:[TX.wcW]};}
 function schoolCells(){for(let i=0;i<N;i++){const c=FLCH[i];CEILTEX[i]=TX.schCeil;
   if(c===46)FLOORTEX[i]=TX.schFloor;else if(c===114)FLOORTEX[i]=TX.schTerr;else if(c===58)FLOORTEX[i]=TX.schBoards;else if(c===59)FLOORTEX[i]=TX.schCheck;else if(c===109)FLOORTEX[i]=TX.schStep;}}
-function schInit(){G.techOK=false;G.techT=0;}
+function schInit(){G.techOK=false;G.techT=0;G.bellT=BELL.first;BDOOR=SCH.door;}
 function techNag(){G.bark='ТЕХНИЧКА: «'+pick(['Куда в уличной обуви?! Сменку надень!','Я только помыла! Сменка где?','Без сменки не пущу. Гардероб — налево.'])+'»';G.barkT=2.6;sfx.bark(230);msg('НУЖНА СМЕНКА · ГАРДЕРОБ');}
 /* E on a door: true if the school keeps it shut */
 function schoolDoor(i){
@@ -99,4 +99,58 @@ function updateSchool(dt){G.techT-=dt;
   if(Math.hypot(P.x-34.5,P.y-25.5)<2.2){
     if(!worn('smenka')){if(G.techT<=0){techNag();G.techT=6;}}
     else if(!G.techOK){G.techOK=true;G.bark='ТЕХНИЧКА: «Вот, другое дело. Проходи. И не бегать!»';G.barkT=2.6;sfx.bark(230);doorTarget[SCH.door]=1;doorTimer[SCH.door]=0;sfx.door();}}
-  if(!(G.msgT>0)&&P.x<13&&P.y<12.5)msg('2 ЭТАЖ · СКОРО');}
+  if(G.techOK)schBell(dt);
+  if(!(G.msgT>0)&&P.x<13&&P.y<12.5&&!G.schBreak)msg('2 ЭТАЖ · СКОРО');}
+
+/* ---------- уроки и перемены: the bell sends a crowd down the stairs, along the рекреация to the столовая and back.
+   It never goes into classrooms (or toilets, or the вестибюль): that's where you hide ---------- */
+const BELL={first:20,lesson:35,brk:22,n:40};
+const CROWD_PAL=[
+  {suit:'#1e2a55',top:'#24336a',stripe:'#1e2a55',skin:'#e0b090',hair:'#6b4a2a',shoe:'#2a2a2a',hat:'none',hatC:'#222'},
+  {suit:'#1e2a55',top:'#e8e4d8',stripe:'#1e2a55',skin:'#e0b090',hair:'#3a2a18',shoe:'#3a2a1a',hat:'none',hatC:'#222',tie:1},
+  {suit:'#5a3a24',top:'#5a3a24',stripe:'#5a3a24',skin:'#e8c0a0',hair:'#c8a060',shoe:'#2a1a10',hat:'none',hatC:'#222'},
+  {suit:'#2a5a9a',top:'#c83a2a',stripe:'#f0f0f0',skin:'#d0a283',hair:'#8a6a3a',shoe:'#e2e2e2',hat:'cap',hatC:'#2a3a6a'},
+  {suit:'#1e2a55',top:'#24336a',stripe:'#1e2a55',skin:'#c99a7a',hair:'#1a1410',shoe:'#141414',hat:'knit',hatC:'#b3262b'}];
+SPR.crowd=CROWD_PAL.map(p=>({stand:bake(g=>drawGop(g,'stand',p)),walk1:bake(g=>drawGop(g,'walk1',p)),walk2:bake(g=>drawGop(g,'walk2',p))}));
+SPR.wad=bake(g=>{R(g,'#d8d6cc',29,29,7,6);R(g,'#b8b4a8',30,34,5,1);R(g,'#f4f2ea',30,30,2,2);});
+const CROWD_BARK=['С дороги!','В столовку!','Чур я первый!','Булочки!','Догоняй!','А-а-а-а!','Посторонись!'];
+function bellRing(){for(let i=0;i<50;i++){const t=i/20;tone('square',2350,2300,.04,.045,t);tone('sine',1180,1170,.05,.07,t+.01);}G.shake=Math.max(G.shake,.15);}
+/* lanes cover the whole width; 40% hug a wall so there's no safe strip along the sides */
+const crowdLane=()=>{const r=Math.random();return r<.2?20.3+Math.random()*.5:r<.4?23.2+Math.random()*.5:20.3+Math.random()*3.4;},cafX=()=>(Math.random()<.5?53:60)+(Math.random()-.5)*.8;
+const cafPt=()=>[49.6+Math.random()*14.8,pick([11.8,15,18.2])];
+function crowdSpawn(n){const x=8.6+Math.random()*3.8,y=12+Math.random()*3,run=n%5<2,ln=crowdLane(),ex=cafX();
+  ents.push({kind:'crowd',x,y,s:(Math.random()*CROWD_PAL.length)|0,sc:.66+Math.random()*.16,spd:3.3+Math.random()*.9,walk:Math.random()*2,wait:0,hitT:0,vx:0,vy:1,dead:false,
+    mode:run?'run':'caf',wp:run?[[x,ln],[63.5,crowdLane()]]:[[x,ln],[ex,ln],[ex,18.4],cafPt()]});}
+function crowdNext(c){
+  if(c.mode==='home'){c.dead=true;return;}
+  if(c.mode==='run'){c.wp.push([c.x<36?63.5:9,crowdLane()]);return;}
+  if(Math.random()<.5)c.wait=.4+Math.random()*1.6;c.wp.push(cafPt());}
+function crowdHome(c){c.mode='home';c.spd*=1.4;c.wait=Math.random()*.6;const ln=crowdLane(),sx=9+Math.random()*3;
+  c.wp=c.y<19.8?[[Math.abs(c.x-53)<Math.abs(c.x-60)?53:60,18.4],[Math.abs(c.x-53)<Math.abs(c.x-60)?53:60,ln],[sx,ln],[sx,15],[sx,12]]:[[sx,ln],[sx,15],[sx,12]];}
+function schBell(dt){G.bellT-=dt;
+  if(!G.schBreak){
+    if(G.bellT<5&&!G.schWarn){G.schWarn=true;msg('СКОРО ЗВОНОК');}
+    if(G.bellT<=0){G.schBreak=true;G.schWarn=false;G.bellT=BELL.brk;G.crowdOut=BELL.n;G.crowdSpT=1.4;bellRing();msg('ПЕРЕМЕНА! ПРЯЧЬСЯ В КЛАСС');}}
+  else{
+    G.crowdSpT-=dt;if(G.crowdOut>0&&G.crowdSpT<=0){crowdSpawn(G.crowdOut--);G.crowdSpT=.05+Math.random()*.07;}
+    if(G.bellT<=0&&!G.schHome){G.schHome=true;G.crowdOut=0;bellRing();msg('ЗВОНОК НА УРОК');for(const c of ents)if(c.kind==='crowd'&&!c.dead)crowdHome(c);}
+    if(G.schHome&&!ents.some(c=>c.kind==='crowd'&&!c.dead)){G.schBreak=G.schHome=false;G.bellT=BELL.lesson;}}
+  updateCrowd(dt);}
+function updateCrowd(dt){G.crowdHitT-=dt;
+  for(const c of ents){if(c.kind!=='crowd'||c.dead)continue;c.hitT-=dt;
+    if(c.wait>0)c.wait-=dt;
+    else{if(!c.wp.length){crowdNext(c);if(c.dead)continue;}
+      const w=c.wp[0],dx=w[0]-c.x,dy=w[1]-c.y,d=Math.hypot(dx,dy);
+      if(d<.15)c.wp.shift();else{const st=Math.min(d,c.spd*dt);c.vx=dx/d;c.vy=dy/d;c.x+=c.vx*st;c.y+=c.vy*st;c.walk+=st*3.2;}}
+    const px=P.x-c.x,py=P.y-c.y,pd=Math.hypot(px,py);if(pd>=.62||G.state!=='play')continue;
+    const ux=pd>.01?px/pd:c.vx,uy=pd>.01?py/pd:c.vy;moveBody(P,ux*(.62-pd),uy*(.62-pd),1,.24);
+    if(c.wait<=0&&c.hitT<=0&&G.crowdHitT<=0){c.hitT=.9;G.crowdHitT=.35;hurtPlayer(5+Math.random()*4);sfx.punch();G.shake=Math.max(G.shake,.25);
+      moveBody(P,(c.vx+ux)*.3,(c.vy+uy)*.3,1,.24);
+      if(G.barkT<.6){G.bark='ТОЛПА: «'+pick(CROWD_BARK)+'»';G.barkT=1.4;}}}
+  if(G.schBreak&&Math.random()<dt*1.4){const c=ents.find(o=>o.kind==='crowd'&&!o.dead&&Math.hypot(o.x-P.x,o.y-P.y)<12);if(c)vocal(380+Math.random()*200,.25+Math.random()*.2,.8,[700,1300,2600]);}}
+function updateSchoolAudio(){if(!AU.c)return;const t=AU.c.currentTime;
+  if(G.level!==13){if(AU.schOn){AU.schOn=false;if(G.level!==8&&AU.crowd)AU.crowd.gain.setTargetAtTime(0,t,.3);}return;}
+  AU.schOn=true;let s=0;if(G.state==='play')for(const c of ents)if(c.kind==='crowd'&&!c.dead)s+=Math.max(0,1-Math.hypot(c.x-P.x,c.y-P.y)/16)*(los(P.x,P.y,c.x,c.y)?1:.4);
+  crowdBus().gain.setTargetAtTime(Math.min(.18,s*.02),t,.25);}
+function schoolHud(g){const b=G.schBreak,s=Math.max(0,Math.ceil(G.bellT));
+  stxt(g,G.schHome?'НА УРОК':(b?'ПЕРЕМЕНА ':'УРОК ')+((s/60)|0)+':'+String(s%60).padStart(2,'0'),394,6,b?DANGER:G.bellT<5?WARN:'#d8d4c8','right');}

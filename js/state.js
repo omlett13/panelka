@@ -16,7 +16,7 @@ const levelState=()=>({
   brig:null,siteEnd:0,obrezEnt:null,arena:false,breach:false,breachHole:false,                  // site
   gkey:false,gateOpen:false,garDone:false,knock:null,seedFound:false,                                    // garages
   siloCage:false,semOn:false,semCard:0,semLock:false,semWinT:0,                               // silo
-  techOK:false,techT:0});                                                                      // school
+  techOK:false,techT:0,bellT:0,schBreak:false,schHome:false,schWarn:false,crowdOut:0,crowdSpT:0,crowdHitT:0});                                                                      // school
 const G=watchKeys('G',Object.assign({
   state:'menu',read:null,page:'main',sel:0,parent:'main',prevState:'play',t:0,deadT:0,zoom:0,winTime:0,navT:0,hadLock:false,noiseT:0,god:false,
   lootHeld:-1,lootSlot:-1,lootCur:0,statsT:0,rideT:0,rideDing:false,rideTarget:0,hiT:0,talk:null,noteI:0,house:9,
@@ -67,6 +67,10 @@ const KINDS={
   sh:{who:'ШАПКА',hp:30,speed:1.8,reach:0,dmg:[6,9],wind:.4,rate:1.2,sight:11,scale:1.05,pitch:150,idle:'stand',shapka:1,bark:['Шапку не трожь!','Семки — в шапке!','Ушанка — бронь!','Лови, пока горячие!']},
   mx:{who:'МЕХАНИК',hp:48,speed:2.3,reach:1.1,dmg:[10,15],wind:.32,rate:.8,sight:9,scale:1.05,pitch:115,idle:'stand',bark:['Ключ на двенадцать!','Не трожь машину!','Ща подкручу тебе!','Карбюратор не дам!']},
   kd:{who:'МАЛОЙ',hp:14,speed:3.6,reach:.9,dmg:[4,7],wind:.22,rate:.6,sight:10,scale:.62,pitch:270,idle:'stand',jumper:1,kid:1,rad:.24,bark:['Дядя, лови!','Петушка хочешь?','Ха-ха, попался!']},
+  /* school */
+  shk:{who:'СТАРШАК',hp:30,speed:2.5,reach:1.05,dmg:[7,11],wind:.3,rate:.8,sight:9,scale:1.16,pitch:160,idle:'stand',bark:['Деньги на обед есть?','Ты из какого класса?','После уроков — за гаражами!','Чё вылупился, первоклашка?']},
+  pl:{who:'ПЛЕВАКА',hp:18,speed:2.1,reach:0,dmg:[4,7],wind:.35,rate:1.1,sight:11,scale:.9,pitch:215,idle:'stand',ranged:1,wad:1,bark:['Тьфу — в яблочко!','Жёваной бумагой — пли!','Ха, прямо в лоб!']},
+  ku:{who:'КУРИЛЬЩИК',hp:34,speed:2.3,reach:1.05,dmg:[8,12],wind:.3,rate:.8,sight:7,scale:1,pitch:140,idle:'squat',bark:['Не пали нас!','Директору настучишь?','Стукачей не любим!','Закурить есть?']},
   sw:{who:'СТОРОЖ',name:'СТОРОЖ',hp:1100,speed:1.7,reach:1.45,dmg:[18,26],wind:.45,rate:1,sight:30,scale:1.45,pitch:80,idle:'stand',boss:1,storozh:1,rad:.5,bark:['Стоять! Кооператив закрыт!','Ключи? Через мой труп!','Пропуск есть?']},
   km:{who:'КАМЕНЩИК',hp:60,speed:1.9,reach:1,dmg:[8,12],wind:.35,rate:1,sight:13,scale:1.05,pitch:120,idle:'stand',mason:1,bark:['Кирпич летит!','Посторонись!','Норма — тыща кирпичей!']},
   tb:{who:'ТРУБНЫЙ',hp:44,speed:3.3,reach:1,dmg:[9,14],wind:.25,rate:.7,sight:8,scale:1,pitch:155,idle:'squat',pipe:1,bark:['Моя труба!','Не шуми!','Ку-ку!']},

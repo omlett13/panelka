@@ -34,7 +34,7 @@ function start(data){
   if(document.fonts&&document.fonts.load){document.fonts.load('8px "Press Start 2P"').catch(()=>{});document.fonts.load('44px "Russo One"').catch(()=>{});}
   let last=performance.now();
   function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;
-    const t0=performance.now();try{update(dt);}catch(err){loopErr('update',err);}
+    const t0=performance.now();try{if(dt>0)update(dt);}catch(err){loopErr('update',err);}
     const t1=performance.now();try{renderTop();}catch(err){loopErr('renderTop',err);}
     const t2=performance.now();try{renderBottom();}catch(err){loopErr('renderBottom',err);}
     if(PERF.on){perfAdd(t1-t0,t2-t1,performance.now()-t2,now);drawPerf();}

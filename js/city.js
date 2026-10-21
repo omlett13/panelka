@@ -76,10 +76,10 @@ function bossMusic(){if(!AU.c)return;const c=AU.c,t=c.currentTime;
   else if(!on&&AU.bossSrc){AU.bossG.gain.setTargetAtTime(0,t,.6);const src=AU.bossSrc;AU.bossSrc=null;try{src.stop(t+1.4);}catch(e){}}
   else if(on&&AU.bossSrc){AU.bossG.gain.setTargetAtTime(.6,t,.5);}
   if(AU.bossSrc){const rage=G.level===12&&ents.some(e=>e.k==='se'&&e.phase2&&!e.dead);AU.bossSrc.playbackRate.setTargetAtTime(rage?1.18:1,t,.4);}}
+function crowdBus(){if(!AU.crowd){const c=AU.c,gn=c.createGain();gn.gain.value=0;gn.connect(AU.m);AU.crowd=gn;
+    loadMp3('crowd',buf=>{const s=c.createBufferSource();s.buffer=buf;s.loop=true;s.connect(gn);s.start();});}return AU.crowd;}
 function updateCityAudio(){if(!AU.c||G.level!==8)return;const t=AU.c.currentTime,live=G.state==='play';
-  if(!AU.crowd){const c=AU.c,gn=c.createGain();gn.gain.value=0;gn.connect(AU.m);AU.crowd=gn;
-    loadMp3('crowd',buf=>{const s=c.createBufferSource();s.buffer=buf;s.loop=true;s.connect(gn);s.start();});}
-  const d=Math.hypot(P.x-84,P.y-48),v=live?Math.pow(Math.max(0,1-d/28),1.3)*.07:0;AU.crowd.gain.setTargetAtTime(v,t,.4);
+  const d=Math.hypot(P.x-84,P.y-48),v=live?Math.pow(Math.max(0,1-d/28),1.3)*.07:0;crowdBus().gain.setTargetAtTime(v,t,.4);
   if(!live||t<(G.shoutT||0))return;G.shoutT=t+2.5+Math.random()*3.5;
   const cands=ents.filter(e=>e.kind==='npc'&&e.shout&&Math.hypot(e.x-P.x,e.y-P.y)<16);if(!cands.length){const n=ents.find(e=>e.kind==='npc'&&e.talk==='vend'&&Math.hypot(e.x-P.x,e.y-P.y)<12);if(n)vocal(150+Math.random()*80,.35,.8,[650,1150,2400]);return;}
   const n=pick(cands),dd=Math.hypot(n.x-P.x,n.y-P.y);vocal(dd<8?230:180,.45,.8,[650,1150,2400]);if(dd<9&&G.barkT<=0){G.bark=TALK[n.talk].who+': «'+pick(n.shout)+'»';G.barkT=2.2;}}

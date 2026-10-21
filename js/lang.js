@@ -181,6 +181,12 @@ const EN={
   "НУЖНА СМЕНКА · ГАРДЕРОБ":"NEED INDOOR SHOES · CLOAKROOM","ДОМОЙ РАНО · УРОКИ":"TOO EARLY TO GO HOME · LESSONS","ПОДВАЛ ЗАПЕРТ":"BASEMENT LOCKED","ТЫ: «":"YOU: «",
   "Не, туда нельзя.":"Nah, can't go there.","Это женский. Мимо.":"That's the girls'. Moving on.","Ж. Я не настолько потерялся.":"Girls'. I'm not THAT lost.",
   "ЖЕНСКИЙ ТУАЛЕТ":"GIRLS' TOILET","ТЕХНИЧКА: «Вот, другое дело. Проходи. И не бегать!»":"CLEANER: «There, that's better. Go on. And no running!»","2 ЭТАЖ · СКОРО":"FLOOR 2 · SOON",
+  "СТАРШАК":"SENIOR","ПЛЕВАКА":"SPITBALLER","КУРИЛЬЩИК":"SMOKER","ТОЛПА: «":"CROWD: «","ТОЛПА":"CROWD","Деньги на обед есть?":"Got lunch money?","Ты из какого класса?":"What class are you in?",
+  "После уроков — за гаражами!":"After school — behind the garages!","Чё вылупился, первоклашка?":"What you staring at, first-grader?","Тьфу — в яблочко!":"Ptoo — bullseye!",
+  "Жёваной бумагой — пли!":"Spitballs — fire!","Ха, прямо в лоб!":"Ha, right in the forehead!","Не пали нас!":"Don't rat us out!","Директору настучишь?":"Gonna snitch to the principal?",
+  "Стукачей не любим!":"We don't like snitches!","С дороги!":"Out of the way!","В столовку!":"To the canteen!","Чур я первый!":"Dibs on first!","Булочки!":"Buns!","Догоняй!":"Catch me!",
+  "А-а-а-а!":"A-a-a-a!","Посторонись!":"Make way!","СКОРО ЗВОНОК":"BELL SOON","ПЕРЕМЕНА! ПРЯЧЬСЯ В КЛАСС":"BREAK! HIDE IN A CLASSROOM","ЗВОНОК НА УРОК":"BELL — BACK TO CLASS",
+  "НА УРОК":"TO CLASS","ПЕРЕМЕНА":"BREAK","УРОК":"LESSON",
   /* silo.js */
   "ХАРКУН: «":"SPITTER: «","ЛИФТ СЛОМАН · ИДИ ПО ЛЕСТНИЦЕ":"LIFT BROKEN · TAKE THE STAIRS","ШАПКА: «":"HAT: «","ШАПКА: «Шапку лови!»":"HAT: «Catch the hat!»","ДРОБИЛКА!":"CRUSHER!",
   "СЕМЁН: «":"SEMYON: «","СЕМЁН: «А-А-А-ТЬФУ!!»":"SEMYON: «A-A-A-PTOO!!»","СЕМЁН В ЯРОСТИ":"SEMYON ENRAGED","Хрум… Тьфу. Семки мои.":"Crunch… Ptoo. My seeds.",

@@ -33,6 +33,9 @@ const PAL={
   gt:{suit:'#1c1d22',top:'#2a3a6a',stripe:'#e6e6e6',skin:'#d0a283',hair:'#3a2418',shoe:'#e2e2e2',hat:'none',hatC:'#222',mullet:1},
   dz:{suit:'#1c1d22',top:'#3a3e44',stripe:'#e6e6e6',skin:'#c99a7a',hair:'#3a2a20',shoe:'#141414',hat:'cap',hatC:'#3b3b3e',cig:1},
   bm:{suit:'#3a4a3a',top:'#5a6a4a',stripe:'#3a4a3a',skin:'#d0a283',hair:'#4a3a2a',shoe:'#1a1a1a',hat:'knit',hatC:'#2a2a2a',hold:'bottleH'},
+  shk:{suit:'#1e2a55',top:'#24336a',stripe:'#1e2a55',skin:'#d0a283',hair:'#3a2a18',shoe:'#1a1a1a',hat:'none',hatC:'#222',mullet:1},
+  pl:{suit:'#1e2a55',top:'#e8e4d8',stripe:'#1e2a55',skin:'#e0b090',hair:'#c89a50',shoe:'#3a2a1a',hat:'none',hatC:'#222',tie:1,hold:'tube'},
+  ku:{suit:'#1e2a55',top:'#24336a',stripe:'#1e2a55',skin:'#c99a7a',hair:'#2a1c14',shoe:'#141414',hat:'cap',hatC:'#3b3b3e',cig:1},
   dg:{suit:'#3a4866',top:'#2e2017',stripe:'#3a4866',skin:'#c4957a',hair:'#2a1c14',shoe:'#101010',hat:'none',hatC:'#222',chain:1,leather:1,shades:1,mullet:1}
 };
 /* бабка у подъезда: headscarf, coat, felt boots, авоська */
@@ -114,7 +117,7 @@ function drawGop(g,pose,P){
   else if(pose==='spit'){R(g,AR,43,16,5,11);R(g,AR,38,16,6,4);R(g,P.skin,34,16,5,4);R(g,'#222',35,21,1,1);R(g,'#ddd',36,23,1,1);R(g,'#222',33,25,1,1);}
   else {R(g,AR,43,23+hb-sw,5,17);armStripes(45,24+hb-sw,15);R(g,P.skin,43,40+hb-sw,5,4);}
   if(P.vest){R(g,P.skin,27,21+hb,10,4);R(g,P.skin,21,22+hb,3,3);R(g,P.skin,40,22+hb,3,3);R(g,'#c9b98a',30,32+hb,5,3);R(g,'#b8a878',24,36+hb,3,2);}
-  chain(22+hb);head(26,8+hb,pose==='attack'||pose==='spit');
+  chain(22+hb);if(P.tie){R(g,'#c8241e',30,22+hb,4,2);R(g,'#c8241e',31,24+hb,2,5);}head(26,8+hb,pose==='attack'||pose==='spit');
   const at=pose==='attack',th=pose==='spit';
   if(P.hold==='rosette'){if(at){R(g,'#2c5a33',31,20,5,11);R(g,'#9fd0a8',30,19,7,2);R(g,'#9fd0a8',31,17,2,2);R(g,'#9fd0a8',34,17,2,2);}else{R(g,'#2c5a33',44,42+hb,3,8);R(g,'#9fd0a8',43,49+hb,5,2);R(g,'#9fd0a8',43,51+hb,1,2);R(g,'#9fd0a8',47,51+hb,1,2);}}
   if(P.hold==='rebar'){if(at){R(g,'#7a5a44',4,26,56,3);R(g,'#5a4030',4,26,2,3);}else{R(g,'#7a5a44',45,8+hb,2,36);R(g,'#5a4030',45,8+hb,2,2);}}
@@ -132,6 +135,7 @@ function drawGop(g,pose,P){
   if(P.hold==='brick'){if(th){R(g,'#a83a2a',36,4,9,5);R(g,'#c85a4a',36,4,9,1);}else if(!at){R(g,'#a83a2a',43,40+hb,8,5);R(g,'#8a8a8e',15,40+hb,3,6);}}
   if(P.hold==='obrezH'){if(th||at){R(g,'#2a2c30',30,24,24,3);R(g,'#2a2c30',30,27,24,3);R(g,'#44474d',30,24,24,1);R(g,'#6b3f22',24,26,8,6);}else{R(g,'#2a2c30',44,30+hb,3,18);R(g,'#2a2c30',47,30+hb,2,18);R(g,'#6b3f22',43,46+hb,6,8);}}
   if(P.hold==='komp'){if(at){R(g,'#8a8a8e',28,19,11,8);R(g,'#c02020',31,21,4,3);R(g,'#e8e0a8',38,17,6,4);}else{R(g,'#8a8a8e',43,37+hb,8,6);R(g,'#c02020',45,38+hb,3,2);}R(g,'#c9a54a',25,26+hb,3,3);}
+  if(P.hold==='tube'){if(th){R(g,'#3a6ac0',29,15,5,5);R(g,'#1a1a1a',30,16,3,3);}else if(!at){R(g,'#3a6ac0',45,31+hb,2,10);R(g,'#e8e8e8',45,31+hb,2,1);}}
   if(P.hold==='jar'){if(th){R(g,'#5a7a3a',37,4,8,9);R(g,'#8aaa5a',38,6,2,6);R(g,'#c9c0a0',37,3,8,2);}else if(!at){R(g,'#5a7a3a',43,38+hb,7,8);R(g,'#8aaa5a',44,40+hb,2,5);R(g,'#c9c0a0',43,37+hb,7,2);}}
 }
 const POSES=['squat','stand','walk1','walk2','attack','spit','dead','sit'];
