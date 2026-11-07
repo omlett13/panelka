@@ -119,7 +119,7 @@ function occupied(i){const cx=i%MW,cy=(i/MW)|0;const r=.26;for(const [ox,oy] of 
 function useAction(){
   if(G.trans||G.cut||(G.rc&&G.rc.lock))return;
   if(G.state==='lift'){if(facingDealer()){openShop();return;}const f=frontTarget();if(f&&f.t==='panel'){if(G.level===4){liftBroken();return;}if(G.level===2&&G.hasKey){G.state='liftMenu';openPage('liftChoice');sfx.tick();}else startRide(G.level===1?2:'win');return;}sfx.tick();return;}
-  if(G.state!=='play')return;if(G.level===11){const sw=facingStorozh();if(sw){talkStorozh(sw);return;}}if(G.level===11&&frontGate()){useGate();return;}if(G.level===10&&G.brig&&G.brig.phase==='crane'&&nearCraneB()){startDuel();return;}{const n=facingNPC();if(n){if(n.talk==='bar')openShop();else openTalk(n);return;}}{const gr=facingGranny();if(gr){bribe(gr);return;}}const f=frontTarget();if(!f){sfx.tick();return;}
+  if(G.state!=='play')return;if(G.level===11){const sw=facingStorozh();if(sw){talkStorozh(sw);return;}}if(G.level===11&&frontGate()){useGate();return;}if(G.level===10&&G.brig&&G.brig.phase==='crane'&&nearCraneB()){startDuel();return;}{const n=facingNPC();if(n){if(n.talk==='bar')openShop();else openTalk(n);return;}}{const gr=facingGranny();if(gr){bribe(gr);return;}}if((G.level===13||G.level===14)&&schoolUse())return;const f=frontTarget();if(!f){sfx.tick();return;}
   if(f.t==='seeds'){if(!G.foundHQ){G.foundHQ=true;}G.seedFound=true;G.secrets=1;sfx.ding();sfx.door();G.gReturn={x:P.x,y:P.y,a:P.a};keys.clear();transition(()=>{enterLevel(12);msg('ЭЛЕВАТОР · 1 ЭТАЖ');},.6);return;}
   if(f.t==='panel'&&G.level===12){siloBroken();return;}
   if(f.t==='gshut'){sfx.click();msg(pick(['ЗАПЕРТО НАГЛУХО','НА ЗАМКЕ','ЭТОТ НЕ ОТКРЫТЬ']));return;}
@@ -127,7 +127,7 @@ function useAction(){
     if(f.i===BDOOR&&G.bossOn){sfx.click();msg('ЗАПЕРТО');return;}
     if(G.level===12&&G.semLock&&f.i===SEM_DOOR){sfx.click();msg('ЗАПЕРТО');return;}
     if(G.level===9&&f.i===G.lockDoor){sfx.click();msg('ЗАПЕРТО');return;}
-    if(G.level===13&&doorTarget[f.i]<.5&&schoolDoor(f.i))return;
+    if((G.level===13||G.level===14)&&doorTarget[f.i]<.5&&schoolDoor(f.i))return;
     if(doorTarget[f.i]<.5){doorTarget[f.i]=1;doorTimer[f.i]=0;sfx.door();if(TILE[f.i]===10&&!FOUND.has(f.i)){FOUND.add(f.i);G.secrets++;msg('ТАЙНИК!');}}
     else if(!occupied(f.i)&&TILE[f.i]!==10&&TILE[f.i]!==62){doorTarget[f.i]=0;sfx.door();}
   }

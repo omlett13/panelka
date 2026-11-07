@@ -11,17 +11,19 @@ function renderTop(){
   TORCH=(LEVELDEF[G.level].torch&&(G.state==='play'||G.state==='dead'||G.state==='pause'))?1:0;
   for(let x=0;x<RW;x++){const cx=2*x/RW-1;const ang=Math.atan2(dirY+plY*cx,dirX+plX*cx);SKYCOL[x]=((((ang/(2*Math.PI))%1)+1)%1*SKYW)|0;}
   const PIN=G.level===11&&ZONE[(py|0)*MW+(px|0)]===Z_HALL;
-  RHOR=Math.round(RH/2+(P.pitch||0)*RH);const rdx0=dirX-plX,rdy0=dirY-plY,rdx1=dirX+plX,rdy1=dirY+plY,skyK=SKYH*2/RH;
+  RHOR=Math.round(RH/2+(P.pitch||0)*RH);const K2=HALL2?(2-camZ)/(CEILH-camZ):0;const rdx0=dirX-plX,rdy0=dirY-plY,rdx1=dirX+plX,rdy1=dirY+plY,skyK=SKYH*2/RH;
   for(let y=0;y<RH;y++){
     const isF=y>=RHOR,p=isF?(y-RHOR+.5):(RHOR-y-.5),rowD=(isF?camZ:(CEILH-camZ))*RPROJ/p;
     let fx=px+rowD*rdx0,fy=py+rowD*rdy0;const sx=rowD*(rdx1-rdx0)/RW,sy=rowD*(rdy1-rdy0)/RW;
     let fog=1-rowD/FOGD;if(fog<0)fog=0;const fogI=fog*256;const fI=flash>0?flash*Math.max(0,1-rowD/7)*190:0;const feF=Math.min(256,fogI*1.5+40)|0;const tR=TORCH?230*TROW[y]*Math.max(0,1-rowD/10):0;const hk=HZ?1-fog:0,hr=hk*178,hg=hk*196,hb=hk*214;
     const o=y*RW,skyRow=Math.max(0,Math.min(SKYH-1,(SKYH-1-(RHOR-y)*skyK)|0))*SKYW;if(!isF&&camZ>1){for(let x=0;x<RW;x++)FB[o+x]=SKY[skyRow+SKYCOL[x]];continue;}
-    const fG=fI*.85,fB=fI*.6;let lc=-1,lr=0,lg=0,lb=0; // per-row constants; lighting cached while the cell doesn't change
+    const fG=fI*.85,fB=fI*.6,T2=HALL2&&!isF;let lc=-1,lr=0,lg=0,lb=0; // per-row constants; lighting cached while the cell doesn't change
     for(let x=0;x<RW;x++,fx+=sx,fy+=sy){
       if(fx<0||fy<0||fx>=MWL||fy>=MHL){if(isF&&G.level===7){const u=((fx/6)%1+1)%1,v=((fy/6)%1+1)%1,c=TX.cityTop[(((v*64)|0)<<6)|((u*64)|0)],L=(70+(G.dawn||0)*120)*Math.max(.45,fog);FB[o+x]=sh(c,L|0,(L*.9)|0,(L*.88)|0);continue;}FB[o+x]=isF?OOBF:SKY[skyRow+SKYCOL[x]];continue;}
       const cx=fx|0,cy=fy|0,cell=cy*MW+cx;let tex;
-      if(isF)tex=FLOORTEX[cell];else{const zc=ZONE[cell];if((zc===Z_OUT||zc===Z_VOID)&&!(PIN&&TILE[cell]!==0)&&!CEILW[cell]){FB[o+x]=SKY[skyRow+SKYCOL[x]];continue;}tex=CEILTEX[cell];}
+      if(isF)tex=FLOORTEX[cell];else{const zc=ZONE[cell];if((zc===Z_OUT||zc===Z_VOID)&&!(PIN&&TILE[cell]!==0)&&!CEILW[cell]){FB[o+x]=SKY[skyRow+SKYCOL[x]];continue;}tex=CEILTEX[cell];
+        /* two-unit ceiling: the same ray meets the higher plane K2 times further out */
+        if(T2&&TALL2[cell]){const gx=px+(fx-px)*K2,gy=py+(fy-py)*K2,c2=(gy|0)*MW+(gx|0);if(TALL2[c2]){FB[o+x]=hallCeil(c2,gx,gy,rowD*K2,fI);continue;}}}
       const c=tex[((((fy-cy)*64)|0)<<6)|(((fx-cx)*64)|0)];
       if((c>>>24)===254)FB[o+x]=sh(c,feF,feF,feF);
       else{if(cell!==lc){lc=cell;lr=((LR[cell]*fogI)>>8)+fI;lg=((LG[cell]*fogI)>>8)+fG;lb=((LB[cell]*fogI)>>8)+fB;}
@@ -37,16 +39,19 @@ function renderTop(){
     if(rdx<0){stx=-1;sdx=(px-mx)*ddx;}else{stx=1;sdx=(mx+1-px)*ddx;}
     if(rdy<0){sty=-1;sdy=(py-my)*ddy;}else{sty=1;sdy=(my+1-py)*ddy;}
     let prev=my*MW+mx,side=0,hitT=0,hitI=-1,dOff=0,railD=0,railW=0,ovD=0,ovI=-1,ovTx=0,ovSide=0,cabIn=RZON&&ZONE[prev]===Z_LIFT?0:-1,cabOut=-1;SEEN[prev]=1;LOWN=0;if(RZON)for(let y=0,q=x;y<RH;y++,q+=RW)RZ[q]=1e9;LOWD[x]=1e9;LOWY[x]=RH;BIN[x]=IND?0:1e9;BYA[x]=IND?-1e9:0;BEX[x]=1e9;ZT[x]=0;let lowFull=0;
+    let clipD=0,hvD=0,hvI=-1,hvTx=0,hvSide=0; // tall hall: where the ray walks in from a normal-height cell; a doorway out of it (wall above the door)
     for(let i=0;i<120;i++){
       if(sdx<sdy){sdx+=ddx;mx+=stx;side=0;}else{sdy+=ddy;my+=sty;side=1;}
       if(mx<0||my<0||mx>=MWL||my>=MHL)break;
       const ci=my*MW+mx,t=TILE[ci];
+      if(HALL2&&!clipD&&TALL2[ci]&&!TALL2[prev])clipD=side===0?sdx-ddx:sdy-ddy;
       if(L10R&&camZ<1){const z=ZONE[ci];if(BIN[x]>1e8){if(z===Z_HALL&&ZONE[prev]!==Z_HALL){const dd=side===0?sdx-ddx:sdy-ddy;BIN[x]=dd;BYA[x]=RHOR-(1-camZ)*RPROJ/dd;}}else if(BEX[x]>1e8&&z===Z_OUT)BEX[x]=side===0?sdx-ddx:sdy-ddy;}
       if(t===0&&OUTP&&FLCH[ci]===59&&LOWN<12){LOWC[LOWN]=ci;LOWP[LOWN]=prev;LOWT[LOWN]=99;LOWN++;}
       if(t===0&&RZON){const zl=ZONE[ci]===Z_LIFT;if(zl&&cabIn<0)cabIn=side===0?sdx-ddx:sdy-ddy;else if(!zl&&cabIn>=0&&cabOut<0)cabOut=side===0?sdx-ddx:sdy-ddy;}
       if(t===0){if(!railD&&!RZON&&ZONE[ci]===Z_VOID&&ZONE[prev]!==Z_VOID&&FLCH[ci]!==111){railD=side===0?sdx-ddx:sdy-ddy;let w=side===0?py+railD*rdy:px+railD*rdx;railW=w-Math.floor(w);}SEEN[ci]=1;prev=ci;continue;}
       if((t>=51&&t<=55)||t===57||(L10R&&(t===49||(t===2&&OUTP)))||(L11R&&(t===62||t===63||t===64||((t===60||t===61||t===65)&&(OUTP||BEX[x]<1e8))))||(L12R&&t>=68&&t<=70)){const hh=t===70?WH12[ci]*.5:(LOWB[t]?LOWB[t][4]:9);if(LOWN<12&&!(lowFull>camZ&&hh<=lowFull)){if(t===68||t===69){const m=RAILM[ci];if((m&3)||!(m&12)){LOWC[LOWN]=ci;LOWP[LOWN]=prev;LOWT[LOWN]=68;LOWN++;}if((m&12)&&LOWN<12){LOWC[LOWN]=ci;LOWP[LOWN]=prev;LOWT[LOWN]=69;LOWN++;}}else{LOWC[LOWN]=ci;LOWP[LOWN]=prev;LOWT[LOWN]=t;LOWN++;}const B2=LOWB[t];if(B2&&t!==62&&B2[0]===0&&B2[1]===1&&B2[2]===0&&B2[3]===1&&!(B2[6]>0)&&hh>lowFull)lowFull=hh;}SEEN[ci]=1;prev=ci;continue;}
       if(ISD[t]&&!(L11R&&t===62)){const o=doorOpen[ci];if(o>0){const pd=side===0?sdx-ddx:sdy-ddy;let w=side===0?py+pd*rdy:px+pd*rdx;w-=Math.floor(w);if(w<o){
+        if(HALL2&&hvI<0&&TALL2[prev]){hvD=pd;hvI=ci;hvSide=side;let q=(w*64)|0;if(q>63)q=63;if((side===0&&rdx<0)||(side===1&&rdy>0))q=63-q;hvTx=q;}
         /* open doorway in a tall facade: remember it so the wall above the door still gets drawn */
         if(ovI<0&&((TALLOK[ci]&&(ZONE[prev]===Z_OUT||ZONE[prev]===Z_VOID))||(RZON&&(t===12||t===7)))){ovD=pd;ovI=ci;ovSide=side;let q=(w*64)|0;if(q>63)q=63;if((side===0&&rdx<0)||(side===1&&rdy>0))q=63-q;ovTx=q;}
         if(RZON&&cabIn<0&&ZONE[ci]===Z_LIFT)cabIn=pd;SEEN[ci]=1;prev=ci;continue;}}dOff=o;}
@@ -93,8 +98,8 @@ function renderTop(){
     }
     if(WALLOV&&WALLOV[hitT]){const o=WALLOV[hitT];base=o[WALLV[hitI]%o.length];}
     if(RZON&&(hitT===11||hitT===13)&&pz!==Z_LIFT)base=TX.siloShaft;
-    const lineH=RPROJ/perp,fl=RHOR+camZ*lineH,st=(RZON&&pz===Z_LIFT)?1:(G.level===12&&hitT===66)?CEILH:(tall?5:(CEILH>1&&pz!==Z_OUT&&pz!==Z_VOID?CEILH:1)),top=fl-st*lineH;
-    const y0=Math.max(0,Math.ceil(top)),y1=Math.min(RH-1,Math.floor(fl));if(OUTP&&!IND&&BIN[x]>1e8)ZT[x]=Math.max(0,Math.ceil(top));
+    const T2W=HALL2&&TALL2[prev]===1,lineH=RPROJ/perp,fl=RHOR+camZ*lineH,st=T2W?2:(RZON&&pz===Z_LIFT)?1:(G.level===12&&hitT===66)?CEILH:(tall?5:(CEILH>1&&pz!==Z_OUT&&pz!==Z_VOID?CEILH:1)),top=fl-st*lineH;
+    let y0=Math.max(0,Math.ceil(top));const y1=Math.min(RH-1,Math.floor(fl));if(clipD)y0=Math.max(y0,Math.ceil(RHOR-(1-camZ)*RPROJ/clipD));if(OUTP&&!IND&&BIN[x]>1e8)ZT[x]=Math.max(0,Math.ceil(top));
     let hA=1e9,hB=-1e9;if(perp>BIN[x]+.01){hA=BYA[x];hB=RHOR-(1-camZ)*RPROJ/Math.min(perp,BEX[x]);}
     let fog=1-perp/FOGD;if(fog<0)fog=0;const fogI=fog*256,sd=side===1?.78:1;const hk=HZ?1-fog:0,hr=hk*178,hg=hk*196,hb=hk*214;
     const fI=flash>0?flash*Math.max(0,1-perp/7)*190:0;
@@ -104,7 +109,7 @@ function renderTop(){
     for(let y=y0;y<=y1;y++){if(y>=hA&&y<hB)continue;
       const v=(fl-y)*inv;let s=v|0;if(s>=st)s=st-1;let ty=63-(((v-s)*64)|0);if(ty<0)ty=0;
       let tex=base,lr=lr0,lg=lg0,lb=lb0;
-      let cx2=tx;if(G.level===12&&(hitT===66||(s>0&&hitT===71))){tex=TX.siloW;cx2=tx;}else if(RZON&&s>0&&hitT>=11&&hitT<=13){tex=TX.siloShaft;cx2=tx;}else if(RZON&&s>0&&hitT===7){tex=TX.siloW;cx2=tx;}else if(tall&&(s>0||!base)&&hitT!==48){if(hitT===56||hitT===50||hitT===58){tex=s===4?TX.skelTop:TX.skelF[WINV[hitI*5+s]&1];cx2=txU;}else{tex=TX.panel[WINV[hitI*5+s]];cx2=txU;if(s>0&&!L10D){lr=ur;lg=ug;lb=ub;}}}
+      let cx2=tx;if(G.level===12&&(hitT===66||(s>0&&hitT===71))){tex=TX.siloW;cx2=tx;}else if(RZON&&s>0&&hitT>=11&&hitT<=13){tex=TX.siloShaft;cx2=tx;}else if(RZON&&s>0&&hitT===7){tex=TX.siloW;cx2=tx;}else if(T2W&&s>0){tex=hitT===17?TX.curtainTop:hitT===22?TX.schWinUp:TX.schWup;cx2=tx;}else if(tall&&(s>0||!base)&&hitT!==48){if(hitT===56||hitT===50||hitT===58){tex=s===4?TX.skelTop:TX.skelF[WINV[hitI*5+s]&1];cx2=txU;}else{tex=TX.panel[WINV[hitI*5+s]];cx2=txU;if(s>0&&!L10D){lr=ur;lg=ug;lb=ub;}}}
       const c=tex[(ty<<6)|cx2];if(c===0)continue;
       const tw=tW?tW*TROW[y]:0;FB[y*RW+x]=(c>>>24)===254?sh(c,fe,fe,fe):sh(c,(lr+tw)|0,(lg+tw*.95)|0,(lb+tw*.8)|0);if(hk)FB[y*RW+x]=hzA(FB[y*RW+x],hr,hg,hb);
     }
@@ -112,6 +117,9 @@ function renderTop(){
       let fg=1-d/FOGD;if(fg<0)fg=0;const s2=ovSide===1?.78:1,sk=TILE[ovI]===50||TILE[ovI]===12||TILE[ovI]===7,r2=(sk?LR[ovI]*fg:ar*fg)*s2,g2=(sk?LG[ovI]*fg:ag*fg)*s2,b2=(sk?LB[ovI]*fg:ab*fg)*s2,fe2=Math.min(256,fg*256*1.5+40)|0;
       for(let y=ya;y<=yb;y++){const v=(f2-y)/lh;let s=v|0;if(s<1)s=1;if(s>4)s=4;let ty=63-(((v-s)*64)|0);if(ty<0)ty=0;const c=(TILE[ovI]===12?TX.siloShaft:TILE[ovI]===7?TX.siloW:TILE[ovI]===50?(s===4?TX.skelTop:TX.skelF[WINV[ovI*5+s]&1]):TX.panel[WINV[ovI*5+s]])[(ty<<6)|ovTx];if(c===0)continue;
         FB[y*RW+x]=(c>>>24)===254?sh(c,fe2,fe2,fe2):sh(c,r2|0,g2|0,b2|0);}}
+    if(hvI>=0&&hvD<perp){const d=Math.max(.05,hvD),lh=RPROJ/d,f2=RHOR+camZ*lh,ya=Math.max(0,Math.ceil(f2-2*lh)),yb=Math.min(RH-1,Math.floor(f2-lh));let fg=1-d/FOGD;if(fg<0)fg=0;
+      const s2=hvSide===1?.78:1,r2=LR[hvI]*fg*s2,g2=LG[hvI]*fg*s2,b2=LB[hvI]*fg*s2,T=TX.schWup;
+      for(let y=ya;y<=yb;y++){let ty=63-((((f2-y)/lh-1)*64)|0);if(ty<0)ty=0;if(ty>63)ty=63;FB[y*RW+x]=sh(T[(ty<<6)|hvTx],r2|0,g2|0,b2|0);}}
     if(cabOut>cabIn)drawCab(x,cabIn,cabOut,px,py,rdx,rdy,camZ,flash);
     if(railD&&railD<perp)drawRail(x,railD,railW,camZ);
     if(LOWN)drawLow(x,px,py,rdx,rdy,camZ);
@@ -127,8 +135,12 @@ function renderTop(){
   if(inShop)drawCase();else drawWeapon();
   tg.imageSmoothingEnabled=false;{const k=(G.state==='play'&&G.shake>0&&!REDUCED)?G.shake*9:0;const jx=k?(Math.random()-.5)*k:0,jy=k?(Math.random()-.5)*k:0;if(G.roll){tg.fillStyle='#000';tg.fillRect(0,0,W,H);tg.save();tg.translate(W/2+jx,H/2+jy);tg.rotate(G.roll);tg.drawImage(LC,-W*.62,-H*.62,W*1.24,H*1.24);tg.restore();}else{if(k){tg.fillStyle='#000';tg.fillRect(0,0,W,H);}tg.drawImage(LC,jx,jy,W,H);}}
   if(inShop)drawShopUI();
+  if(G.state==='board'&&G.board)drawBoardUI();
   drawTopOverlay();
 }
+/* ceiling pixel of a two-unit-high cell (актовый зал) */
+function hallCeil(c2,gx,gy,d,fI){const c=CEILTEX[c2][((((gy-(gy|0))*64)|0)<<6)|(((gx-(gx|0))*64)|0)];let fog=1-d/FOGD;if(fog<0)fog=0;const f=fog*256;
+  if((c>>>24)===254){const e=Math.min(256,f*1.5+40)|0;return sh(c,e,e,e);}return sh(c,((LR[c2]*f)>>8)+fI,((LG[c2]*f)>>8)+fI*.85,((LB[c2]*f)>>8)+fI*.6);}
 /* balcony railing: a see-through, waist-high strip drawn where the ray leaves the balcony */
 /* silo lift cabin: its ceiling is a plane at height 1 between where the ray enters the cabin (d0) and leaves it (d1) */
 function drawCab(x,d0,d1,px,py,rdx,rdy,camZ,flash){const k=(1-camZ)*RPROJ,yA=d0>0?Math.max(0,Math.ceil(RHOR-k/d0-.5)):0,yB=Math.min(RHOR-1,Math.floor(RHOR-k/d1-.5));

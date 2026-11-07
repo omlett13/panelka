@@ -8,6 +8,7 @@ const ZMAP={'/':Z_OUT,';':Z_HALL,'[':Z_HALL,'m':Z_HALL,'r':Z_HALL,'e':Z_HALL,'y'
 const LIFT_SPAWN={x:3.5,y:39.35,a:-Math.PI/2};
 const doorOpen=new Float32Array(N), doorTarget=new Float32Array(N), doorTimer=new Float32Array(N);
 let DOORS=[];let BDOOR=-1;
+const TALL2=new Uint8Array(N);let HALL2=false;   /* cells with a ceiling two units high (school актовый зал) */
 const RAILM=new Uint8Array(N),WH12=new Uint8Array(N),CEILW=new Uint8Array(N),SEEN=new Uint8Array(N),TALLOK=new Uint8Array(N),ROOM=new Int16Array(N),BROOM=new Uint8Array(N);
 function inB(x,y){return x>=0&&y>=0&&x<MW&&y<MH;}
 function parseMap(src){

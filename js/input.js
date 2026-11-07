@@ -42,6 +42,7 @@ addEventListener('keydown',e=>{const k=e.code;if(['Space','ArrowUp','ArrowDown',
   if(G.state==='breaker'||G.state==='keypad'){if(!e.repeat)puzzleKey(k);return;}
   if(G.state==='talk'){if(!e.repeat)talkKey(k);return;}
   if(G.state==='read'){if(!e.repeat&&(k==='Enter'||k==='Space'||k==='KeyE'||k==='Escape'))readClose();return;}
+  if(G.state==='board'){keys.add(k);if(e.repeat)return;if(k==='Escape'||k==='Backspace'||k==='Tab')closeBoard();else if(k==='Enter'||k==='Space'||k==='KeyE')boardClick();return;}
   if(G.state==='shop'){keys.add(k);if(e.repeat)return;if(k==='Escape'||k==='Backspace'||k==='Tab')shopBack();else if(k==='Enter'||k==='Space'||k==='KeyE')shopClick();return;}
   if(G.state==='play'||G.state==='lift'){if(e.repeat)return;
     if(G.loot){lootKey(k);return;}
@@ -59,11 +60,12 @@ const topC=document.getElementById('top'),botC=document.getElementById('bot');
 function topPos(e){const r=topC.getBoundingClientRect();return {x:Math.max(0,Math.min(W-1,(e.clientX-r.left)/r.width*W)),y:Math.max(0,Math.min(H-1,(e.clientY-r.top)/r.height*H))};}
 topC.addEventListener('pointerdown',e=>{initAudio();
   if(G.state==='shop'){e.preventDefault();G.hand=topPos(e);updateHover();shopClick();return;}
+  if(G.state==='board'){e.preventDefault();G.hand=topPos(e);boardHover();boardClick();return;}
   if(G.state!=='play'&&G.state!=='lift')return;
   if(G.loot)return;
   if(e.pointerType==='mouse'&&document.pointerLockElement!==topC){try{const p=topC.requestPointerLock&&topC.requestPointerLock();if(p&&p.catch)p.catch(()=>{});}catch(err){}}
   if(e.pointerType==='mouse')mouseFire=true;});
-topC.addEventListener('pointermove',e=>{if(G.state==='shop'&&document.pointerLockElement!==topC)G.hand=topPos(e);});
+topC.addEventListener('pointermove',e=>{if((G.state==='shop'||G.state==='board')&&document.pointerLockElement!==topC)G.hand=topPos(e);});
 addEventListener('mouseup',()=>{mouseFire=false;});
 document.addEventListener('mousemove',e=>{if(document.pointerLockElement===topC)mouseDX+=e.movementX||0;});
 document.addEventListener('pointerlockchange',()=>{if(document.pointerLockElement===topC)G.hadLock=true;else if(G.hadLock){G.hadLock=false;mouseFire=false;if(!G.trans&&!G.loot)pauseGame();}});
@@ -80,6 +82,7 @@ document.querySelectorAll('[data-dbg]').forEach(b=>b.addEventListener('click',()
   if(a==='f11'){if(G.state==='pause')resume();if(G.state==='talk')talkClose();if(G.state!=='play'&&G.state!=='lift')newGame();enterLevel(11);G.loot=false;msg('ГАРАЖИ');return;}
   if(a==='sem'){if(G.state==='pause')resume();if(G.state==='talk')talkClose();if(G.state!=='play'&&G.state!=='lift')newGame();enterLevel(12);G.loot=false;P.x=107.5;P.y=74;P.a=-Math.PI/2;return;}
   if(a==='f13'){if(G.state==='pause')resume();if(G.state==='talk')talkClose();if(G.state!=='play'&&G.state!=='lift')newGame();enterLevel(13);G.loot=false;msg('ШКОЛА · ЭТАЖ 1');return;}
+  if(a==='f14'){if(G.state==='pause')resume();if(G.state==='talk')talkClose();if(G.state!=='play'&&G.state!=='lift')newGame();enterLevel(14);G.loot=false;msg('ШКОЛА · ЭТАЖ 2');return;}
   if(a==='f12'){if(G.state==='pause')resume();if(G.state==='talk')talkClose();if(G.state!=='play'&&G.state!=='lift')newGame();enterLevel(12);G.loot=false;msg('ЭЛЕВАТОР · 1 ЭТАЖ');return;}
   if(a==='f10'||a==='duel'){if(G.state==='pause')resume();if(G.state==='talk')talkClose();if(G.state!=='play'&&G.state!=='lift')newGame();enterLevel(10);G.loot=false;msg('СТРОЙКА');if(a==='duel'){siteSkipToCrane();P.x=CRB.x+2;P.y=CRB.y;}return;}
   if(a==='f9'){if(G.state==='pause')resume();if(G.state==='talk')talkClose();if(G.state!=='play'&&G.state!=='lift')newGame();enterLevel(9);G.loot=false;msg('МЕТРО');return;}
@@ -96,6 +99,7 @@ document.querySelectorAll('[data-btn]').forEach(b=>{const id=b.dataset.btn;
   const down=e=>{e.preventDefault();initAudio();b.classList.add('on');if(id in btn)btn[id]=1;
     if(G.trans||G.state==='ride'){/* buttons do nothing mid-transition or riding */}
     else if(G.state==='shop'){if(id==='A')shopClick();else if(id==='B'||id==='START')shopBack();}
+    else if(G.state==='board'){if(id==='A')boardClick();else if(id==='B'||id==='START')closeBoard();}
     else if(G.state==='breaker'||G.state==='keypad')puzzleBtn(id);
     else if(G.state==='read'){if(id==='A'||id==='B'||id==='START')readClose();}
     else if(G.state==='talk'){if(id==='A')talkChoose();else if(id==='B'||id==='START')talkClose();else if(id==='X')talkMove(-1);else if(id==='Y')talkMove(1);}
@@ -119,7 +123,7 @@ const GEARBTN={x:6,y:158,w:74,h:18},LOOTBTN={x:240,y:158,w:74,h:18},LOOTCLOSE={x
 function lootTile(i){return {x:7+i*52,y:24,w:48,h:60};}
 function gearTile(c){return {x:c<4?84:136,y:30+(c&3)*36,w:48,h:34};}
 botC.addEventListener('pointerdown',e=>{e.preventDefault();initAudio();const r=botC.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*BW,y=(e.clientY-r.top)/r.height*BH,p={x,y};
-  if(G.trans||G.state==='ride'||G.state==='shop')return;
+  if(G.trans||G.state==='ride'||G.state==='shop'||G.state==='board')return;
   if(G.state==='breaker'||G.state==='keypad'){puzzleTouch(p);return;}
   if(G.state==='talk'){talkTouch(p);return;}
   if((G.state==='play'||G.state==='lift')&&G.loot){

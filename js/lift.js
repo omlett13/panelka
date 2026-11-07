@@ -66,7 +66,8 @@ function take(e){
     case 'gkey':G.gkey=true;msg('КЛЮЧ ОТ ВОРОТ — ВОРОТА В КОНЦЕ НИЖНЕГО РЯДА');break;
     case 'apple':if(P.hp>=maxHP())return false;P.hp=Math.min(maxHP(),P.hp+5);msg('ЯБЛОКО  +5');break;
     case 'tapok':P.has[3]=1;P.w=3;P.switchT=.25;msg('МАМИН ТАПОК!  [5]');break;
-    case 'note7':case 'note8':case 'note12':case 'note15':case 'note16':case 'note17':if(!NOTESGOT.includes(e.t)){NOTESGOT.push(e.t);saveNotes();}msg('НОВАЯ ЗАМЕТКА');break;
+    case 'gum':if(P.hp>=maxHP()&&!(P.bleed>0))return false;P.bleed=0;P.hp=Math.min(maxHP(),P.hp+45);msg('ЖВАЧКА «LOVE IS»  +45');break;
+    case 'note7':case 'note8':case 'note12':case 'note15':case 'note16':case 'note17':case 'note18':case 'note19':case 'note20':if(!NOTESGOT.includes(e.t)){NOTESGOT.push(e.t);saveNotes();}msg('НОВАЯ ЗАМЕТКА');break;
     case 'rub':case 'rubS':G.rub+=e.v||5;msg('РУБЛИ  +'+(e.v||5));break;
   }
   return true;

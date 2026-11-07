@@ -20,6 +20,7 @@ function update(dt){
     if(G.liftBreak>0){G.liftBreak-=dt;if(G.liftBreak<=0&&!G.trans){G.liftBreak=0;keys.clear();transition(()=>{enterLevel(5);msg('ЛЕСТНИЦА');},.5);}}
     updatePlayer(dt);return;}
   if(G.state==='shop'){updateShop(dt);return;}
+  if(G.state==='board'){updateBoard(dt);return;}
   if(G.state==='breaker'||G.state==='keypad'){updatePuzzle(dt);updateDoors(dt);return;}
   if(G.state==='ride'){
     G.rideT+=dt;P.camZ=.5+Math.sin(G.rideT*38)*.006*Math.min(1,G.rideT);

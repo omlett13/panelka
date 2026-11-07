@@ -84,15 +84,15 @@ function schoolArt(){
     R(g,'#c8bca0',50,58,10,4);poly(g,'#9a9e9c',[[6,50],[18,50],[17,63],[7,63]]);R(g,'#c0c4c2',6,50,12,1);});
 }
 schoolArt();
-function schoolWalls(){return {1:TX.schW,3:[TX.board],6:[TX.schDoor],16:[TX.coats],17:[TX.honor],20:[TX.stall],22:[TX.schWin],37:[TX.wcM],43:[TX.wcW]};}
+function schoolWalls(){return {1:TX.schW,3:[TX.board],6:[TX.schDoor],16:[TX.coats],17:[TX.stend],20:[TX.stall],22:[TX.schWin],37:[TX.wcM],43:[TX.wcW]};}
 function schoolCells(){for(let i=0;i<N;i++){const c=FLCH[i];CEILTEX[i]=TX.schCeil;
   if(c===46)FLOORTEX[i]=TX.schFloor;else if(c===114)FLOORTEX[i]=TX.schTerr;else if(c===58)FLOORTEX[i]=TX.schBoards;else if(c===59)FLOORTEX[i]=TX.schCheck;else if(c===109)FLOORTEX[i]=TX.schStep;}}
 function schInit(){G.techOK=false;G.techT=0;G.bellT=BELL.first;BDOOR=SCH.door;}
 function techNag(){G.bark='ТЕХНИЧКА: «'+pick(['Куда в уличной обуви?! Сменку надень!','Я только помыла! Сменка где?','Без сменки не пущу. Гардероб — налево.'])+'»';G.barkT=2.6;sfx.bark(230);msg('НУЖНА СМЕНКА · ГАРДЕРОБ');}
 /* E on a door: true if the school keeps it shut */
 function schoolDoor(i){
-  if(TILE[i]===7){sfx.click();msg(i===SCH.front?'ДОМОЙ РАНО · УРОКИ':'ПОДВАЛ ЗАПЕРТ');return true;}
-  if(i===SCH.door&&!worn('smenka')){sfx.click();techNag();return true;}
+  if(TILE[i]===7){sfx.click();msg(G.level===14?'ДИРЕКТОР · ЗАПЕРТО':i===SCH.front?'ДОМОЙ РАНО · УРОКИ':'ПОДВАЛ ЗАПЕРТ');return true;}
+  if(G.level===13&&i===SCH.door&&!worn('smenka')){sfx.click();techNag();return true;}
   if(TILE[i]===43){sfx.click();G.bark='ТЫ: «'+pick(['Не, туда нельзя.','Это женский. Мимо.','Ж. Я не настолько потерялся.'])+'»';G.barkT=2;msg('ЖЕНСКИЙ ТУАЛЕТ');return true;}
   return false;}
 function updateSchool(dt){G.techT-=dt;
@@ -100,7 +100,7 @@ function updateSchool(dt){G.techT-=dt;
     if(!worn('smenka')){if(G.techT<=0){techNag();G.techT=6;}}
     else if(!G.techOK){G.techOK=true;G.bark='ТЕХНИЧКА: «Вот, другое дело. Проходи. И не бегать!»';G.barkT=2.6;sfx.bark(230);doorTarget[SCH.door]=1;doorTimer[SCH.door]=0;sfx.door();}}
   if(G.techOK)schBell(dt);
-  if(!(G.msgT>0)&&P.x<13&&P.y<12.5&&!G.schBreak)msg('2 ЭТАЖ · СКОРО');}
+  if(P.x<13&&P.y<12.5&&!G.trans){keys.clear();transition(()=>{enterLevel(14);msg('ШКОЛА · ЭТАЖ 2');},.5);}}
 
 /* ---------- уроки и перемены: the bell sends a crowd down the stairs, along the рекреация to the столовая and back.
    It never goes into classrooms (or toilets, or the вестибюль): that's where you hide ---------- */
@@ -154,3 +154,108 @@ function updateSchoolAudio(){if(!AU.c)return;const t=AU.c.currentTime;
   crowdBus().gain.setTargetAtTime(Math.min(.18,s*.02),t,.25);}
 function schoolHud(g){const b=G.schBreak,s=Math.max(0,Math.ceil(G.bellT));
   stxt(g,G.schHome?'НА УРОК':(b?'ПЕРЕМЕНА ':'УРОК ')+((s/60)|0)+':'+String(s%60).padStart(2,'0'),394,6,b?DANGER:G.bellT<5?WARN:'#d8d4c8','right');}
+
+/* ---------- ШКОЛА · ЭТАЖ 2: классы, химия, учительская, актовый зал, библиотека, приёмная директора ---------- */
+function tShelf(g,r){R(g,'#4a2e1a',0,0,64,64);R(g,'#5e3c22',0,0,64,3);
+  for(let y=4;y<60;y+=11){R(g,'#2a1a10',2,y,60,9);let x=3;while(x<61){const w=2+((r()*3)|0),h=6+((r()*3)|0);if(r()<.08){x+=3;continue;}
+      R(g,['#7a2a22','#2a4a7a','#3a6a3a','#8a6a2a','#5a3a5a','#c8b48a','#2a2a2a'][(r()*7)|0],x,y+9-h,w,h);if(r()<.4)R(g,'#d8c890',x,y+10-h,w,1);x+=w;}
+    R(g,'#6e4a2c',0,y+9,64,2);}
+  R(g,'#3a2414',0,0,2,64);R(g,'#3a2414',62,0,2,64);}
+function tCurtain(g,r,top){R(g,'#5a0e12',0,0,64,64);for(let x=0;x<64;x+=8){R(g,'#8a1a1e',x+1,0,4,64);R(g,'#a8282a',x+2,0,1,64);R(g,'#3e080a',x+6,0,2,64);}
+  speck(g,r,120,['#4e0c10','#7a161a'],0,0,64,64);
+  if(top){R(g,'#6a1216',0,0,64,10);for(let x=0;x<64;x+=16){g.fillStyle='#4a0a0c';g.beginPath();g.arc(x+8,10,8,0,Math.PI);g.fill();}R(g,'#c8a040',0,10,64,1);R(g,'#a8802a',0,0,64,2);}
+  else{R(g,'#c8a040',0,58,64,2);for(let x=1;x<64;x+=3)R(g,'#a8802a',x,60,1,4);}}
+function tMendel(g,r){tSchW(g,r,0);R(g,'#5a3a22',3,3,58,36);R(g,'#eeeae0',4,4,56,34);R(g,'#1a1a1a',14,5,36,2);
+  const C=['#e8a0a0','#a0c8e8','#e8d890','#b0e0a8','#d0b0e0'];
+  for(let row=0;row<6;row++)for(let col=0;col<18;col++){if(row===0&&col>0&&col<17)continue;if((row===1||row===2)&&col>1&&col<12)continue;
+    R(g,C[col<2?0:col>11?(col>16?4:3):row>3?2:1],5+col*3,9+row*4,2,3);}
+  R(g,'#d0b0e0',14,34,30,2);}
+function tDerm(g,r){tSchW(g,r,0);R(g,'#2a1a10',4,0,56,64);R(g,'#5a2e1a',7,2,50,62);
+  for(let y=6;y<62;y+=8)for(let x=10+((y/8)&1)*4;x<56;x+=8){R(g,'#4a2414',x,y,2,2);R(g,'#c8a050',x,y,1,1);}
+  R(g,'#6a3a22',7,2,50,1);R(g,'#c8a050',13,11,38,11);R(g,'#e0c070',13,11,38,1);R(g,'#8a6a2a',13,21,38,1);g.fillStyle='#3a2410';g.font='bold 7px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('ДИРЕКТОР',32,17);R(g,'#c8a050',50,34,4,3);R(g,'#8a6a2a',50,37,2,5);}
+function school2Art(){
+  TX.shelf=bake(g=>tShelf(g,rng(730)));TX.curtain=bake(g=>tCurtain(g,rng(731),0));TX.curtainTop=bake(g=>tCurtain(g,rng(731),1));TX.mendel=bake(g=>tMendel(g,rng(732)));TX.derm=bake(g=>tDerm(g,rng(733)));
+  /* лабораторный стол: black top, flasks and a spirit lamp */
+  SPR.labtable=bake(g=>{R(g,'#5a5a56',10,42,3,21);R(g,'#5a5a56',51,42,3,21);R(g,'#4a4a46',12,52,40,8);R(g,'#5a5a56',12,52,40,1);
+    R(g,'#1e1e20',6,38,52,5);R(g,'#3a3a3e',6,38,52,1);
+    poly(g,'#bcd8d8',[[16,28],[20,28],[24,38],[12,38]]);R(g,'#60b060',13,34,10,4);
+    R(g,'#bcd8d8',30,26,4,12);R(g,'#c84a8a',30,32,4,6);R(g,'#d8e4e4',30,26,4,1);
+    R(g,'#c8c4b0',42,32,8,6);R(g,'#8a8478',45,30,2,2);R(g,'#ffb040',45,27,2,3);R(g,'#fff0a0',45,28,1,1);});}
+school2Art();
+function school2Walls(){return {1:TX.schW,3:[TX.board],6:[TX.schDoor],7:[TX.derm],10:[TX.shelf],14:[TX.hallDoor],16:[TX.shelf],17:[TX.curtain],20:[TX.stall],22:[TX.schWin],23:[TX.mendel],31:[TX.honor],32:[TX.bigBook],33:[TX.shelf],37:[TX.wcM],43:[TX.wcW]};}
+/* актовый зал: two units tall (TALL2), see renderTop; the stairs down: walk back up the flight you came from */
+const HALL={x0:49,y0:5,x1:64,y1:18},LIB={book:31*MW+32,door:37*MW+30};
+function school2Cells(){schoolCells();for(let y=HALL.y0;y<=HALL.y1;y++)for(let x=HALL.x0;x<=HALL.x1;x++)TALL2[y*MW+x]=1;}
+function updateSchool2(){if(P.x<13&&P.y<11.3&&!G.trans){keys.clear();transition(()=>{enterLevel(13);G.techOK=true;P.x=10.5;P.y=13.8;P.a=Math.PI/2;msg('ШКОЛА · ЭТАЖ 1');},.5);}}
+
+/* ---------- floor 2 art: upper halves for the tall hall, hall doors, the big book; gum ---------- */
+function tSchWup(g,r){R(g,'#d6d3c8',0,0,64,64);speck(g,r,700,['#cecbc0','#dddad0','#c6c3b8'],0,0,64,64);R(g,'#c4c0b2',0,0,64,3);R(g,'#e4e0d4',0,3,64,1);}
+function tSchWinUp(g,r){tSchWup(g,r);R(g,'#dedbd0',6,6,52,58);R(g,'#141c2e',9,9,46,55);for(let i=0;i<22;i++)R(g,'#3a4a6a',9+((r()*46)|0),9+((r()*50)|0),1,1);
+  R(g,'#dedbd0',31,9,2,55);R(g,'#dedbd0',9,30,46,2);R(g,'rgba(200,220,255,.18)',12,11,8,14);}
+function tHallDoor(g,r){tSchW(g,r,0);R(g,'#6a4a2a',2,0,60,64);R(g,'#c8a050',16,2,32,8);R(g,'#8a6a2a',16,9,32,1);
+  g.fillStyle='#3a2410';g.font='bold 5px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('АКТОВЫЙ ЗАЛ',32,6);
+  for(const x of [5,33]){R(g,'#8a5a32',x,12,26,52);R(g,'#9a6a3c',x,12,26,1);R(g,'#7a4a28',x+3,40,20,20);R(g,'#6a3e22',x+3,59,20,1);
+    g.fillStyle='#4a3a2a';g.beginPath();g.arc(x+13,26,7,0,7);g.fill();g.fillStyle='#8aa4b0';g.beginPath();g.arc(x+13,26,5,0,7);g.fill();R(g,'rgba(255,255,255,.3)',x+10,23,2,2);}
+  R(g,'#3a2414',31,12,2,52);R(g,'#d8b050',27,36,3,6);R(g,'#d8b050',34,36,3,6);}
+function tStend(g,r){tSchW(g,r,0);R(g,'#5a3a22',2,2,60,38);R(g,'#c8a878',4,4,56,34);speck(g,r,120,['#b8986a','#d4b488'],4,4,56,34);R(g,'#a8241e',4,4,56,6);R(g,'#e8d070',14,6,36,2);
+  for(const [x,y,w,h,c] of [[6,12,14,12,'#f0ece0'],[22,12,10,10,'#f0e6a0'],[34,13,12,11,'#f0ece0'],[48,12,10,13,'#d8e4f0'],[7,26,11,10,'#f0d0d0'],[21,25,14,11,'#f0ece0'],[38,27,9,9,'#f0e6a0'],[49,27,9,9,'#f0ece0']]){
+    R(g,'rgba(0,0,0,.25)',x+1,y+1,w,h);R(g,c,x,y,w,h);for(let k=y+3;k<y+h-1;k+=2)R(g,'#8a8478',x+2,k,w-4-((r()*4)|0),1);R(g,r()<.5?'#c02a22':'#2a4ac0',x+(w>>1),y,2,2);}}
+function tBigBook(g,r){tShelf(g,r);R(g,'rgba(0,0,0,.45)',23,14,22,40);R(g,'#8a1012',20,10,22,42);R(g,'#c41e1e',22,10,18,42);R(g,'#e83a2a',22,10,2,42);
+  for(const y of [14,20,44])R(g,'#e8c050',22,y,18,2);R(g,'#e8c050',26,26,10,10);R(g,'#c41e1e',28,28,6,6);R(g,'#ffe080',22,10,18,1);}
+function school2Art2(){
+  TX.schWup=bake(g=>tSchWup(g,rng(740)));TX.schWinUp=bake(g=>tSchWinUp(g,rng(741)));TX.hallDoor=bake(g=>tHallDoor(g,rng(742)));TX.stend=bake(g=>tStend(g,rng(743)));TX.bigBook=bake(g=>tBigBook(g,rng(730)));
+  /* трибуна: wooden lectern, red front with a gold emblem, a microphone on a gooseneck */
+  SPR.lectern=bake(g=>{poly(g,'#5a3a22',[[16,24],[48,24],[46,63],[18,63]]);poly(g,'#7a4e2c',[[14,20],[50,20],[48,26],[16,26]]);R(g,'#8a5e34',14,20,36,1);
+    R(g,'#a8241e',21,30,22,26);R(g,'#c8342a',21,30,22,1);g.fillStyle='#e8c050';g.beginPath();g.arc(32,40,6,0,7);g.fill();R(g,'#a8241e',30,37,4,6);R(g,'#e8c050',22,52,20,1);
+    R(g,'#3a2414',16,61,32,2);R(g,'#2a2a2a',40,8,1,13);R(g,'#2a2a2a',37,6,4,3);R(g,'#5a5a5a',37,6,4,1);});
+  /* жвачка «Love is»: pink wrapper with the comic strip */
+  SPR.gum=bake(g=>{R(g,'rgba(0,0,0,.3)',22,51,22,11);R(g,'#f088b0',20,48,22,12);R(g,'#f8b0cc',20,48,22,2);R(g,'#ffffff',23,51,16,6);R(g,'#c02a5a',24,52,6,1);R(g,'#c02a5a',24,54,10,1);R(g,'#e85a8a',32,52,5,4);R(g,'#2a2a2a',27,55,2,1);});}
+school2Art2();
+/* E in the school: floor 1's стенд opens the board, floor 2's big book opens the shelf */
+function schoolUse(){for(let d=.35;d<=1.35;d+=.1){const cx=(P.x+Math.cos(P.a)*d)|0,cy=(P.y+Math.sin(P.a)*d)|0,i=cy*MW+cx,t=TILE[i];if(t===0)continue;
+    if(G.level===13&&t===17){openBoard();return true;}
+    if(G.level===14&&i===LIB.book){pullBook();return true;}
+    return false;}return false;}
+function pullBook(){if(G.libOpen){sfx.click();msg('КНИГА УЖЕ ВЫДВИНУТА');return;}
+  G.libOpen=true;sfx.clunk();G.shake=.2;G.bark='ТЫ: «„Капитал“, том второй… Тяжёлый. Ага.»';G.barkT=2.6;
+  const i=LIB.door;TILE[i]=10;DOORS.push(i);doorTarget[i]=1;doorTimer[i]=0;setTimeout(()=>sfx.door(),350);G.secrets++;msg('ТАЙНИК!');}
+
+/* ---------- стенд «ИНФОРМАЦИЯ» (floor 1 вестибюль): pinned notices you point at and read, like the барыга's case ---------- */
+const BOARD=[
+ {t:'РАСПИСАНИЕ ЗВОНКОВ',c:'#f0ece0',l:['1 урок ....... 8:30–9:15','2 урок ....... 9:25–10:10','3 урок ...... 10:30–11:15','4 урок ...... 11:25–12:10','','На переменах по рекреации','НЕ БЕГАТЬ!','В класс — по звонку.']},
+ {t:'ДЕЖУРНЫЙ КЛАСС',c:'#f0e6a0',l:['Дежурит 8 «Б».','Дежурные стоят у столовой','и у лестницы.','Сменку проверять у всех.','Без сменки — домой,','за родителями.']},
+ {t:'ПРОПАЛ ЖУРНАЛ 8 «Б»',c:'#f0ece0',l:['Кто видел классный журнал —','сдать завучу.','Тому, кто вернёт, —','пятёрка по поведению','за четверть.','','Завуч Р. С. Кузнецова']},
+ {t:'КРУЖОК «ЮНЫЙ ХИМИК»',c:'#d8e4f0',l:['Вторник, четверг, 15:00.','Кабинет химии, 2 этаж.','Ведёт М. П. Ершова.','Реактивы из кабинета','не выносить!','Кто взял магний —','верните, не позорьтесь.']},
+ {t:'СПАСИБО ШЕФАМ!',c:'#f0ece0',l:['Наши шефы с завода','подарили школе новые парты','и цветной телевизор.','Грузовики шефов приезжают','по ночам, чтобы не мешать','урокам. Подвал не трогать —','там их склад. Директор']},
+ {t:'БИБЛИОТЕКА',c:'#f0d0d0',l:['Сдайте книги','до конца четверти!','«Капитал», том второй,','с полки не брать.','Это личный экземпляр','директора.','','Библиотекарь Н. В.']},
+ {t:'СБОР МАКУЛАТУРЫ',c:'#f0e6a0',l:['В субботу — субботник','и сбор макулатуры.','Норма — 10 кг на ученика.','Класс-победитель','поедет на экскурсию','на элеватор.']},
+ {t:'ПРОДАМ ЖВАЧКУ',c:'#e8f0d8',hand:1,l:['Турбо, Лав из, Дональд.','Вкладыши — меняю.','Спросить Вовку, 7 «А».','Учителям не говорить!!!','','P.S. Тайник у меня лучше,','чем у директора.']}];
+const BRECT=[[24,40,82,78],[116,34,82,84],[208,42,82,76],[300,36,78,82],[30,134,80,82],[120,130,82,86],[212,136,80,78],[300,132,80,84]],BROT=[-.04,.03,-.02,.05,.03,-.05,.04,-.02];
+const BCLOSE={x:304,y:222,w:80,h:16};
+function openBoard(){G.state='board';G.board={t:0};G.hover=-1;G.hand={x:200,y:200};keys.clear();exitLock();sfx.latch();}
+function closeBoard(){G.board=null;G.state='play';keys.clear();sfx.tick();}
+function boardHover(){G.hover=-1;for(let i=BOARD.length-1;i>=0;i--){const [x,y,w,h]=BRECT[i];if(inR(G.hand,{x,y,w,h})){G.hover=i;break;}}}
+function boardClick(){if(!G.board||G.board.t<1)return;G.pokeT=.14;
+  if(inR(G.hand,BCLOSE)){closeBoard();return;}
+  const i=G.hover;if(i<0)return;const n=BOARD[i];sfx.pickup();openRead(n.t,n.l,null,()=>{G.state='board';});}
+function updateBoard(dt){const b=G.board;b.t=Math.min(1,b.t+dt*4);G.pokeT-=dt;
+  const hx=((k('ArrowRight')||k('KeyD'))?1:0)-((k('ArrowLeft')||k('KeyA'))?1:0)+pad.x,hy=((k('ArrowDown')||k('KeyS'))?1:0)-((k('ArrowUp')||k('KeyW'))?1:0)+pad.y;
+  if(hx||hy){G.hand.x=Math.max(0,Math.min(W-1,G.hand.x+hx*240*dt));G.hand.y=Math.max(0,Math.min(H-1,G.hand.y+hy*240*dt));}
+  boardHover();}
+function drawBoardUI(){const g=tg,b=G.board;g.save();g.globalAlpha=Math.min(1,b.t*1.5);
+  R(g,'#3a2414',0,0,W,H);R(g,'#5a3a22',6,6,W-12,H-12);R(g,'#b8946a',12,12,W-24,H-24);
+  const r=rng(77);for(let i=0;i<900;i++)R(g,r()<.5?'#a8845a':'#c8a47a',12+((r()*(W-26))|0),12+((r()*(H-26))|0),2,2);
+  R(g,'#a8241e',12,12,W-24,18);stxt(g,'ИНФОРМАЦИЯ',200,17,'#f0d060','center');
+  for(let i=0;i<BOARD.length;i++){const n=BOARD[i],[x,y,w,h]=BRECT[i],hv=G.hover===i,lift=hv?3:0;g.save();g.translate(x+w/2,y+h/2-lift);g.rotate(hv?0:BROT[i]);
+    R(g,'rgba(0,0,0,.3)',-w/2+2+lift,-h/2+3+lift,w,h);R(g,n.c,-w/2,-h/2,w,h);if(hv){g.strokeStyle=WARN;g.lineWidth=2;g.strokeRect(-w/2,-h/2,w,h);}
+    wrapText(n.t,12).forEach((s,k)=>txt(g,s,0,-h/2+8+k*9,n.hand?'#2a3ab0':'#2a2218','center',6));
+    const rr=rng(90+i);for(let yy=-h/2+34;yy<h/2-6;yy+=6)R(g,n.hand?'#6a7ac8':'#8a8478',-w/2+6,yy,w-14-((rr()*14)|0),1);
+    R(g,i%2?'#2a4ac0':'#c02a22',-2,-h/2-1,4,4);R(g,'#ffffff',-1,-h/2,1,1);g.restore();}
+  const hc=inR(G.hand,BCLOSE);R(g,hc?'#5a4e3a':'#3a342a',BCLOSE.x,BCLOSE.y,BCLOSE.w,BCLOSE.h);txt(g,'ОТОЙТИ',BCLOSE.x+BCLOSE.w/2,BCLOSE.y+4,'#e8e1cf','center');
+  g.restore();
+  const hx=G.hand.x|0,hy=(G.hand.y-(G.pokeT>0?6:0))|0;
+  poly(g,SLV,[[hx-2,hy+60],[hx+27,hy+60],[hx+140,H+60],[hx+40,H+60]]);poly(g,SLVD,[[hx+22,hy+60],[hx+27,hy+60],[hx+140,H+60],[hx+128,H+60]]);g.drawImage(ART.hand,hx-16,hy-1);}
+function drawBoardBottom(g){txt(g,'СТЕНД В ВЕСТИБЮЛЕ',6,4,WARN);
+  const n=G.hover>=0?BOARD[G.hover]:null;
+  if(n){wrapText(n.t,18).forEach((s,k)=>txt(g,s,160,60+k*16,VFD,'center',12));}else txt(g,'НАВЕДИ НА ЛИСТОК',160,70,DIM,'center');
+  txt(g,'A — ЧИТАТЬ    B — ОТОЙТИ',160,140,LABEL,'center');drawSlots(g,-1);}
