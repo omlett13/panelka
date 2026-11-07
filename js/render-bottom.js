@@ -125,7 +125,6 @@ function renderBottom(){
   if(G.state==='keypad')return drawKeypadBottom(g);
   if(G.loot)return G.loot==='gear'?drawWear(g):drawLoot(g);
   if(G.barkT>0)txt(g,G.bark,6,4,WARN);else if(G.msgT>0)txt(g,G.msg,6,4,LABEL);else txt(g,(G.level===3?'':G.level===10?'':G.level===9?'МЕТРО · ':G.level===8?'ГОРОД · ':G.level>=11?'':G.level>=4?'ДОМ 11 · ':'ЭТАЖ '+G.level+' · ')+zoneName(),6,4,LABEL);
-  txt(g,fmtTime(G.time),314,4,VFD,'right');
   /* left column */
   R(g,'#0b0f0e',18,20,44,44);frame(g,18,20,44,44,'#2c4a40');drawFace(g,20,22);
   const hc=P.hp<30?DANGER:VFD;

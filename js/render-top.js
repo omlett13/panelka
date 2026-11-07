@@ -311,6 +311,7 @@ function drawTopOverlay(){
     if(!G.cut&&!(G.rc&&G.rc.lock)){g.fillStyle='rgba(235,230,215,.55)';g.fillRect(199,119,2,2);}
     if(G.level===13&&G.techOK)schoolHud(g);
     if(G.msgT>0)stxt(g,G.msg,6,6,G.msgT<.5?'rgba(232,226,210,.5)':'#e8e2d2');
+    if(SET.timer)stxt(g,fmtTime(G.time),394,6,VFD,'right');
     if(G.state==='play'&&G.bossOn){let i=0;for(const e of ents)if(e.kind==='enemy'&&KINDS[e.k].bro){const x=i?214:56,K=KINDS[e.k];
         stxt(g,K.name+(e.rage?' !':''),x+65,8,e.dead?DIM:(e.rage?DANGER:WARN),'center');R(g,'#1a0a08',x,20,130,5);if(!e.dead)R(g,e.rage?DANGER:'#d86a3a',x,20,Math.max(0,e.hp/e.max)*130|0,5);i++;}}
     if(G.clearT>0){g.save();g.globalAlpha=Math.min(1,G.clearT);R(g,'rgba(6,8,10,.75)',70,78,260,58);stxt(g,'ПОДЪЕЗД ЗАЧИЩЕН',200,88,VFD,'center',16);stxt(g,'КЛЮЧ ОТ ПОДВАЛА',200,114,WARN,'center');g.restore();}

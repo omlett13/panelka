@@ -80,7 +80,7 @@ const EN={
   "  («МИШКА» В КАРМАНЕ)":"  («MISHKA» IN POCKET)","МЕТРО · E — СПУСТИТЬСЯ":"METRO · E — GO DOWN",
   /* config.js */
   "ПИКСЕЛИ":"PIXELS","СЛОЖНОСТЬ":"DIFFICULTY","ЛЕГКО":"EASY","НОРМА":"NORMAL","ЖЕСТКО":"HARD","ЯРКОСТЬ":"BRIGHTNESS","МЫШЬ":"MOUSE","КАЧАНИЕ":"HEAD BOB","ВЫКЛ":"OFF","ВКЛ":"ON",
-  "ЗВУК":"SOUND",
+  "ЗВУК":"SOUND","ТАЙМЕР":"TIMER",
   /* garages.js */
   "ТЫ: «Ох-х…»":"YOU: «Oof…»","— Р-Р-Р-РЫ-Ы-Ы!":"— G-R-R-R-R!","ВОРОТА НА ЦЕПИ — КЛЮЧ У СТОРОЖА":"GATE CHAINED — WATCHMAN HAS KEY","ВОРОТА ОТКРЫТЫ":"GATE OPEN",
   "E — ПОГОВОРИТЬ СО СТОРОЖЕМ":"E — TALK TO THE WATCHMAN",
