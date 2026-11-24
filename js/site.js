@@ -40,7 +40,7 @@ function updateJumper(e,dt){if(e.jump){const j=e.jump;j.t+=dt;const k=Math.min(1
 /* БРИГАДИР */
 function updateBrig(e,dt){const K=KINDS.bg,D=DIFF[SET.diff],dx=P.x-e.x,dy=P.y-e.y,d=Math.hypot(dx,dy)||.001;
   e.losT-=dt;if(e.losT<=0){e.losT=.12;e.see=los(e.x,e.y,P.x,P.y);}
-  if(!e.intro){if(G.arena){e.intro=true;e.alert=true;e.state='chase';e.shotT=1.5;e.whT=9;G.brig={phase:'ground'};G.bark='БРИГАДИР: «Кто пустил на объект?! А-а, это твой обрез? Был твой.»';G.barkT=3.4;sfx.bark(K.pitch);msg('БРИГАДИР');}return;}
+  if(!e.intro){if(G.arena){e.intro=true;e.alert=true;e.state='chase';e.shotT=1.5;e.whT=9;G.brig={phase:'ground'};sayBox('БРИГАДИР: «Кто пустил на объект?! А-а, это твой обрез? Был твой.»',3.4);sfx.bark(K.pitch);msg('БРИГАДИР');}return;}
   if(e.onCrane)return;
   if(e.state==='toCrane'){e.t-=dt;const tx=CRA.x-e.x,ty=CRA.y+1.2-e.y,l=Math.hypot(tx,ty)||1;if(l>1||e.t>0&&e.t<4.5){const ox=e.x,oy=e.y;moveBody(e,tx/l*3.6,ty/l*3.6,dt,e.rad);e.walk+=Math.hypot(e.x-ox,e.y-oy)*3;}
     if(l<1.2||e.t<=0)brigOnCrane(e);return;}
@@ -100,7 +100,7 @@ function updateSite(dt){const b=G.brig;
   for(const d of ents){if(d.kind!=='drop'||d.done)continue;d.t+=dt;if(d.t>=d.T+.3){d.done=true;sfx.thud();G.shake=Math.max(G.shake,.45);for(let i=0;i<3;i++)spawnFx('puff',d.x+(Math.random()-.5),d.y+(Math.random()-.5),.5);
       if(Math.hypot(P.x-d.x,P.y-d.y)<1.3)hurtPlayer(26);if(!solidR(d.x,d.y,.45)&&ents.filter(o=>o.kind==='prop'&&o.t==='slab').length<14)ents.push({kind:'prop',t:'slab',x:d.x,y:d.y,sc:1.3,block:.45});}}
   for(const f of ents)if(f.kind==='boomfx'){f.life-=dt;f.sc=Math.min(f.sc*(1+dt*.5),3.2);}
-  if(G.obrezEnt&&G.obrezEnt.taken&&!G.breach){G.breach=true;openBreach();for(const [x,y] of [[85.4,11.6],[85.6,16],[84.2,12.8]])ents.push({kind:'fire',x,y,life:60});G.bark='ТЫ: «Ну здравствуй, родной.»';G.barkT=2.4;setTimeout(()=>{if(G.level===10)msg('КРАН ПРОЛОМИЛ ЗАБОР — ТЕБЕ ТУДА');},2400);}
+  if(G.obrezEnt&&G.obrezEnt.taken&&!G.breach){G.breach=true;openBreach();for(const [x,y] of [[85.4,11.6],[85.6,16],[84.2,12.8]])ents.push({kind:'fire',x,y,life:60});sayBox('ТЫ: «Ну здравствуй, родной.»',2.4);setTimeout(()=>{if(G.level===10)msg('КРАН ПРОЛОМИЛ ЗАБОР — ТЕБЕ ТУДА');},2400);}
   if(G.breach&&!G.siteEnd&&P.x>BREACH.x+.7&&P.y>BREACH.y0-1.5&&P.y<BREACH.y1+2.5){G.siteEnd=1;keys.clear();transition(()=>{enterLevel(11);msg('ГАРАЖИ');},.8);}}
 function siteSkipToCrane(){const e=ents.find(o=>o.kind==='enemy'&&o.k==='bg');if(!e)return;siteSkipToArena();e.intro=true;e.alert=true;e.x=CRA.x;e.y=CRA.y+1.2;brigOnCrane(e);}
 function drawCraneHint(g,tx,ty,lab){tx=tx==null?CRB.x:tx;ty=ty==null?CRB.y:ty;lab=lab||'ТВОЙ КРАН';const dx=tx-P.x,dy=ty-P.y,d=Math.hypot(dx,dy);let r=Math.atan2(dy,dx)-P.a;r=Math.atan2(Math.sin(r),Math.cos(r));
@@ -140,11 +140,11 @@ function useAction(){
   else if(f.t==='tdoor'){sfx.click();msg('НЕ ПРИСЛОНЯТЬСЯ');}
   else if(f.t==='metro'){if(G.level===8)openChoice('МЕТРО','Спуск в метро. Поезд идёт до станции «Стройка». Спускаемся — или ещё погуляешь по городу?',[{l:'ДАЛЬШЕ: В МЕТРО',f:()=>{talkClose();transition(()=>{enterLevel(9);msg('МЕТРО');},.5);}},{l:'ОСТАТЬСЯ В ГОРОДЕ',f:talkClose}]);
     else openChoice('ВЫХОД В ГОРОД','Лестница наверх, в город.',[{l:'НАВЕРХ: В ГОРОД',f:()=>{talkClose();transition(()=>{enterLevel(8);P.x=61.5;P.y=59.6;P.a=-Math.PI/2;msg('ГОРОД');},.5);}},{l:'ОСТАТЬСЯ',f:talkClose}]);}
-  else if(f.t==='bdoor'){sfx.clunk();G.bark='БАРЫГА: «Кто? …А, это ты. Заходи, быстро.»';G.barkT=2.6;sfx.bark(110);TILE[f.i]=7;doorTarget[f.i]=1;doorTimer[f.i]=0;DOORS.push(f.i);setTimeout(()=>sfx.door(),400);}
+  else if(f.t==='bdoor'){sfx.clunk();sayBox('БАРЫГА: «Кто? …А, это ты. Заходи, быстро.»',2.6);sfx.bark(110);TILE[f.i]=7;doorTarget[f.i]=1;doorTimer[f.i]=0;DOORS.push(f.i);setTimeout(()=>sfx.door(),400);}
   else if(f.t==='flatdoor'){sfx.click();msg('ЗАПЕРТО — КЛЮЧ У СМОТРЯЩЕГО');}
   else if(f.t==='exit'){
-    if(G.level===9){if(!G.cleared){sfx.click();msg('КАБИНА ЗАПЕРТА — КОНТРОЛЁР НЕ ПУСКАЕТ');return;}sfx.door();keys.clear();G.winTime=G.time;transition(()=>endGame('win'),.6);return;}
-    if(G.level===5){if(!G.cleared){sfx.click();msg('ДВЕРЬ ЗАПЕРТА — БУТЫЛОЧНИК НАВЕРХУ');return;}sfx.door();keys.clear();transition(()=>{enterLevel(6);msg('ДОМ 11 · ЭТАЖ 2');},.5);return;}
+    if(G.level===9){if(!G.cleared){sfx.click();msg('КАБИНА: КОНТРОЛЁР');return;}sfx.door();keys.clear();G.winTime=G.time;transition(()=>endGame('win'),.6);return;}
+    if(G.level===5){if(!G.cleared){sfx.click();msg('ДВЕРЬ: БУТЫЛОЧНИК НАВЕРХУ');return;}sfx.door();keys.clear();transition(()=>{enterLevel(6);msg('ДОМ 11 · ЭТАЖ 2');},.5);return;}
     if(G.level===6){sfx.click();msg('ВНИЗ НЕ НАДО');return;}
     G.winTime=G.time;sfx.door();keys.clear();transition(()=>endGame('win'),.5);}
   else if(f.t==='lift'){if(G.level===4){if(!G.power){sfx.click();msg('ЛИФТ НЕ РАБОТАЕТ');return;}if(!G.liftKey){sfx.click();msg('ЛИФТ ЗАПЕРТ — НУЖЕН КЛЮЧ');return;}enterLift();return;}if(G.level===3){sfx.click();msg('ЛИФТ НЕ ЕДЕТ');return;}if(G.level===1?!G.power:!G.cleared){sfx.click();msg(G.level===1?'ЛИФТ НЕ РАБОТАЕТ':'ЛИФТ НЕ ЕДЕТ');return;}enterLift();}

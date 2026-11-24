@@ -7,7 +7,7 @@ function enterLift(){
     ents=ents.filter(e=>e.kind==='prop'||e.kind==='enemy'||e.kind==='item');exitLock();},.5);
 }
 function dealerSay(s){G.bark='БАРЫГА: «'+s+'»';G.barkT=2.8;sfx.bark(125);}
-function liftBroken(){if(G.liftBreak>0)return;G.liftBreak=4.4;sfx.clunk();sfx.hiss();G.shake=.3;msg('ЛИФТ СЛОМАН');dealerSay('Второй этаж? Лифт до второго не ходит. Пешком давай, по лестнице.');}
+function liftBroken(){if(G.liftBreak>0)return;G.liftBreak=4.4;sfx.clunk();sfx.hiss();G.shake=.3;msg('ЛИФТ СЛОМАН');sayBox('БАРЫГА: «Второй этаж? Лифт до второго не ходит. Пешком давай, по лестнице.»',2.8);sfx.bark(125);}
 function floorLabel(l){return l===3?'-1':l===4?'1':String(l);}
 function rideTo(){const T=G.rideTarget;return T===3?'-1':T===2?'2':G.level===4?'2':'1';}
 function startRide(target){if(G.state!=='lift')return;G.rideTarget=target;G.state='ride';G.rideT=0;G.rideDing=false;keys.clear();sfx.latch();sfx.ride();}
@@ -63,7 +63,7 @@ function take(e){
     case 'flatkey':G.flatKey=true;msg('КЛЮЧ ОТ КВАРТИРЫ');break;
     case 'fuse':G.fuses++;msg('ПРЕДОХРАНИТЕЛЬ  '+G.fuses+'/3');break;
     case 'liftkey':G.liftKey=true;msg('КЛЮЧ ОТ ЛИФТА');break;
-    case 'gkey':G.gkey=true;msg('КЛЮЧ ОТ ВОРОТ — ВОРОТА В КОНЦЕ НИЖНЕГО РЯДА');break;
+    case 'gkey':G.gkey=true;msg('КЛЮЧ ОТ ВОРОТ');break;
     case 'apple':if(P.hp>=maxHP())return false;P.hp=Math.min(maxHP(),P.hp+5);msg('ЯБЛОКО  +5');break;
     case 'tapok':P.has[3]=1;P.w=3;P.switchT=.25;msg('МАМИН ТАПОК!  [5]');break;
     case 'gum':if(P.hp>=maxHP()&&!(P.bleed>0))return false;P.bleed=0;P.hp=Math.min(maxHP(),P.hp+45);msg('ЖВАЧКА «LOVE IS»  +45');break;

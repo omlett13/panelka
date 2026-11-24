@@ -7,7 +7,7 @@
    Add new fields to one of these, never ad hoc. With ?debug, touching an undeclared field warns. */
 const runState=()=>({rub:0,floorN:1,candy:0,foundHQ:false,gReturn:null,sunset:false});
 const levelState=()=>({
-  time:0,kills:0,killTotal:0,items:0,itemTotal:0,secrets:0,msg:'',msgT:0,bark:'',barkT:0,flash:0,hurt:0,bonus:0,power:false,trans:null,loot:false,
+  time:0,kills:0,killTotal:0,items:0,itemTotal:0,secrets:0,msg:'',msgT:0,bark:'',barkT:0,boxS:'',popS:'',popT:0,flash:0,hurt:0,bonus:0,power:false,trans:null,loot:false,
   cleared:false,bossOn:false,healT:6,brawlUsed:false,firstDeadT:-1,clearT:0,face:null,goo:0,grab:null,grannyN:0,
   safeFound:false,fuses:0,liftKey:false,dvOn:false,dvDown:false,cut:null,flatKey:false,liftBreak:0,codeOK:false,brk:null,kp:null,boardHP:{},code:[],
   ambS:0,birdT:0,boomT:0,fireT:0,shoutT:0,spitT:0,ventT:0,                                     // timers
@@ -183,7 +183,7 @@ const LIGHTS12=[{x:108,y:44.5,c:[1,.86,.6],r:7,i:.8,fl:1},{x:99,y:48,c:[1,.86,.6
 const LIGHTS11=[{x:24,y:9.5,c:[1,.85,.6],r:5,i:1}];
 const LIGHTS10=[{x:77.5,y:77,c:[1,.85,.6],r:5,i:1},{x:48,y:42,c:[1,.92,.8],r:7,i:.8},{x:60,y:40,c:[1,.92,.8],r:7,i:.8},{x:72,y:42,c:[1,.92,.8],r:7,i:.8},{x:55,y:45,c:[1,.92,.8],r:6,i:.6},{x:66,y:45,c:[1,.92,.8],r:6,i:.6}];
 /* per-level config. Render: fog (FOGD), cull (CULL2), ceilH (CEILH), hz (HZ), oob (OOBF), sky() (SKY); defaults in LVDEF0.
-   walls() {tile:[textures]} wall overrides (variant by WALLV) · Hooks: cells() floor/ceiling/zone overrides after parseMap · init() end of resetLevel · update(dt) each play tick, return true to end the tick */
+   walls() {tile:[textures]} wall overrides (variant by WALLV) · gates [[x,y]] doors only bosses pass · Hooks: cells() floor/ceiling/zone overrides after parseMap · init() end of resetLevel · update(dt) each play tick, return true to end the tick */
 const LVDEF0={fog:12.5,cull:196,ceilH:1,hz:0,oob:0xff000000,sky:()=>SKYN};
 const LEVELDEF={
   14:{lights:LIGHTS14,start:{x:10.5,y:13.6,a:Math.PI/2},obj:'СМЕНКА',amb:1.35,fog:30,cull:900,
@@ -217,7 +217,7 @@ const LEVELDEF={
   6:{lights:LIGHTS6,start:{x:3.5,y:23.5,a:0},obj:'ЗАДАЧИ',amb:.6,torch:1,init(){makeTags(G.code,true);}},
   4:{lights:LIGHTS4,start:{x:3.5,y:33.5,a:-Math.PI/2},obj:'ЛИФТ',init(){makeTags(G.code,false);},
     update(){if(G.codeOK&&!G.dvOn&&!G.cut&&!G.dvDown&&P.x>=10&&P.x<14&&P.y>=11.5&&P.y<16.9){const dv=ents.find(o=>o.k==='dv'&&!o.dead);if(dv){startCut(dv);return true;}}}},
-  1:{lights:LIGHTS1,start:{x:3.5,y:18.5,a:-0.9},obj:'ТОК'},
+  1:{lights:LIGHTS1,start:{x:3.5,y:18.5,a:-0.9},obj:'ТОК',gates:[[38,17],[30,28]]},
   3:{lights:LIGHTS3,start:{x:1.5,y:17.5,a:0},obj:'СЕЙФ',amb:.45,torch:1},
   2:{lights:LIGHTS2,start:{x:1.5,y:16.9,a:0},obj:'КЛЮЧ',heal:[[35,20.5],[45,23.5],[34.2,28],[45,32.5],[39,32.5],[41,21.2],[38,27.5]],
     update(dt){if(G.cleared)return;
@@ -249,7 +249,7 @@ function initLights(){
 function loadLevel(n){
   G.level=n;if(!G.menuLoad)store.set('last',n);MWL=n>=8?MW:64;MHL=n>=8?MH:48;unlock(n);parseMap(LEVEL_SRC[n].map);
   for(let i=0;i<N;i++){const z=ZONE[i];FLOORTEX[i]=z===Z_OUT?TX.asph:(z===Z_APT||z===Z_BOSS)?TX.parq:z===Z_BASE?TX.conc:z===Z_LIFT?TX.rubber:z===Z_VOID?TX.far:z===Z_WATER?TX.water:z===Z_BOIL?TX.coalf:TX.tile;CEILTEX[i]=z===Z_LIFT?TX.liftCeil:(z===Z_BASE||z===Z_WATER||z===Z_BOIL)?TX.ceilB:TX.ceil;}
-  const L=Object.assign({},LVDEF0,LEVELDEF[n]);CEILW.fill(0);TALL2.fill(0);WALLOV=L.walls?L.walls():null;if(L.cells)L.cells();HALL2=TALL2.indexOf(1)>=0;
+  const L=Object.assign({},LVDEF0,LEVELDEF[n]);CEILW.fill(0);TALL2.fill(0);WALLOV=L.walls?L.walls():null;if(L.cells)L.cells();GATE.fill(0);GATES=L.gates?1:0;for(const [x,y] of L.gates||[])GATE[y*MW+x]=1;HALL2=TALL2.indexOf(1)>=0;
   FOGD=L.fog;CULL2=L.cull;CEILH=L.ceilH;HZ=L.hz;OOBF=L.oob;SKY=L.sky();
   LIGHTS=L.lights.map(l=>Object.assign({},l));initLights();
   G.secretTotal=0;for(let i=0;i<N;i++)if(TILE[i]===10)G.secretTotal++;if(L.secrets!=null)G.secretTotal=L.secrets;

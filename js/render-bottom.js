@@ -109,7 +109,7 @@ function drawWear(g){
 }
 function drawShopBottom(g){
   txt(g,'ЧЕМОДАН БАРЫГИ',6,4,WARN);
-  if(G.barkT>0)txt(g,G.bark,160,26,LABEL,'center');
+  if(G.barkT>0)fitTxt(g,G.bark,160,26,LABEL,'center',308);
   txt(g,'РУБЛИ',160,52,DIM,'center');txt(g,String(G.rub),160,64,VFD,'center',16);
   txt(g,'УЛУЧШЕНИЯ',6,96,DIM);txt(g,'ВОДКА x'+P.vodka+(P.kefir?'  КЕФИР x'+P.kefir:''),314,96,LABEL,'right');drawGear(g,108);
   drawSlots(g,-1);
@@ -125,7 +125,7 @@ function renderBottom(){
   if(G.state==='breaker')return drawBreakerBottom(g);
   if(G.state==='keypad')return drawKeypadBottom(g);
   if(G.loot)return G.loot==='gear'?drawWear(g):drawLoot(g);
-  if(G.barkT>0)txt(g,G.bark,6,4,WARN);else if(G.msgT>0)txt(g,G.msg,6,4,LABEL);else txt(g,(G.level===3?'':G.level===10?'':G.level===9?'МЕТРО · ':G.level===8?'ГОРОД · ':G.level>=11?'':G.level>=4?'ДОМ 11 · ':'ЭТАЖ '+G.level+' · ')+zoneName(),6,4,LABEL);
+  if(G.barkT>0&&!boxOn())fitTxt(g,G.bark,6,4,WARN,'left',308);else if(G.msgT>0)txt(g,G.msg,6,4,LABEL);else txt(g,(G.level===3?'':G.level===10?'':G.level===9?'МЕТРО · ':G.level===8?'ГОРОД · ':G.level>=11?'':G.level>=4?'ДОМ 11 · ':'ЭТАЖ '+G.level+' · ')+zoneName(),6,4,LABEL);
   /* left column */
   R(g,'#0b0f0e',18,20,44,44);frame(g,18,20,44,44,'#2c4a40');drawFace(g,20,22);
   const hc=P.hp<30?DANGER:VFD;
@@ -195,3 +195,8 @@ function drawLangBtn(g){const b=LANGBTN,cx=b.x+11,cy=b.y+10;R(g,'#141b19',b.x,b.
   g.strokeStyle=VFD;g.lineWidth=1;g.beginPath();g.arc(cx,cy,6.5,0,7);g.stroke();g.beginPath();g.ellipse(cx,cy,2.8,6.5,0,0,7);g.stroke();
   R(g,VFD,cx-6,cy,13,1);R(g,VFD,cx-5,cy-3,11,1);R(g,VFD,cx-5,cy+3,11,1);txt(g,SET.lang?'EN':'RU',b.x+22,b.y+7,LABEL);}
 
+
+/* one line of 8px text that must fit width w: drops to 6px, then wraps to two 6px lines (still inside the 15px header) */
+function fitTxt(g,s,x,y,c,al,w){const t=tr(s);g.font='8px "Press Start 2P", monospace';if(g.measureText(t).width<=w)return txt(g,t,x,y,c,al);
+  g.font='6px "Press Start 2P", monospace';if(g.measureText(t).width<=w)return txt(g,t,x,y+1,c,al,6);
+  const L=wrapPx(g,t,w);txt(g,L[0],x,y-3,c,al,6);if(L[1])txt(g,L.slice(1).join(' '),x,y+4,c,al,6);}

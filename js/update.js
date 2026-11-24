@@ -4,7 +4,7 @@ function k(c){return keys.has(c);}
 let flowT=0;
 function update(dt){
   G.t+=dt;updateLights(G.t);
-  G.flash=Math.max(0,G.flash-dt*8);G.hurt=Math.max(0,G.hurt-dt*1.6);G.bonus=Math.max(0,G.bonus-dt*2.5);G.msgT-=dt;G.barkT-=dt;G.navT-=dt;
+  G.flash=Math.max(0,G.flash-dt*8);G.hurt=Math.max(0,G.hurt-dt*1.6);G.bonus=Math.max(0,G.bonus-dt*2.5);G.msgT-=dt;G.barkT-=dt;G.popT-=dt;G.navT-=dt;
   for(const b of BTNS)if(b.hit)b.hit=Math.max(0,b.hit-dt);
   updateAmbience();
   if(G.state!=='play'&&G.page&&G.navT<=0){
@@ -244,7 +244,7 @@ function updateEnemy(e,dt){
   else if(ranged&&e.see&&d<7){vx=-dy/d*e.sdir*.75;vy=dx/d*e.sdir*.75;if(Math.random()<dt*.6)e.sdir*=-1;}
   else if(e.see&&d<6){if(d<.75)return;vx=dx/d;vy=dy/d;
     if(K.drunk){const sw=Math.sin(G.t*5+e.id*1.7)*1.1;vx+=-dy/d*sw;vy+=dx/d*sw;}}
-  else{const nx=flowNext(e.x|0,e.y|0);if(!nx)return;const ni=nx[1]*MW+nx[0];if(ISD[TILE[ni]]&&doorOpen[ni]<.85){if(ni===BDOOR)return;doorTarget[ni]=1;doorTimer[ni]=0;return;}const tx=nx[0]+.5-e.x,ty=nx[1]+.5-e.y,tm=Math.hypot(tx,ty)||1;vx=tx/tm;vy=ty/tm;
+  else{const nx=flowNext(e.x|0,e.y|0,K.boss&&GATES?FLOWB:FLOW);if(!nx)return;const ni=nx[1]*MW+nx[0];if(ISD[TILE[ni]]&&doorOpen[ni]<.85){if(ni===BDOOR)return;doorTarget[ni]=1;doorTimer[ni]=0;return;}const tx=nx[0]+.5-e.x,ty=nx[1]+.5-e.y,tm=Math.hypot(tx,ty)||1;vx=tx/tm;vy=ty/tm;
     if(K.drunk){const sw=Math.sin(G.t*5+e.id*1.7)*.8;vx+=-ty/tm*sw;vy+=tx/tm*sw;}}
   const ox=e.x,oy=e.y,spd=K.speed*D.spd*(rage?1.5:1)*(e.phase2?1.3:1)*(e.buffT>0?1.35:1);moveBody(e,vx*spd,vy*spd,dt,K.dog?.2:.26);
   for(const o of ents){if(o===e||o.kind!=='enemy'||o.dead)continue;const sx=e.x-o.x,sy=e.y-o.y;if(Math.abs(sx)>.6||Math.abs(sy)>.6)continue;const sd=Math.hypot(sx,sy);if(sd<.55&&sd>.001){const px=e.x+sx/sd*(.55-sd)*.5,py=e.y+sy/sd*(.55-sd)*.5;if(!solidR(px,py,.26)&&!roomBlock(e,px,py,.26)){e.x=px;e.y=py;}}}

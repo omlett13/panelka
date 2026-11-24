@@ -7,7 +7,7 @@ const TMAP={'#':1,'B':2,'M':3,'G':4,'L':5,'D':6,'E':7,'S':8,'R':9,'X':10,'Y':11,
 const ZMAP={'/':Z_OUT,';':Z_HALL,'[':Z_HALL,'m':Z_HALL,'r':Z_HALL,'e':Z_HALL,'y':Z_OUT,'q':Z_OUT,'x':Z_OUT,'j':Z_OUT,'o':Z_VOID,'t':Z_OUT,'p':Z_OUT,',':Z_OUT,'.':Z_HALL,':':Z_APT,'_':Z_BASE,'~':Z_LIFT,'v':Z_VOID,'^':Z_BOSS,'w':Z_WATER,'*':Z_BOIL};
 const LIFT_SPAWN={x:3.5,y:39.35,a:-Math.PI/2};
 const doorOpen=new Float32Array(N), doorTarget=new Float32Array(N), doorTimer=new Float32Array(N);
-let DOORS=[];let BDOOR=-1;
+let DOORS=[];let BDOOR=-1;let GATES=0;const GATE=new Uint8Array(N);   /* GATE: doors only bosses may pass (LEVELDEF gates) */
 const TALL2=new Uint8Array(N);let HALL2=false;   /* cells with a ceiling two units high (school актовый зал) */
 const RAILM=new Uint8Array(N),WH12=new Uint8Array(N),CEILW=new Uint8Array(N),SEEN=new Uint8Array(N),TALLOK=new Uint8Array(N),ROOM=new Int16Array(N),BROOM=new Uint8Array(N);
 function inB(x,y){return x>=0&&y>=0&&x<MW&&y<MH;}

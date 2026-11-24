@@ -1,17 +1,17 @@
 'use strict';
 /* ---------- FLOW FIELD ---------- */
-const FLOW=new Int16Array(N),LUREF=new Int16Array(N);
+const FLOW=new Int16Array(N),LUREF=new Int16Array(N),FLOWB=new Int16Array(N);   /* FLOWB: like FLOW but through GATE doors, for bosses */
 let lure=null;
-function passT(i){const t=TILE[i];return (t===0&&ZONE[i]!==Z_VOID)||t===6||t===7||t===50||((t===42||t===43)&&doorOpen[i]>.5)||(t===10&&doorOpen[i]>.5);}
-function bfs(F,x,y){
+function passT(i,g){if(GATE[i]&&!g)return false;const t=TILE[i];return (t===0&&ZONE[i]!==Z_VOID)||t===6||t===7||t===50||((t===42||t===43)&&doorOpen[i]>.5)||(t===10&&doorOpen[i]>.5);}
+function bfs(F,x,y,g){
   F.fill(9999);const s=(y|0)*MW+(x|0);if(s<0||s>=N)return;F[s]=0;const q=[s];let h=0;
-  while(h<q.length){const c=q[h++],cx=c%MW,cy=(c/MW)|0;for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=cx+dx,ny=cy+dy;if(!inB(nx,ny))continue;const n=ny*MW+nx;if(passT(n)&&F[n]>F[c]+1){F[n]=F[c]+1;q.push(n);}}}
+  while(h<q.length){const c=q[h++],cx=c%MW,cy=(c/MW)|0;for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=cx+dx,ny=cy+dy;if(!inB(nx,ny))continue;const n=ny*MW+nx;if(passT(n,g)&&F[n]>F[c]+1){F[n]=F[c]+1;q.push(n);}}}
 }
-function computeFlow(){bfs(FLOW,P.x,P.y);}
-function passFlow(x,y){return inB(x,y)&&passT(y*MW+x);}
-function flowNext(cx,cy,F){F=F||FLOW;let best=null,bv=F[cy*MW+cx];
-  for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){const nx=cx+dx,ny=cy+dy;if(!passFlow(nx,ny))continue;
-    if(dx&&dy&&(!passFlow(cx+dx,cy)||!passFlow(cx,cy+dy)||ISD[TILE[cy*MW+cx+dx]]||ISD[TILE[(cy+dy)*MW+cx]]))continue;
+function computeFlow(){bfs(FLOW,P.x,P.y);if(GATES)bfs(FLOWB,P.x,P.y,1);}
+function passFlow(x,y,g){return inB(x,y)&&passT(y*MW+x,g);}
+function flowNext(cx,cy,F){F=F||FLOW;const g=F===FLOWB;let best=null,bv=F[cy*MW+cx];
+  for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){const nx=cx+dx,ny=cy+dy;if(!passFlow(nx,ny,g))continue;
+    if(dx&&dy&&(!passFlow(cx+dx,cy,g)||!passFlow(cx,cy+dy,g)||ISD[TILE[cy*MW+cx+dx]]||ISD[TILE[(cy+dy)*MW+cx]]))continue;
     const v=F[ny*MW+nx]+(dx&&dy?.4:0);if(v<bv){bv=v;best=[nx,ny];}}
   return best;}
 
@@ -21,7 +21,7 @@ function railHit(cx,cy,ax0,ax1,ay0,ay1){const m=RAILM[cy*MW+cx];const ov=(bx0,bx
   if((m&12)&&ov(cx+((m&4)?0:.42),cx+((m&8)?1:.58),cy+.42,cy+.58))return true;return false;}
 function solidR(x,y,r){const x0=(x-r)|0,x1=(x+r)|0,y0=(y-r)|0,y1=(y+r)|0;for(let cy=y0;cy<=y1;cy++)for(let cx=x0;cx<=x1;cx++){if(!inB(cx,cy))return true;const t=TILE[cy*MW+cx];if(t===68||t===69){if(railHit(cx,cy,x-r,x+r,y-r,y+r))return true;}else if(solidCell(cx,cy))return true;}return false;}
 function pushProps(o,r){for(const e of ents){if((e.kind!=='prop'&&e.kind!=='npc')||!e.block)continue;const dx=o.x-e.x,dy=o.y-e.y;if(Math.abs(dx)>1.2||Math.abs(dy)>1.2)continue;const d=Math.hypot(dx,dy),m=r+e.block;if(d<m&&d>.0001){const nx=e.x+dx/d*m,ny=e.y+dy/d*m;if(!solidR(nx,o.y,r))o.x=nx;if(!solidR(o.x,ny,r))o.y=ny;}}}
-function roomBlock(o,x,y,r){const bro=!!KINDS[o.k].bro;for(const [ox,oy] of [[-r,-r],[r,-r],[-r,r],[r,r]]){const c=((y+oy)|0)*MW+((x+ox)|0);if(bro?!BROOM[c]:(BROOM[c]||c===BDOOR))return true;}return false;}
+function roomBlock(o,x,y,r){const bro=!!KINDS[o.k].bro;for(const [ox,oy] of [[-r,-r],[r,-r],[-r,r],[r,r]]){const c=((y+oy)|0)*MW+((x+ox)|0);if(bro?!BROOM[c]:(BROOM[c]||c===BDOOR||(GATE[c]&&!KINDS[o.k].boss)))return true;}return false;}
 function moveBody(o,vx,vy,dt,r){const en=o.kind==='enemy',S=(x,y)=>solidR(x,y,r)||(en&&roomBlock(o,x,y,r));const nx=o.x+vx*dt;if(!S(nx,o.y))o.x=nx;const ny=o.y+vy*dt;if(!S(o.x,ny))o.y=ny;pushProps(o,r);}
 function los(ax,ay,bx,by){const dx=bx-ax,dy=by-ay,d=Math.hypot(dx,dy),n=Math.ceil(d*4);for(let i=1;i<n;i++){const t=i/n;if(sightBlock((ax+dx*t)|0,(ay+dy*t)|0))return false;}return true;}
 function rayDistLow(x,y,dx,dy,max){for(let d=0;d<max;d+=.04){const cx=(x+dx*d)|0,cy=(y+dy*d)|0;if(!inB(cx,cy))return d;const t=TILE[cy*MW+cx];if(t>=60&&t<=65)continue;if(sightBlock(cx,cy))return d;}return max;}
@@ -29,6 +29,9 @@ function rayDist(x,y,dx,dy,max){for(let d=0;d<max;d+=.04){if(sightBlock((x+dx*d)
 
 /* ---------- MESSAGES ---------- */
 function msg(s){G.msg=s;G.msgT=2.4;}
+/* cutscene line in the top-screen text box (typed out, stays long enough to read); pop: big centred word on the top screen */
+function sayBox(s,t){G.bark=G.boxS=s;G.barkT=Math.max(t||0,s.length/40+1.4);}
+function pop(s){G.popS=s;G.popT=1.8;}
 function bark(e){const K=KINDS[e.k];if(G.barkT>1.2||K.rat||K.dog||K.spider)return;G.bark=(K.who||K.name||(K.boss?'БАТЯ':'ГОПНИК'))+': «'+K.bark[(Math.random()*K.bark.length)|0]+'»';G.barkT=2.8;sfx.bark(K.pitch*(.9+Math.random()*.2));}
 
 /* ---------- PLAYER ACTIONS ---------- */

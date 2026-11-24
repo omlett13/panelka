@@ -216,9 +216,9 @@ function schoolUse(){for(let d=.35;d<=1.35;d+=.1){const cx=(P.x+Math.cos(P.a)*d)
     if(G.level===13&&t===17){openBoard();return true;}
     if(G.level===14&&i===LIB.book){pullBook();return true;}
     return false;}return false;}
-function pullBook(){if(G.libOpen){sfx.click();msg('КНИГА УЖЕ ВЫДВИНУТА');return;}
-  G.libOpen=true;sfx.clunk();G.shake=.2;G.bark='ТЫ: «„Капитал“, том второй… Тяжёлый. Ага.»';G.barkT=2.6;
-  const i=LIB.door;TILE[i]=10;DOORS.push(i);doorTarget[i]=1;doorTimer[i]=0;setTimeout(()=>sfx.door(),350);G.secrets++;msg('ТАЙНИК!');}
+function pullBook(){if(G.libOpen){sfx.click();return;}
+  G.libOpen=true;sfx.clunk();G.shake=.2;
+  const i=LIB.door;TILE[i]=10;DOORS.push(i);doorTarget[i]=1;doorTimer[i]=0;setTimeout(()=>sfx.door(),350);G.secrets++;pop('ТАЙНИК!');}
 
 /* ---------- стенд «ИНФОРМАЦИЯ» (floor 1 вестибюль): pinned notices you point at and read, like the барыга's case ---------- */
 const BOARD=[

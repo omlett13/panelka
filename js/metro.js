@@ -4,7 +4,7 @@ const MT={doorsA:[],doorsG:[],ghostW:-1,bossW:-1,rumT:0,clackT:0};
 function metroInit(){MT.doorsA=[];MT.doorsG=[];MT.doorsX=[];G.outside=false;G.siteDone=false;for(const i of DOORS){if(TILE[i]!==42)continue;const y=(i/MW)|0,x=i%MW;if(y===37){MT.doorsA.push(i);doorOpen[i]=1;doorTarget[i]=1;}else if(x<100)MT.doorsG.push(i);else MT.doorsX.push(i);}
   MT.ghostW=39*MW+76;MT.bossW=39*MW+112;G.trainMove=false;G.departed=false;G.departT=0;G.ghostOn=false;G.ghostDone=false;G.ghostEnd=false;G.ghostT=0;G.lockDoor=-1;G.wave=null;}
 function inTrain(){return FLCH[(P.y|0)*MW+(P.x|0)]===114;}
-function announce(s){G.bark='ДИКТОР: «'+s+'»';G.barkT=3.4;if(AU.c){tone('sine',784,784,.35,.22);tone('sine',622,622,.5,.22,.38);}}
+function announce(s){sayBox('ДИКТОР: «'+s+'»',3.4);if(AU.c){tone('sine',784,784,.35,.22);tone('sine',622,622,.5,.22,.38);}}
 function spawnEnemy(k,x,y){const K=KINDS[k],D=DIFF[SET.diff],rr=K.rad||.32*K.scale;if(solidR(x,y,rr)){let best=null,bd=1e9;for(let dy=-3;dy<=3;dy++)for(let dx=-3;dx<=3;dx++){const cx=(x|0)+dx+.5,cy=(y|0)+dy+.5;if(solidR(cx,cy,rr))continue;const d=Math.hypot(cx-x,cy-y);if(d<bd){bd=d;best=[cx,cy];}}if(best){x=best[0];y=best[1];}}const e={kind:'enemy',k,x,y,hp:K.hp*D.hp,max:K.hp*D.hp,state:'chase',t:0,cool:.4,alert:true,pain:0,walk:0,id:eid++,rad:K.rad||.32*K.scale,stT:2,stun:0,rage:false,rageT:0,losT:0,see:false,sdir:1,box:K.box||0};ents.push(e);G.killTotal++;return e;}
 function updateMetro(dt){
   const c=(P.y|0)*MW+(P.x|0);

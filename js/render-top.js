@@ -366,8 +366,10 @@ function drawTopOverlay(){
       for(let i=0;i<26;i++){const x=((i*53+rc.t*18*(i%3+1))%W),y=((rc.t*38*(1+i%4)+i*37)%H);R(g,HC[i%4],x|0,y|0,3,1);R(g,HC[(i+1)%4],(x+1)|0,(y+1)|0,1,2);}
       g.fillStyle='#9a7a24';g.beginPath();g.moveTo(0,H);for(let x=0;x<=W;x+=16)g.lineTo(x,H-(46+r()*26)*k);g.lineTo(W,H);g.closePath();g.fill();
       g.lineWidth=2;for(let i=0;i<110;i++){const x=r()*W,side=i<16,h2=(30+r()*70)*k;g.strokeStyle=HC[(r()*4)|0];g.beginPath();if(side){const sx=i%2?0:W;g.moveTo(sx,H*.3+r()*H*.7);g.lineTo(sx+(i%2?1:-1)*(20+r()*50)*k,H*.2+r()*H*.6);}else{g.moveTo(x,H);g.lineTo(x+(r()-.5)*40,H-h2);}g.stroke();}}
-    if(rc&&rc.lock){R(g,'#000',0,0,W,22);R(g,'#000',0,H-22,W,22);if(G.barkT>0)stxt(g,G.bark,200,H-17,'#e8e2d2','center');}
+    if(rc&&rc.lock){R(g,'#000',0,0,W,22);R(g,'#000',0,H-22,W,22);}
     if(rc&&rc.fade>0){g.fillStyle='rgba(0,0,0,'+Math.min(1,rc.fade).toFixed(3)+')';g.fillRect(0,0,W,H);}}
+  if(boxOn())drawSayBox(g);
+  if(G.popT>0&&G.state==='play'){const k=Math.min(1,(1.8-G.popT)*6),a=Math.min(1,G.popT*3);g.globalAlpha=a;stxt(g,G.popS,200,64-(1-k)*10,WARN,'center',16);g.globalAlpha=1;}
   if(G.state==='breaker'&&G.brk)drawBreakerTop(g);
   if(G.state==='keypad'&&G.kp)drawKeypadTop(g);
   if(G.page==='note')drawNote(g,NOTES[G.noteI]);
@@ -393,3 +395,20 @@ function drawFaceSpider(g,f){
 }
 function fmtTime(t){t=t|0;return String((t/60)|0).padStart(2,'0')+':'+String(t%60).padStart(2,'0');}
 
+
+/* cutscene text box (Majora-style): dark rounded box at the bottom of the top screen, name tab, text typed out, ▼ when done.
+   Shows for sayBox() lines and for any bark said during a cutscene (G.cut, the roof ride). */
+function boxOn(){return G.barkT>0&&G.bark&&G.state!=='menu'&&G.state!=='shop'&&(G.bark===G.boxS||G.cut||(G.level===7&&G.rc&&G.rc.lock));}
+let boxLast='',boxBT=0,boxT0=0,boxN=0;
+function wrapPx(g,s,w){const out=[];let line='';for(const wd of s.split(' ')){const t=line?line+' '+wd:wd;if(line&&g.measureText(t).width>w){out.push(line);line=wd;}else line=t;}if(line)out.push(line);return out;}
+function rrect(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();}
+function drawSayBox(g){
+  if(G.bark!==boxLast||G.barkT>boxBT+.05){boxLast=G.bark;boxT0=G.t;boxN=0;}boxBT=G.barkT;
+  let s=tr(G.bark),who='';const m=s.match(/^([^:«]{1,24}): «(.*)»$/);if(m){who=m[1];s=m[2];}
+  g.font='8px "Press Start 2P", monospace';const L=wrapPx(g,s,352).slice(0,3),tot=L.join('').length;
+  const n=Math.min(tot,((G.t-boxT0)*40)|0);if(n>boxN){if(n%3===0&&AU.c)tone('square',620+(n%5)*40,600,.025,.05);boxN=n;}
+  const bh=14+L.length*13,bx=14,bw=372,by=H-bh-8;
+  g.fillStyle='rgba(8,10,24,.82)';rrect(g,bx,by,bw,bh,6);g.fill();g.lineWidth=2;g.strokeStyle='rgba(232,226,210,.85)';rrect(g,bx+2,by+2,bw-4,bh-4,4);g.stroke();
+  if(who){g.font='8px "Press Start 2P", monospace';const tw=g.measureText(who).width+14;g.fillStyle='rgba(8,10,24,.9)';rrect(g,bx+10,by-11,tw,14,4);g.fill();g.strokeStyle='rgba(232,226,210,.85)';g.lineWidth=1.5;rrect(g,bx+10,by-11,tw,14,4);g.stroke();txt(g,who,bx+17,by-8,WARN);}
+  let left=n;L.forEach((l,i)=>{if(left<=0)return;txt(g,l.slice(0,left),bx+12,by+9+i*13,'#f0ece0');left-=l.length;});
+  if(n>=tot&&((G.t*3)|0)%2)txt(g,'▼',bx+bw-16,by+bh-12,WARN,'left',6);}
